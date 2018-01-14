@@ -1,0 +1,330 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1060B11D1F4373DC00C9EFF5 /* Chip8.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1060B1141F4373DC00C9EFF5 /* Chip8.cpp */; };
+		1060B11E1F4373DC00C9EFF5 /* Display.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1060B1161F4373DC00C9EFF5 /* Display.cpp */; };
+		1060B11F1F4373DC00C9EFF5 /* GBCPU.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1060B1181F4373DC00C9EFF5 /* GBCPU.cpp */; };
+		1060B1201F4373DC00C9EFF5 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1060B11A1F4373DC00C9EFF5 /* main.cpp */; };
+		1060B1241F4373F200C9EFF5 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1060B1231F4373F200C9EFF5 /* OpenGL.framework */; };
+		1060B1261F4373F700C9EFF5 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1060B1251F4373F700C9EFF5 /* GLUT.framework */; };
+		1060B1281F43747000C9EFF5 /* roms in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1060B1271F43745700C9EFF5 /* roms */; };
+		108226CB1F6250A1006A63BC /* NES.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 108226C91F625090006A63BC /* NES.cpp */; };
+		108226CE1F625209006A63BC /* CPU.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 108226CC1F625209006A63BC /* CPU.cpp */; };
+		108226D11F62569D006A63BC /* Memory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 108226CF1F62569D006A63BC /* Memory.cpp */; };
+		108226D41F625731006A63BC /* PPU.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 108226D21F625731006A63BC /* PPU.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		1060B1081F43737D00C9EFF5 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 12;
+			dstPath = "";
+			dstSubfolderSpec = 6;
+			files = (
+				1060B1281F43747000C9EFF5 /* roms in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		1060B10A1F43737D00C9EFF5 /* Nintendoish */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Nintendoish; sourceTree = BUILT_PRODUCTS_DIR; };
+		1060B1141F4373DC00C9EFF5 /* Chip8.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Chip8.cpp; sourceTree = SOURCE_ROOT; };
+		1060B1151F4373DC00C9EFF5 /* Chip8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Chip8.h; sourceTree = SOURCE_ROOT; };
+		1060B1161F4373DC00C9EFF5 /* Display.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Display.cpp; sourceTree = SOURCE_ROOT; };
+		1060B1171F4373DC00C9EFF5 /* Display.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Display.h; sourceTree = SOURCE_ROOT; };
+		1060B1181F4373DC00C9EFF5 /* GBCPU.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GBCPU.cpp; sourceTree = SOURCE_ROOT; };
+		1060B1191F4373DC00C9EFF5 /* GBCPU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GBCPU.h; sourceTree = SOURCE_ROOT; };
+		1060B11A1F4373DC00C9EFF5 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = SOURCE_ROOT; };
+		1060B1231F4373F200C9EFF5 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		1060B1251F4373F700C9EFF5 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
+		1060B1271F43745700C9EFF5 /* roms */ = {isa = PBXFileReference; lastKnownFileType = folder; path = roms; sourceTree = SOURCE_ROOT; };
+		108226C91F625090006A63BC /* NES.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = NES.cpp; sourceTree = "<group>"; };
+		108226CA1F625090006A63BC /* NES.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NES.h; sourceTree = "<group>"; };
+		108226CC1F625209006A63BC /* CPU.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CPU.cpp; sourceTree = "<group>"; };
+		108226CD1F625209006A63BC /* CPU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CPU.h; sourceTree = "<group>"; };
+		108226CF1F62569D006A63BC /* Memory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Memory.cpp; sourceTree = "<group>"; };
+		108226D01F62569D006A63BC /* Memory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Memory.h; sourceTree = "<group>"; };
+		108226D21F625731006A63BC /* PPU.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PPU.cpp; sourceTree = "<group>"; };
+		108226D31F625731006A63BC /* PPU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PPU.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		1060B1071F43737D00C9EFF5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1060B1261F4373F700C9EFF5 /* GLUT.framework in Frameworks */,
+				1060B1241F4373F200C9EFF5 /* OpenGL.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		1060B1011F43737D00C9EFF5 = {
+			isa = PBXGroup;
+			children = (
+				1060B10C1F43737D00C9EFF5 /* Nintendoish */,
+				1060B10B1F43737D00C9EFF5 /* Products */,
+				1060B1221F4373F200C9EFF5 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		1060B10B1F43737D00C9EFF5 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1060B10A1F43737D00C9EFF5 /* Nintendoish */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		1060B10C1F43737D00C9EFF5 /* Nintendoish */ = {
+			isa = PBXGroup;
+			children = (
+				1060B1271F43745700C9EFF5 /* roms */,
+				108226C81F625090006A63BC /* NES */,
+				1060B1151F4373DC00C9EFF5 /* Chip8.h */,
+				1060B1141F4373DC00C9EFF5 /* Chip8.cpp */,
+				1060B1171F4373DC00C9EFF5 /* Display.h */,
+				1060B1161F4373DC00C9EFF5 /* Display.cpp */,
+				1060B1191F4373DC00C9EFF5 /* GBCPU.h */,
+				1060B1181F4373DC00C9EFF5 /* GBCPU.cpp */,
+				1060B11A1F4373DC00C9EFF5 /* main.cpp */,
+			);
+			name = Nintendoish;
+			path = Gameboyish;
+			sourceTree = "<group>";
+		};
+		1060B1221F4373F200C9EFF5 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1060B1251F4373F700C9EFF5 /* GLUT.framework */,
+				1060B1231F4373F200C9EFF5 /* OpenGL.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		108226C81F625090006A63BC /* NES */ = {
+			isa = PBXGroup;
+			children = (
+				108226CA1F625090006A63BC /* NES.h */,
+				108226C91F625090006A63BC /* NES.cpp */,
+				108226CD1F625209006A63BC /* CPU.h */,
+				108226CC1F625209006A63BC /* CPU.cpp */,
+				108226D01F62569D006A63BC /* Memory.h */,
+				108226CF1F62569D006A63BC /* Memory.cpp */,
+				108226D31F625731006A63BC /* PPU.h */,
+				108226D21F625731006A63BC /* PPU.cpp */,
+			);
+			path = NES;
+			sourceTree = SOURCE_ROOT;
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		1060B1091F43737D00C9EFF5 /* Nintendoish */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1060B1111F43737D00C9EFF5 /* Build configuration list for PBXNativeTarget "Nintendoish" */;
+			buildPhases = (
+				1060B1061F43737D00C9EFF5 /* Sources */,
+				1060B1071F43737D00C9EFF5 /* Frameworks */,
+				1060B1081F43737D00C9EFF5 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Nintendoish;
+			productName = Gameboyish;
+			productReference = 1060B10A1F43737D00C9EFF5 /* Nintendoish */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		1060B1021F43737D00C9EFF5 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0830;
+				ORGANIZATIONNAME = "Ingebretsen, Andrew (HBO)";
+				TargetAttributes = {
+					1060B1091F43737D00C9EFF5 = {
+						CreatedOnToolsVersion = 8.3.3;
+						DevelopmentTeam = Q8ZUCZJ2K4;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 1060B1051F43737D00C9EFF5 /* Build configuration list for PBXProject "Nintendoish" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 1060B1011F43737D00C9EFF5;
+			productRefGroup = 1060B10B1F43737D00C9EFF5 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				1060B1091F43737D00C9EFF5 /* Nintendoish */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1060B1061F43737D00C9EFF5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				108226CE1F625209006A63BC /* CPU.cpp in Sources */,
+				108226CB1F6250A1006A63BC /* NES.cpp in Sources */,
+				108226D11F62569D006A63BC /* Memory.cpp in Sources */,
+				1060B11F1F4373DC00C9EFF5 /* GBCPU.cpp in Sources */,
+				1060B11E1F4373DC00C9EFF5 /* Display.cpp in Sources */,
+				108226D41F625731006A63BC /* PPU.cpp in Sources */,
+				1060B1201F4373DC00C9EFF5 /* main.cpp in Sources */,
+				1060B11D1F4373DC00C9EFF5 /* Chip8.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1060B10F1F43737D00C9EFF5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		1060B1101F43737D00C9EFF5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		1060B1121F43737D00C9EFF5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEVELOPMENT_TEAM = Q8ZUCZJ2K4;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		1060B1131F43737D00C9EFF5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEVELOPMENT_TEAM = Q8ZUCZJ2K4;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1060B1051F43737D00C9EFF5 /* Build configuration list for PBXProject "Nintendoish" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1060B10F1F43737D00C9EFF5 /* Debug */,
+				1060B1101F43737D00C9EFF5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1060B1111F43737D00C9EFF5 /* Build configuration list for PBXNativeTarget "Nintendoish" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1060B1121F43737D00C9EFF5 /* Debug */,
+				1060B1131F43737D00C9EFF5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 1060B1021F43737D00C9EFF5 /* Project object */;
+}
