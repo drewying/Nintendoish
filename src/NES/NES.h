@@ -21,6 +21,8 @@ namespace NES {
         CPU *cpu;
         Memory *memory;
         PPU *ppu;
+
+		unsigned int graphics[256 * 240] = { 0 };
     
 		bool triggerNMI = false;
 		int stallCycles = 0x0;

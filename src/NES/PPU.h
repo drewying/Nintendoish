@@ -58,6 +58,7 @@ namespace NES {
 			unsigned char chr[0x2000] = { 0 };  // Character Data
             unsigned char oam[0x100] = { 0 };   // Object Attribute Memory
             unsigned char vram[0x2000] = { 0 }; // Video Memory
+			unsigned char palette[0xFF] = { 0 }; // Pallette
             PPU &ppu;
             
             unsigned char &operator [](unsigned short index);
@@ -110,6 +111,10 @@ namespace NES {
         void reset();
 
 		void renderScanline();
+
+		void renderPatternTable();
+
+		void renderTile(int x, int y, int tileIndex);
         
         void vBlankStart();
         void vBlankEnd();

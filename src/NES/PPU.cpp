@@ -6,32 +6,32 @@ using namespace std;
 unsigned char &NES::PPU::Memory::operator [](unsigned short index) {
 	ppu.lastWrite = index;
     switch (index){
-        case 0x2000:
+        case 0x2000: //PPU Control Flags
 			ppu.lastValue = ppu.PPUCTRL.byte;
 			return ppu.PPUCTRL.byte;
             break;
-        case 0x2001:
+        case 0x2001: //PPU Render Flags
 			ppu.lastValue = ppu.PPUMASK.byte;
             return ppu.PPUMASK.byte;
             break;
-        case 0x2002:
+        case 0x2002: //PPU Status Flags
 			ppu.lastValue = ppu.PPUSTATUS.byte;
             return ppu.PPUSTATUS.byte;
             break;
-        case 0x2003:
+        case 0x2003: //OAM Read/Write Address
 			ppu.lastValue = ppu.OAMADDR;
             return ppu.OAMADDR;
             break;
-        case 0x2004:
+        case 0x2004: //OAM data Read/Write
 			ppu.lastValue = oam[ppu.OAMADDR];
             return oam[ppu.OAMADDR];
             break;
         case 0x2005:
-			//TODO
+			//TODO PPU Scroll
 			ppu.lastValue = ppu.PPUSCROLL;
             return ppu.PPUSCROLL;
             break;
-        case 0x2006:
+        case 0x2006: //PPU Read/Write Address
 			ppu.lastValue = ppu.PPUADDR.address;
             if (ppu.PPUADDRLATCH == false) {
                 ppu.PPUADDRLATCH = true;
@@ -41,7 +41,7 @@ unsigned char &NES::PPU::Memory::operator [](unsigned short index) {
                 return ppu.PPUADDR.byte.hi;
             }
             break;
-        case 0x2007:
+        case 0x2007: //PPU Data Read/Write
             if (ppu.PPUADDR.address < 0x2000) {
                 return chr[ppu.PPUADDR.address];
             }
@@ -54,11 +54,10 @@ unsigned char &NES::PPU::Memory::operator [](unsigned short index) {
                 return vram[ppu.PPUADDR.address - 0x3001];
             }
             if (ppu.PPUADDR.address < 0x4000) {
-                exit(0);
-                //return parent->ppu->pallet[parent->ppu->PPUADDR.address - 0x3F00];
+				return palette[ppu.PPUADDR.address - 0x3F00];
             }
             break;
-        case 0x4014:
+        case 0x4014: // OAM DMA High Address
 			ppu.lastValue = ppu.DMAINDEX;
 			return ppu.DMAINDEX;
             break;
@@ -118,17 +117,19 @@ void NES::PPU::renderScanline() {
 		//	printf("Render Background\n");
 		//}
 
-		printf("Render Sprite\n");
+		//printf("Render Sprite\n");
+		//renderPatternTable();
 		if (oddCycle == true) {
 			// On odd cycles, data is read from (primary) OAM
 			if (memory.oam[currentOamIndex] <= (currentScanline + 1) && (memory.oam[currentOamIndex] + 8) >= (currentScanline + 1)) {
 				currentSprite = (Sprite*)&memory.oam[currentOamIndex];
 				writeFlag = true;
 			}
+
 		} else if (writeFlag == true){
 			// On even cycles, data is written to secondary OAM
-			memcpy(&spriteList[currentSpriteIndex], currentSprite, 4);
 			writeFlag = false;
+			memcpy(&spriteList[currentSpriteIndex], currentSprite, 4);
 			currentSpriteIndex += 1;
 		}
 		currentOamIndex += 4;
@@ -137,6 +138,45 @@ void NES::PPU::renderScanline() {
 	if (currentCycle >= 257 && currentCycle < 320) {
 		OAMADDR = 0x0;
 		//Tile Data
+	}
+}
+
+void NES::PPU::renderPatternTable() {
+	int tileIndex = 0x0000;
+	
+	for (int y = 0; y < 128; y += 8) {
+		for (int x = 0; x < 128; x += 8) {
+			renderTile(x, y, tileIndex);
+			tileIndex += 0x10;
+		}
+	}
+
+	for (int y = 0; y < 128; y += 8) {
+		for (int x = 128; x < 256; x += 8) {
+			renderTile(x, y, tileIndex);
+			tileIndex += 0x10;
+		}
+	}
+}
+
+void NES::PPU::renderTile(int x, int y, int tileIndex) {
+	for (int i = 0; i <= 8; i++) {
+		char tileSliceA = memory.chr[tileIndex + i];
+		char tileSliceB = memory.chr[tileIndex + i + 8];
+		for (int j = 7; j >= 0; j--) {
+			unsigned short colorIndex = (tileSliceB & 0x1) << 1 | (tileSliceA & 0x1);
+			colorIndex = 0x3F10  + colorIndex;
+			//colorIndex += 2;
+			//unsigned char t = memory.vram[colorIndex];
+			//unsigned char* color = colorTable[memory.vram[colorIndex]];
+			unsigned char c = (((float)colorIndex / 3.0) * 255);
+			unsigned char color[3] = { c, 0, 0 };
+
+			unsigned int combinedColor = color[0] << 16 | color[1] << 8 | color[2];
+			parent.graphics[x + j + ((y + i) * 256)] = combinedColor;
+			tileSliceA = tileSliceA >> 1;
+			tileSliceB = tileSliceB >> 1;
+		}
 	}
 }
 

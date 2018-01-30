@@ -21,13 +21,13 @@ static NES::Console *nes;
 ifstream logfile;
 bool passedTest = true;
 bool runTests = false;
-bool fullLog = false;
+bool fullLog = true;
 int lineNumber = 0x0;
 
 //const int frequency = 540; //540 hertz
 const int frequency = 10;
 
-void updateDisplay(void)
+void updateCHIP8Display(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 	for (int x = 0; x < 64; x++) {
@@ -60,6 +60,26 @@ void updateCHIP8(void)
 	int microsToSleep = int(1000000 / frequency) - time_span.count();
 	std::this_thread::sleep_for(std::chrono::microseconds(microsToSleep));
 }
+
+void updateDisplay(void)
+{
+	glClear(GL_COLOR_BUFFER_BIT);
+	for (int x = 0; x < 256; x++) {
+		for (int y = 0; y < 240; y++) {
+			unsigned int color = nes->graphics[x + (y * 256)];
+			if (color) {
+				float blue = (float)(color & 0x000000FF);
+				float green = (float)((color & 0x0000FF00) >> 8);
+				float red = (float)((color & 0x00FF0000) >> 16);
+				display->plotPixel(x, y, red / 255.0, green / 255.0, blue / 255.0);
+			}
+		}
+	}
+
+	glEnd();
+	glutSwapBuffers();
+}
+
 
 void updateNES(void) {
 	//high_resolution_clock::time_point t1 = high_resolution_clock::now();
@@ -132,7 +152,7 @@ void testNES(void)
 		}
 		else {
 			cout << lineNumber << " " << logLine << endl;
-			cout << lineNumber << " " << emuLine << endl;
+		    cout << lineNumber << " " << emuLine << endl;
 			cout << "NOT CORRECT" << endl << endl;
 			passedTest = false;
 		}
@@ -148,10 +168,10 @@ void testNES(void)
 
 int main(int argc, char** argv)
 {
-	display = new Display(20, 64, 32);
+	display = new Display(4, 256, 240);
 	display->initialize(argc, argv);
-	chip8 = new Chip8();
-	chip8->loadProgram("../roms/BRIX");
+	//chip8 = new Chip8();
+	//chip8->loadProgram("../roms/BRIX");
     if (runTests) {
         nes = new NES::Console();
         nes->loadProgram("../roms/NESTEST.nes");
