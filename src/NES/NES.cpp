@@ -21,31 +21,17 @@ void NES::Console::emulateCycle()
 	}
 
     int estimatedCycles = cpu->loadNextInstruction();
-	int pre = estimatedCycles / 2;
-	int post = estimatedCycles / 2;
-	if (estimatedCycles % 2 == 1) post++;
-
-	for (int i = 0; i < estimatedCycles * 3; i++) {
+	for (int i = 0; i < (estimatedCycles * 3); i++) {
 		ppu->step();
 	}
 
+	/*
 	int actualCycles = cpu->executeLoadedInstruction();
+
 	for (int i = 0; i < (actualCycles * 3) - (estimatedCycles * 3); i++) {
-	//while (ppu->cycles < cpu->cycles * 3) {
 		ppu->step();
 	}
-
-	//for (int i = 0; i < post * 3; i++) {
-		//ppu->step();
-	//}
-
-	if (triggerNMI == true) {
-		cpu->NMI();
-		for (int i = 0; i < 21; i++) {
-			ppu->step();
-		}
-		triggerNMI = false;
-	}
+	*/
 }
 
 void NES::Console::loadProgram(const char * path)
@@ -68,7 +54,7 @@ void NES::Console::loadProgram(const char * path)
         }
         memory->extended = (header[4] == 2);
 		fread(memory->prg, sizeof(char), header[4] * 16384, rom);
-        fread(ppu->memory.chr, sizeof(char), header[5] * 8192, rom);
+        fread(memory->chr, sizeof(char), header[5] * 8192, rom);
         cpu->reg.PC = memory->resetVector();
     }
 	std::cout << "Loaded" << std::endl;

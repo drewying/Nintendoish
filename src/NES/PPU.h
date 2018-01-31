@@ -6,59 +6,63 @@ namespace NES {
     class Console;
     class PPU {
     public:
-        union {
-            struct {
-            unsigned BaseAddressHi:1,
-                     BaseAddressLo:1,
-                     VRAMAddress:1,
-                     SpriteTableAddress:1,
-                     BackgroundTableAddress:1,
-                     SpriteSize:1,
-                     MasterSlave:1,
-                     NMI:1;
-            } status;
-            unsigned char byte;
-        } PPUCTRL;
-        
-        union {
-            struct {
-                unsigned Greyscale:1,
-                         LeftBackground:1,
-                         LeftSprite:1,
-                         ShowBackground:1,
-                         ShowSprite:1,
-                         EmphasizeRed:1,
-                         EmphasizeGreen:1,
-                         EmphasizeBlue:1;
-            } status;
-            unsigned char byte;
-        } PPUMASK;
-        
-        union {
-            struct {
-                unsigned Address:5,
-                         SpriteOverflow:1,
-                         Sprite0Hit:1,
-                         VBlankStarted:1;
-            } status;
-            unsigned char byte;
-        } PPUSTATUS;
-        
-        union {
-            struct {
-                unsigned char hi;
-                unsigned char lo;
-            } byte;
-            unsigned short address;
-        } PPUADDR;
-        
+
+		union {
+			struct {
+				unsigned BaseAddressHi : 1,
+					BaseAddressLo : 1,
+					VRAMAddress : 1,
+					SpriteTableAddress : 1,
+					BackgroundTableAddress : 1,
+					SpriteSize : 1,
+					MasterSlave : 1,
+					NMI : 1;
+			} status;
+			unsigned char byte;
+		} PPUCTRL;
+
+		union {
+			struct {
+				unsigned Greyscale : 1,
+					LeftBackground : 1,
+					LeftSprite : 1,
+					ShowBackground : 1,
+					ShowSprite : 1,
+					EmphasizeRed : 1,
+					EmphasizeGreen : 1,
+					EmphasizeBlue : 1;
+			} status;
+			unsigned char byte;
+		} PPUMASK;
+
+		union {
+			struct {
+				unsigned Address : 5,
+					SpriteOverflow : 1,
+					Sprite0Hit : 1,
+					VBlankStarted : 1;
+			} status;
+			unsigned char byte;
+		} PPUSTATUS;
+
+		union {
+			struct {
+				unsigned char hi;
+				unsigned char lo;
+			} byte;
+			unsigned short address;
+		} PPUADDR;
+
+		unsigned char DMAINDEX;
+		unsigned char OAMADDR;
+		unsigned char PPUSCROLL;
+		bool PPUADDRLATCH;
+		bool extended = false;
+
         struct Memory {
         public:
             bool extended = false;
-			unsigned char chr[0x2000] = { 0 };  // Character Data
-            unsigned char oam[0x100] = { 0 };   // Object Attribute Memory
-            unsigned char vram[0x2000] = { 0 }; // Video Memory
-			unsigned char palette[0xFF] = { 0 }; // Pallette
+
             PPU &ppu;
             
             unsigned char &operator [](unsigned short index);
@@ -86,11 +90,8 @@ namespace NES {
 
 		Sprite spriteList[8];
 
-		unsigned char DMAINDEX;
-        unsigned char OAMADDR;
-        unsigned char PPUSCROLL;
-        
-        bool PPUADDRLATCH;
+
+  
         bool ODDFRAME;
         
 		unsigned short lastWrite = 0x0;
@@ -100,10 +101,17 @@ namespace NES {
 
 		int currentCycle = 0;
 		int currentScanline = 241;
-        
+		int frameCount = 0;
+
 		bool skipCycle = false;
 
         Console &parent;
+
+		void processWrite();
+
+		unsigned char getPPURegister(unsigned short index);
+
+		void setPPURegister(unsigned short index, unsigned char value);
 
 		void copyDMAMemory(unsigned char index);
         

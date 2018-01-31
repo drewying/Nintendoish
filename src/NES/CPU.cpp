@@ -111,7 +111,7 @@ NES::CPU::~CPU()
 }
 
 unsigned char NES::CPU::readProgram() {
-    return memory[reg.PC++];
+    return memory.get(reg.PC++);
 }
 
 int NES::CPU::executeLoadedInstruction() {
@@ -125,6 +125,9 @@ int NES::CPU::executeLoadedInstruction() {
 
 int NES::CPU::loadNextInstruction()
 {
+	int currentCycles = cycles;
+
+	checkInterrurpts();
     unsigned char hi = 0x0;
     unsigned char lo = 0x0;
     unsigned short startingPC = reg.PC;
@@ -172,7 +175,7 @@ int NES::CPU::loadNextInstruction()
             hi = readProgram();
             //address = hi << 8 | lo;
             //address = memory[(hi << 8 | lo)];
-			loadedAddress = (unsigned short)(memory[hi << 8 | lo] + memory[(hi << 8 | (unsigned char)(lo + 1))] * 256);
+			loadedAddress = (unsigned short)(memory.get(hi << 8 | lo) + memory.get((hi << 8 | (unsigned char)(lo + 1))) * 256);
             break;
         case Absolute:
             // A full 16 - bit address is specified and the byte at that address is used to perform the computation.
@@ -197,14 +200,14 @@ int NES::CPU::loadNextInstruction()
             // The little-endian address stored at the two-byte pair of sum address (LSB) and sum address plus one (MSB)
             // is loaded and the value at that address is used to perform the computation.
             lo = readProgram();
-			loadedAddress = (unsigned short)(memory[(lo + reg.X) % 256] + memory[(lo + reg.X + 1) % 256] * 256);
+			loadedAddress = (unsigned short)(memory.get((lo + reg.X) % 256) + memory.get((lo + reg.X + 1) % 256) * 256);
             break;
         case IndirectIndexY:
             // The value in Y is added to the address at the little-endian address stored at the two-byte pair of the
             // specified address (LSB) and the specified address plus one (MSB). The value at the sum address is used
             // to perform the computation. Indeed addressing mode actually repeats exactly the accumulator register's digits.
             lo = readProgram();
-			loadedAddress = (unsigned short)(memory[lo] + memory[(lo + 1) % 256] * 256 + reg.Y);
+			loadedAddress = (unsigned short)(memory.get(lo) + memory.get((lo + 1) % 256) * 256 + reg.Y);
             break;
         default:
             break;
@@ -231,7 +234,14 @@ int NES::CPU::loadNextInstruction()
     
     lastInstruction = debugBuffer.str();
    
-    return timingTable[loadedInstruction];
+	//return timingTable[loadedInstruction];// +(temp ? 7 : 0);
+	
+	(this->*opTable[loadedInstruction])(loadedAddress);
+	cycles += timingTable[loadedInstruction];
+
+	loadedInstruction = 0x0;
+	loadedAddress = 0x0;
+	return cycles - currentCycles;
 }
 
 void NES::CPU::setNZStatus(unsigned char value) {
@@ -270,17 +280,24 @@ void NES::CPU::oopsCycle(unsigned short address) {
     }
 }
 
+void NES::CPU::checkInterrurpts() {
+	if (requestNMI == true) {
+		NMI();
+		requestNMI = false;
+	}
+}
+
 void NES::CPU::compareValues(unsigned char a, unsigned char b) {
     setNZStatus(a - b);
     reg.P.status.Carry = (a >= b);
 }
 
 void NES::CPU::push(unsigned char byte) {
-    memory[0x100 | reg.S--] = byte;
+    memory.set(0x100 | reg.S--, byte);
 }
 
 unsigned char NES::CPU::pull() {
-    return memory[0x100 | ++reg.S];
+    return memory.get(0x100 | ++reg.S);
 }
 
 void NES::CPU::pushAddress(unsigned short address) {
@@ -300,7 +317,7 @@ void NES::CPU::NMI() {
     // Non-Maskable Interrupt
     pushAddress(reg.PC);
     PHP(0x0);
-	reg.PC = memory[0xFFFB] << 8 | memory[0xFFFA];
+	reg.PC = memory.get(0xFFFB) << 8 | memory.get(0xFFFA);
     reg.P.status.Interrupt = true;
     cycles += 7;
 }
@@ -322,7 +339,7 @@ void NES::CPU::BEQ(unsigned short address) {
 
 void NES::CPU::BIT(unsigned short address) {
     //Test Bits in Memory with Accumulator
-    char value = memory[address];
+	char value = memory.get(address);
     reg.P.status.Overflow = (value >> 6) & 1;
     reg.P.status.Zero = (value & reg.A) == 0;
     reg.P.status.Negative = (value & 0x80) != 0;
@@ -380,12 +397,12 @@ void NES::CPU::CLV(unsigned short address) {
 
 void NES::CPU::CPX(unsigned short address) {
     //Compare Memory and Index X
-    compareValues(reg.X, memory[address]);
+    compareValues(reg.X, memory.get(address));
 }
 
 void NES::CPU::CPY(unsigned short address) {
     //Compare Memory with Index Y
-    compareValues(reg.Y, memory[address]);
+    compareValues(reg.Y, memory.get(address));
 }
 
 void NES::CPU::DEX(unsigned short address) {
@@ -419,7 +436,7 @@ void NES::CPU::INY(unsigned short address) {
 void NES::CPU::LDX(unsigned short address) {
     //Load Index X with Memory
     //Flags: N, Z
-    reg.X = memory[address];
+    reg.X = memory.get(address);
     setNZStatus(reg.X);
     oopsCycle(address);
 }
@@ -427,7 +444,7 @@ void NES::CPU::LDX(unsigned short address) {
 void NES::CPU::LDY(unsigned short address) {
     //Load Index Y with Memory
     //Flags: N, Z
-    reg.Y = memory[address];
+    reg.Y = memory.get(address);
     setNZStatus(reg.Y);
     oopsCycle(address);
 }
@@ -507,12 +524,12 @@ void NES::CPU::SEI(unsigned short address) {
 
 void NES::CPU::STX(unsigned short address) {
     //Store Index X in Memory
-    memory[address] = reg.X;
+    memory.set(address, reg.X);
 }
 
 void NES::CPU::STY(unsigned short address) {
     //Store Index Y in Memory
-    memory[address] = reg.Y;
+    memory.set(address, reg.Y);
 }
 
 void NES::CPU::TAX(unsigned short address) {
@@ -559,21 +576,21 @@ void NES::CPU::TXS(unsigned short address) {
 void NES::CPU::ORA(unsigned short address) {
     //OR Memory with Accumulator
     //Flags: N, Z
-    reg.A = reg.A | memory[address];
+    reg.A = reg.A | memory.get(address);
     setNZStatus(reg.A);
 }
 
 void NES::CPU::AND(unsigned short address) {
     //AND Memory with Accumulator
     //Flags: N, Z
-    reg.A = reg.A & memory[address];
+    reg.A = reg.A & memory.get(address);
     setNZStatus(reg.A);
 }
 
 void NES::CPU::EOR(unsigned short address) {
     //Exclusive-OR Memory with Accumulator
     //Flags: N, Z
-    reg.A = reg.A ^ memory[address];
+    reg.A = reg.A ^ memory.get(address);
     setNZStatus(reg.A);
 }
 
@@ -581,10 +598,10 @@ void NES::CPU::ADC(unsigned short address) {
     //Add Memory to Accumulator with Carry
     //Flags: N, V, Z, C
     unsigned char a = reg.A;
-    reg.A = reg.A + memory[address] + reg.P.status.Carry;
+    reg.A = reg.A + memory.get(address) + reg.P.status.Carry;
     
-    reg.P.status.Carry = ((int)a + (int)memory[address] + (int)reg.P.status.Carry) > 0xFF;
-    reg.P.status.Overflow = ((a ^ memory[address]) & 0x80) == 0 &&
+    reg.P.status.Carry = ((int)a + (int)memory.get(address) + (int)reg.P.status.Carry) > 0xFF;
+    reg.P.status.Overflow = ((a ^ memory.get(address)) & 0x80) == 0 &&
     ((a ^ reg.A) & 0x80) != 0;
     
     setNZStatus(reg.A);
@@ -592,20 +609,20 @@ void NES::CPU::ADC(unsigned short address) {
 
 void NES::CPU::STA(unsigned short address) {
     //Store Accumulator in Memory
-    memory[address] = reg.A;
+    memory.set(address, reg.A);
 }
 
 void NES::CPU::LDA(unsigned short address) {
     //Load Accumulator with Memory
     //Flags: N, Z
-    reg.A = memory[address];
+    reg.A = memory.get(address);
     setNZStatus(reg.A);
     oopsCycle(address);
 }
 
 void NES::CPU::CMP(unsigned short address) {
     //Compare Memory and Accumulator
-    compareValues(reg.A, memory[address]);
+    compareValues(reg.A, memory.get(address));
 }
 
 void NES::CPU::SBC(unsigned short address) {
@@ -613,10 +630,10 @@ void NES::CPU::SBC(unsigned short address) {
     //Flags: N, V, Z, C
     
     unsigned char a = reg.A;
-    reg.A = reg.A - memory[address] - (1 - reg.P.status.Carry);
+    reg.A = reg.A - memory.get(address) - (1 - reg.P.status.Carry);
     
-    reg.P.status.Carry = ((int)a - (int)memory[address] - (int)(1 - reg.P.status.Carry)) >= 0x0;
-    reg.P.status.Overflow = ((a ^ memory[address]) & 0x80) != 0 &&
+    reg.P.status.Carry = ((int)a - (int)memory.get(address) - (int)(1 - reg.P.status.Carry)) >= 0x0;
+    reg.P.status.Overflow = ((a ^ memory.get(address)) & 0x80) != 0 &&
     ((a ^ reg.A) & 0x80) != 0;
     
     setNZStatus(reg.A);
@@ -626,77 +643,109 @@ void NES::CPU::SBC(unsigned short address) {
 void NES::CPU::ASL(unsigned short address) {
     //Arithmetic Shift Left One Bit
     //Flags: N, Z, C
-    unsigned char* value;
+    unsigned char value;
     if (currentAddressMode == Accumulator) {
-        value = &reg.A;
+        value = reg.A;
     } else {
-        value = &memory[address];
+        value = memory.get(address);
     }
     
-    reg.P.status.Carry = (*value >> 7) & 1;
-    *value <<= 1;
-    setNZStatus(*value);
+    reg.P.status.Carry = (value >> 7) & 1;
+    value <<= 1;
+    
+	if (currentAddressMode == Accumulator) {
+		reg.A = value;
+	}
+	else {
+		memory.set(address, value);
+	}
+
+	setNZStatus(value);
 }
 
 void NES::CPU::DEC(unsigned short address) {
     //Decrement Memory by One
     //Flags: N, Z
-    memory[address] -= 1;
-    setNZStatus(memory[address]);
+    memory.set(address, memory.get(address - 1));
+    setNZStatus(memory.get(address));
 }
 
 void NES::CPU::INC(unsigned short address) {
     //Increment Memory by One
     //Flags: N, Z
-    memory[address] += 1;
-    setNZStatus(memory[address]);
+	memory.set(address, memory.get(address + 1));
+	setNZStatus(memory.get(address));
 }
 
 void NES::CPU::LSR(unsigned short address) {
     //Logical Shift Right One Bit
     //Flags: N, Z, C
-    unsigned char* value;
+    unsigned char value;
     if (currentAddressMode == Accumulator) {
-        value = &reg.A;
+        value = reg.A;
     } else {
-        value = &memory[address];
+        value = memory.get(address);
     }
     
-    reg.P.status.Carry = *value & 0x1;
-    *value >>= 1;
-    setNZStatus(*value);
+    reg.P.status.Carry = value & 0x1;
+    value >>= 1;
+
+	if (currentAddressMode == Accumulator) {
+		reg.A = value;
+	}
+	else {
+		memory.set(address, value);
+	}
+
+    setNZStatus(value);
 }
 
 void NES::CPU::ROL(unsigned short address) {
     //Rotate Left One Bit
     //Flags: N, Z, C
-    unsigned char* value;
+    unsigned char value;
     if (currentAddressMode == Accumulator) {
-        value = &reg.A;
+        value = reg.A;
     } else {
-        value = &memory[address];
+        value = memory.get(address);
     }
     
     char c = reg.P.status.Carry;
-    reg.P.status.Carry = (*value >> 0x7) & 0x1;
-    *value = (*value << 0x1) | c;
-    setNZStatus(*value);
+    reg.P.status.Carry = (value >> 0x7) & 0x1;
+    value = (value << 0x1) | c;
+
+	if (currentAddressMode == Accumulator) {
+		reg.A = value;
+	}
+	else {
+		memory.set(address, value);
+	}
+
+    setNZStatus(value);
 }
 
 void NES::CPU::ROR(unsigned short address) {
     //Rotate Right One Bit
     //Flags: N, Z, C
-    unsigned char* value;
+    unsigned char value;
     if (currentAddressMode == Accumulator) {
-        value = &reg.A;
+        value = reg.A;
     } else {
-        value = &memory[address];
+        value = memory.get(address);
     }
     
     char c = reg.P.status.Carry;
-    reg.P.status.Carry = *value & 0x1;
-    *value = (*value >> 0x1) | (c << 0x7);
-    setNZStatus(*value);
+    reg.P.status.Carry = value & 0x1;
+    value = (value >> 0x1) | (c << 0x7);
+
+	if (currentAddressMode == Accumulator) {
+		reg.A = value;
+	}
+	else {
+		memory.set(address, value);
+	}
+
+    setNZStatus(value);
 }
 
 // Unimplemented
@@ -715,9 +764,9 @@ void NES::CPU::ISB(unsigned short address) {
 }
 void NES::CPU::LAS(unsigned short address) {}
 void NES::CPU::LAX(unsigned short address) {
-    reg.A = memory[address];
+    reg.A = memory.get(address);
     setNZStatus(reg.A);
-    reg.X = memory[address];
+    reg.X = memory.get(address);
     setNZStatus(reg.X);
     oopsCycle(address);
 }
@@ -734,7 +783,7 @@ void NES::CPU::SLO(unsigned short address) {
     ORA(address);
 }
 void NES::CPU::SAX(unsigned short address) {
-    memory[address] = reg.A & reg.X;
+    memory.set(address, reg.A & reg.X);
 }
 void NES::CPU::SHX(unsigned short address) {}
 void NES::CPU::SHY(unsigned short address) {}

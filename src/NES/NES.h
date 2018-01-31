@@ -24,7 +24,6 @@ namespace NES {
 
 		unsigned int graphics[256 * 240] = { 0 };
     
-		bool triggerNMI = false;
 		int stallCycles = 0x0;
 
 		unsigned char controllerOne = 0x40;

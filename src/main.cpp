@@ -21,7 +21,8 @@ static NES::Console *nes;
 ifstream logfile;
 bool passedTest = true;
 bool runTests = false;
-bool fullLog = true;
+bool fullLog = false;
+int debugStartLineNumber = 9000;
 int lineNumber = 0x0;
 
 //const int frequency = 540; //540 hertz
@@ -144,18 +145,22 @@ void testNES(void)
 
 
 		if (logPc == emuPc && logOp == emuOp && logLo == emuLo && logHi == emuHi && logDesc == emuDesc && logA == emuA && logX == emuX && logY == emuY && logP == emuP && logSP == emuSP && logCYC == emuCYC && logSL == emuSL) {
-			if (/*passedTest == false || */fullLog == true) {
+			if (lineNumber > debugStartLineNumber || fullLog == true) {
 				cout << lineNumber << " " << logLine << endl;
 				cout << lineNumber << " " << emuLine << endl;
-				cout << "CORRECT" << endl << endl;
+				cout << "CORRECT. FRAME:" << nes->ppu->frameCount << endl << endl;
 			}
 		}
-		else {
+		else if (lineNumber > debugStartLineNumber || fullLog == true) {
 			cout << lineNumber << " " << logLine << endl;
 		    cout << lineNumber << " " << emuLine << endl;
-			cout << "NOT CORRECT" << endl << endl;
-			passedTest = false;
+			cout << "NOT CORRECT. FRAME:" << nes->ppu->frameCount << endl << endl;
+ 			passedTest = false;
 		}
+	}
+	else {
+		string emuLine = nes->cpu->lastInstruction + ss.str();
+		cout << "STALL CYCLE " << emuLine << endl << endl;
 	}
 
  

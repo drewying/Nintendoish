@@ -3,76 +3,151 @@
 
 using namespace std;
 
-unsigned char &NES::PPU::Memory::operator [](unsigned short index) {
-	ppu.lastWrite = index;
-    switch (index){
-        case 0x2000: //PPU Control Flags
-			ppu.lastValue = ppu.PPUCTRL.byte;
-			return ppu.PPUCTRL.byte;
-            break;
-        case 0x2001: //PPU Render Flags
-			ppu.lastValue = ppu.PPUMASK.byte;
-            return ppu.PPUMASK.byte;
-            break;
-        case 0x2002: //PPU Status Flags
-			ppu.lastValue = ppu.PPUSTATUS.byte;
-            return ppu.PPUSTATUS.byte;
-            break;
-        case 0x2003: //OAM Read/Write Address
-			ppu.lastValue = ppu.OAMADDR;
-            return ppu.OAMADDR;
-            break;
-        case 0x2004: //OAM data Read/Write
-			ppu.lastValue = oam[ppu.OAMADDR];
-            return oam[ppu.OAMADDR];
-            break;
-        case 0x2005:
-			//TODO PPU Scroll
-			ppu.lastValue = ppu.PPUSCROLL;
-            return ppu.PPUSCROLL;
-            break;
-        case 0x2006: //PPU Read/Write Address
-			ppu.lastValue = ppu.PPUADDR.address;
-            if (ppu.PPUADDRLATCH == false) {
-                ppu.PPUADDRLATCH = true;
-                return ppu.PPUADDR.byte.lo;
-            } else {
-				ppu.PPUADDRLATCH = false;
-                return ppu.PPUADDR.byte.hi;
-            }
-            break;
-        case 0x2007: //PPU Data Read/Write
-            if (ppu.PPUADDR.address < 0x2000) {
-                return chr[ppu.PPUADDR.address];
-            }
-            if (ppu.PPUADDR.address < 0x3000) {
-                ppu.PPUADDR.address++;
-                return vram[ppu.PPUADDR.address - 0x2001];
-            }
-            if (ppu.PPUADDR.address < 0x3F00) {
-                ppu.PPUADDR.address += 0x1;
-                return vram[ppu.PPUADDR.address - 0x3001];
-            }
-            if (ppu.PPUADDR.address < 0x4000) {
-				return palette[ppu.PPUADDR.address - 0x3F00];
-            }
-            break;
-        case 0x4014: // OAM DMA High Address
-			ppu.lastValue = ppu.DMAINDEX;
-			return ppu.DMAINDEX;
-            break;
-        default:
-            exit(0);
-            break;
-    }
-    
-    return chr[0x0];
+
+unsigned char NES::PPU::getPPURegister(unsigned short index) {
+	char status;
+	switch (index) {
+	case 0x2002: //PPU Status Flags
+		status = PPUSTATUS.byte;
+		PPUSTATUS.status.VBlankStarted = false;
+		PPUADDRLATCH = false;
+		return status;
+		break;
+	case 0x2004: //OAM data Read/Write
+		return parent.memory->oam[parent.ppu->OAMADDR];
+		break;
+	case 0x2007: //PPU Data Read/Write
+		if (parent.ppu->PPUADDR.address < 0x2000) {
+			return parent.memory->chr[parent.ppu->PPUADDR.address];
+		}
+		if (parent.ppu->PPUADDR.address < 0x3000) {
+			parent.ppu->PPUADDR.address += 0x1;
+			return parent.memory->vram[parent.ppu->PPUADDR.address - 0x2001];
+		}
+		if (parent.ppu->PPUADDR.address < 0x3F00) {
+			parent.ppu->PPUADDR.address += 0x1;
+			return parent.memory->vram[parent.ppu->PPUADDR.address - 0x3001];
+		}
+		if (parent.ppu->PPUADDR.address < 0x4000) {
+			return parent.memory->pal[parent.ppu->PPUADDR.address - 0x3F00];
+		}
+		break;
+	default:
+		exit(0);
+		break;
+	}
 }
+
+void NES::PPU::setPPURegister(unsigned short index, unsigned char value) {
+	switch (index) {
+	case 0x2000: //PPU Control Flags
+		PPUCTRL.byte = value;
+		break;
+	case 0x2001: //PPU Render Flags
+		PPUMASK.byte = value;
+		break;
+	case 0x2003: //OAM Read/Write Address
+		OAMADDR = value;
+		break;
+	case 0x2004: //OAM data Read/Write
+		parent.memory->oam[OAMADDR] = value;
+		OAMADDR += 1;
+		break;
+	case 0x2005:
+		//TODO PPU Scroll
+		PPUSCROLL = value;
+		break;
+	case 0x2006: //PPU Read/Write Address
+		if (PPUADDRLATCH == false) {
+			PPUADDRLATCH = true;
+			PPUADDR.byte.lo = value;
+		}
+		else {
+			PPUADDRLATCH = false;
+			PPUADDR.byte.hi = value;
+		}
+		break;
+	case 0x2007: //PPU Data Read/Write
+		if (PPUADDR.address < 0x3000) {
+			PPUADDR.address++;
+			parent.memory->vram[PPUADDR.address - 0x2001] = value;
+		}
+		if (PPUADDR.address < 0x3F00) {
+			PPUADDR.address += 0x1;
+			parent.memory->vram[parent.ppu->PPUADDR.address - 0x3001] = value;
+		}
+		if (PPUADDR.address < 0x4000) {
+			parent.memory->pal[parent.ppu->PPUADDR.address - 0x3F00] = value;
+		}
+		break;
+	case 0x4014: // OAM DMA High Address
+		DMAINDEX = value;
+		copyDMAMemory(DMAINDEX - 1);
+		break;
+	default:
+		exit(0);
+		break;
+	}
+	parent.ppu->PPUSTATUS.status.Address = value & 0x1F;
+}
+
+/*
+void NES::PPU::processWrite() {
+	if (lastWrite != 0x0) {
+		if (parent.cpu->cycles < 29658 &&
+			(lastWrite == 0x2000 ||
+				lastWrite == 0x2001 ||
+				lastWrite == 0x2005 ||
+				lastWrite == 0x2006)
+			) {
+			memory[lastWrite] = lastValue;
+		}
+		else {
+			if (lastWrite == 0x2000 ||
+				lastWrite == 0x2001 ||
+				lastWrite == 0x2003 ||
+				(lastWrite == 0x2004 && memory[lastWrite] != lastValue) ||
+				lastWrite == 0x2005 ||
+				lastWrite == 0x2006 ||
+				(lastWrite == 0x2007 && memory[lastWrite] != lastValue)) {
+				PPUSTATUS.status.Address = memory[lastWrite] & 0x1F;
+			}
+			switch (lastWrite) {
+			case 0x2000:
+				if (lastValue != PPUCTRL.byte) {
+					// When turning on the NMI flag in bit 7, if the PPU is currently in vertical blank and the 
+					// PPUSTATUS ($2002) vblank flag is set, an NMI will be generated immediately
+					if (((lastValue >> 0x7) == 0x0) && ((PPUCTRL.byte >> 0x7) == 0x1) && PPUSTATUS.status.VBlankStarted == true) {
+						parent.cpu->requestNMI = true;
+					}
+				}
+				break;
+			case 0x2002:
+				PPUSTATUS.status.VBlankStarted = false;
+				PPUADDRLATCH = false;
+				break;
+			case 0x2004:
+				if (lastValue != memory.oam[OAMADDR]) {
+					OAMADDR += 1;
+				}
+				break;
+			case 0x4014:
+				copyDMAMemory(DMAINDEX);
+				break;
+			}
+		}
+
+		lastWrite = 0x0;
+		lastValue = 0x0;
+	}
+}
+
+*/
 
 void NES::PPU::copyDMAMemory(unsigned char index) {
 	parent.stallCycles = (parent.cpu->cycles - 1) % 2 == 1 ? 514 : 513;
 	for (int i = 0x0; i < 0xFF; i++) {
-		memory.oam[i] = parent.cpu->memory[(index * 0x100) + i];
+		parent.memory->oam[i] = parent.memory->get((index * 0x100) + i);
 	}
 	//memcpy(memory.oam, &parent.memory[index * 0x100], 0xFF);
 }
@@ -89,8 +164,9 @@ void NES::PPU::reset() {
     ODDFRAME = false;
 }
 
+
 void NES::PPU::renderScanline() {
-	bool renderBackground = PPUMASK.status.ShowBackground;
+/*	bool renderBackground = PPUMASK.status.ShowBackground;
 	bool renderSprite = PPUMASK.status.ShowSprite;
 	bool oddCycle = currentCycle & 2 != 0;
 
@@ -138,7 +214,7 @@ void NES::PPU::renderScanline() {
 	if (currentCycle >= 257 && currentCycle < 320) {
 		OAMADDR = 0x0;
 		//Tile Data
-	}
+	} */
 }
 
 void NES::PPU::renderPatternTable() {
@@ -159,8 +235,9 @@ void NES::PPU::renderPatternTable() {
 	}
 }
 
+
 void NES::PPU::renderTile(int x, int y, int tileIndex) {
-	for (int i = 0; i <= 8; i++) {
+	/*for (int i = 0; i <= 8; i++) {
 		char tileSliceA = memory.chr[tileIndex + i];
 		char tileSliceB = memory.chr[tileIndex + i + 8];
 		for (int j = 7; j >= 0; j--) {
@@ -177,101 +254,60 @@ void NES::PPU::renderTile(int x, int y, int tileIndex) {
 			tileSliceA = tileSliceA >> 1;
 			tileSliceB = tileSliceB >> 1;
 		}
-	}
+	}*/
 }
 
 void NES::PPU::step() {
-	cycles += 1;
-
+	
 	if (skipCycle) {
 		skipCycle = false;
 		return;
 	}
 
-	if (lastWrite != 0x0) {			
-		if (parent.cpu->cycles < 29658 &&
-		   (lastWrite == 0x2000 ||
-			lastWrite == 0x2001 ||
-			lastWrite == 0x2005 ||
-			lastWrite == 0x2006)
-			) {
-			memory[lastWrite] = lastValue;
-		} else {
-			if (lastWrite == 0x2000 ||
-				lastWrite == 0x2001 ||
-				lastWrite == 0x2003 ||
-				(lastWrite == 0x2004 && memory[lastWrite] != lastValue) ||
-				lastWrite == 0x2005 ||
-				lastWrite == 0x2006 ||
-				(lastWrite == 0x2007 && memory[lastWrite] != lastValue)) {
-				PPUSTATUS.status.Address = memory[lastWrite] & 0x1F;
-			}
-			switch (lastWrite) {
-			case 0x2000:
-				if (lastValue != PPUCTRL.byte) {
-					// When turning on the NMI flag in bit 7, if the PPU is currently in vertical blank and the 
-					// PPUSTATUS ($2002) vblank flag is set, an NMI will be generated immediately
-					if (((lastValue >> 0x7) == 0x0) && ((PPUCTRL.byte >> 0x7) == 0x1) && PPUSTATUS.status.VBlankStarted == true) {
-						parent.triggerNMI = true;
-					}
-				}
-				break;
-			case 0x2002:
-				PPUSTATUS.status.VBlankStarted = false;
-				PPUADDRLATCH = false;
-				break;
-			case 0x2004:
-				if (lastValue != memory.oam[OAMADDR]) {
-					OAMADDR += 1;
-				}
-				break;
-			case 0x4014:
-				copyDMAMemory(DMAINDEX);
-				break;
-			}
+	cycles += 1;
+	currentCycle += 1;
+
+	if (currentCycle == 341) { // Next Scanline
+		currentCycle = 0;
+		currentScanline++;
+		if (currentScanline == 261) { // Next Frame
+			frameCount++;
+			currentScanline = -1;
+			ODDFRAME = !ODDFRAME;
+			vBlankEnd();
 		}
-		
-		lastWrite = 0x0;
-		lastValue = 0x0;
 	}
 
-	if ((PPUMASK.status.ShowSprite || PPUMASK.status.ShowBackground) && currentScanline >= 0 && currentScanline <= 239 && currentCycle >= 1 && currentCycle <= 340) {
+	bool renderingEnabled = (PPUMASK.status.ShowSprite || PPUMASK.status.ShowBackground);
+	if (renderingEnabled == true && currentScanline >= 0 && currentScanline <= 239 && currentCycle >= 1 && currentCycle <= 340) {
 		//skipCycle = true;
 	}
 
+	if (currentScanline == -1 && currentCycle == 340 && ODDFRAME == true && renderingEnabled == true) {
+		//skipCycle = true;
+	}
+
+
     // Render Visible Scanlines
     if (currentScanline >= 0 && currentScanline <= 239) {
-		renderScanline();
+		//renderScanline();
     }
     
     if (currentScanline == 240) {
         // Do Nothing. Idle Scanline
     }
-
-	currentCycle += 1;
    
 	// VBlank Scanlines
     if (currentScanline == 241 && currentCycle == 1 && parent.cpu->cycles > 100) {
         vBlankStart();
-    }
-    
-	
-	 if (currentCycle == 341){ // Next Scanline
-        currentCycle = 0;
-        currentScanline++;
-        if (currentScanline == 261) { // Next Frame
-            currentScanline = -1;
-            ODDFRAME = !ODDFRAME;
-            vBlankEnd();
-        }
     }
 }
 
 void NES::PPU::vBlankStart() {
     PPUSTATUS.status.VBlankStarted = true;
 	if (PPUCTRL.status.NMI == true) {
-		printf("\n\n\nTRIGGER NMI\n\n\n");
-		parent.triggerNMI = true;
+		printf("\n\n\nNMI REQUESTED\n\n\n");
+		parent.cpu->requestNMI = true;
 	}
 }
 

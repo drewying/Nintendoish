@@ -62,12 +62,14 @@ namespace NES {
 		unsigned int cycles = 0x0;
 		unsigned char loadedInstruction = 0x0;
 		unsigned short loadedAddress = 0x0;
+		bool requestNMI = false;
 
         int loadNextInstruction();
 		int executeLoadedInstruction();
 
         void setNZStatus(unsigned char value);
         void oopsCycle(unsigned short address);
+		void checkInterrurpts();
         void branchOnCondition(bool condition, unsigned short address);
         void compareValues(unsigned char a, unsigned char b);
         void push(unsigned char byte);
