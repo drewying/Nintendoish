@@ -115,23 +115,23 @@ unsigned char NES::CPU::readProgram() {
 }
 
 int NES::CPU::executeLoadedInstruction() {
-	int currentCycles = cycles;
+	/*int currentCycles = cycles;
 	cycles += timingTable[loadedInstruction];
 	(this->*opTable[loadedInstruction])(loadedAddress);
 	loadedInstruction = 0x0;
 	loadedAddress = 0x0;
-	return cycles - currentCycles;
+	return cycles - currentCycles;*/
+	return 0;
 }
 
 int NES::CPU::loadNextInstruction()
 {
 	int currentCycles = cycles;
 
-	checkInterrurpts();
     unsigned char hi = 0x0;
     unsigned char lo = 0x0;
-    unsigned short startingPC = reg.PC;
-	loadedInstruction = readProgram();
+	unsigned short loadedAddress = 0x0;
+	unsigned char loadedInstruction = readProgram();
     
     currentAddressMode = static_cast<AddressMode>(addressTable[loadedInstruction]);
     switch (currentAddressMode) {
@@ -212,35 +212,9 @@ int NES::CPU::loadNextInstruction()
         default:
             break;
     }
-    
-    std::stringstream debugBuffer;
-    debugBuffer << uppercase << setfill('0') << setw(4) << hex << startingPC << "  " << uppercase << setfill('0') << setw(2) << hex << (unsigned short)loadedInstruction;
-    if (reg.PC - startingPC > 1) {
-        debugBuffer << " " << uppercase << setfill('0') << setw(2) << hex << (unsigned short)lo;
-    } else {
-        debugBuffer << "   ";
-    }
-    if (reg.PC - startingPC > 2) {
-        debugBuffer << " " << uppercase << setfill('0') << setw(2) << hex << (unsigned short)hi;
-    } else {
-        debugBuffer << "   ";
-    }
-    debugBuffer << "  "   << debugTable[loadedInstruction];
-    debugBuffer << "                             A:" << uppercase << setfill('0') << setw(2) << hex << (unsigned  short)reg.A;
-    debugBuffer << " X:"  << uppercase << setfill('0') << setw(2) << hex << (unsigned short)reg.X;
-    debugBuffer << " Y:"  << uppercase << setfill('0') << setw(2) << hex << (unsigned short)reg.Y;
-    debugBuffer << " P:"  << uppercase << setfill('0') << setw(2) << hex << (unsigned short)reg.P.byte;
-    debugBuffer << " SP:" << uppercase << setfill('0') << setw(2) << hex << (unsigned short)reg.S;
-    
-    lastInstruction = debugBuffer.str();
-   
-	//return timingTable[loadedInstruction];// +(temp ? 7 : 0);
-	
-	(this->*opTable[loadedInstruction])(loadedAddress);
 	cycles += timingTable[loadedInstruction];
-
-	loadedInstruction = 0x0;
-	loadedAddress = 0x0;
+	(this->*opTable[loadedInstruction])(loadedAddress);
+	checkInterrurpts();
 	return cycles - currentCycles;
 }
 
@@ -666,14 +640,14 @@ void NES::CPU::ASL(unsigned short address) {
 void NES::CPU::DEC(unsigned short address) {
     //Decrement Memory by One
     //Flags: N, Z
-    memory.set(address, memory.get(address - 1));
+    memory.set(address, memory.get(address) - 1);
     setNZStatus(memory.get(address));
 }
 
 void NES::CPU::INC(unsigned short address) {
     //Increment Memory by One
     //Flags: N, Z
-	memory.set(address, memory.get(address + 1));
+	memory.set(address, memory.get(address) + 1);
 	setNZStatus(memory.get(address));
 }
 

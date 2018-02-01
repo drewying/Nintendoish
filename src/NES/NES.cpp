@@ -20,8 +20,17 @@ void NES::Console::emulateCycle()
 		return;
 	}
 
-    int estimatedCycles = cpu->loadNextInstruction();
+	
+
+	int estimatedCycles = cpu->timingTable[memory->get(cpu->reg.PC)]; //cpu->loadNextInstruction();
+
 	for (int i = 0; i < (estimatedCycles * 3); i++) {
+		ppu->step();
+	}
+
+	cpu->loadNextInstruction();
+
+	while (ppu->cycles < cpu->cycles * 3) {
 		ppu->step();
 	}
 

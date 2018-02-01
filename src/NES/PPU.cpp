@@ -41,7 +41,20 @@ unsigned char NES::PPU::getPPURegister(unsigned short index) {
 void NES::PPU::setPPURegister(unsigned short index, unsigned char value) {
 	switch (index) {
 	case 0x2000: //PPU Control Flags
+		if (((PPUCTRL.byte >> 0x7) == 0x0) && ((value >> 0x7) == 0x1) && PPUSTATUS.status.VBlankStarted == true) {
+			parent.cpu->requestNMI = true;
+		}
 		PPUCTRL.byte = value;
+		if (PPUCTRL.status.NMI == true && PPUSTATUS.status.VBlankStarted == true) {
+			printf("\n\n\nNMI REQUESTED\n\n\n");
+			parent.cpu->requestNMI = true;
+		}
+
+		if (PPUCTRL.status.NMI == true) {
+			printf("\n\n\nNMI ENABLED\n\n\n", PPUCTRL.byte, value);
+		} else {
+			printf("\n\n\nNMI DISABLED\n\n\n", PPUCTRL.byte, value);
+		}
 		break;
 	case 0x2001: //PPU Render Flags
 		PPUMASK.byte = value;
@@ -88,7 +101,9 @@ void NES::PPU::setPPURegister(unsigned short index, unsigned char value) {
 		exit(0);
 		break;
 	}
-	parent.ppu->PPUSTATUS.status.Address = value & 0x1F;
+	if (index != 0x4014) {
+		PPUSTATUS.status.Address = value & 0x1F;
+	}
 }
 
 /*
@@ -267,17 +282,6 @@ void NES::PPU::step() {
 	cycles += 1;
 	currentCycle += 1;
 
-	if (currentCycle == 341) { // Next Scanline
-		currentCycle = 0;
-		currentScanline++;
-		if (currentScanline == 261) { // Next Frame
-			frameCount++;
-			currentScanline = -1;
-			ODDFRAME = !ODDFRAME;
-			vBlankEnd();
-		}
-	}
-
 	bool renderingEnabled = (PPUMASK.status.ShowSprite || PPUMASK.status.ShowBackground);
 	if (renderingEnabled == true && currentScanline >= 0 && currentScanline <= 239 && currentCycle >= 1 && currentCycle <= 340) {
 		//skipCycle = true;
@@ -301,9 +305,21 @@ void NES::PPU::step() {
     if (currentScanline == 241 && currentCycle == 1 && parent.cpu->cycles > 100) {
         vBlankStart();
     }
+
+	if (currentCycle == 341) { // Next Scanline
+		currentCycle = 0;
+		currentScanline++;
+		if (currentScanline == 261) { // Next Frame
+			frameCount++;
+			currentScanline = -1;
+			ODDFRAME = !ODDFRAME;
+			vBlankEnd();
+		}
+	}
 }
 
 void NES::PPU::vBlankStart() {
+	printf("\n\n\nVBLANK\n\n\n");
     PPUSTATUS.status.VBlankStarted = true;
 	if (PPUCTRL.status.NMI == true) {
 		printf("\n\n\nNMI REQUESTED\n\n\n");

@@ -57,11 +57,8 @@ namespace NES {
         void(NES::CPU::*opTable[256])(unsigned short);
         
         Memory& memory;
-        string lastInstruction;
 		
 		unsigned int cycles = 0x0;
-		unsigned char loadedInstruction = 0x0;
-		unsigned short loadedAddress = 0x0;
 		bool requestNMI = false;
 
         int loadNextInstruction();

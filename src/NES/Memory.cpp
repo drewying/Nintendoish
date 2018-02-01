@@ -53,36 +53,24 @@ void NES::Memory::set(unsigned short index, unsigned char value) {
 	if (index < 0x2000) {
 		//RAM Access
 		ram[index % 0x800] = value;
-	}
-
-	if (index < 0x4000) {
+	} else if (index < 0x4000) {
 		//PPU Access. Mirrors of $2000-2007 (repeats every 8 bytes)
 		index = 0x2000 + (index % 0x8);
 		parent.ppu->setPPURegister(index, value);
-	}
-
-	if (index == 0x4014) {
+	} else if (index == 0x4014) {
 		//OAM DMA Access
 		parent.ppu->setPPURegister(index, value);
-	}
-
-	if (index == 0x4016) {
+	} else if (index == 0x4016) {
 		//Controller 1
 		parent.controllerOne = 0x40;
 		parent.controllerOne = value;
-	}
-
-	if (index == 0x4017) {
+	} else if (index == 0x4017) {
 		//Controller 2
 		parent.controllerOne = 0x40;
 		parent.controllerOne = value;
-	}
-
-	if (index >= 0xC000) {
+	} else if (index >= 0xC000) {
 		prg[index - 0xC000] = value;
-	}
-
-	if (index >= 0x8000) {
+	} else if (index >= 0x8000) {
 		//NROM Mapper access
 		if (extended == false && index > 0x4000) {
 			index -= 0x4000;

@@ -22,7 +22,7 @@ ifstream logfile;
 bool passedTest = true;
 bool runTests = false;
 bool fullLog = false;
-int debugStartLineNumber = 9000;
+int debugStartLineNumber = 26000;
 int lineNumber = 0x0;
 
 //const int frequency = 540; //540 hertz
@@ -97,14 +97,34 @@ void testNES(void)
 {
 	high_resolution_clock::time_point t1 = high_resolution_clock::now();
 	
-	string SL = std::to_string(nes->ppu->currentScanline);
-	string CYC = std::to_string(nes->ppu->currentCycle);
-
-	std::stringstream ss;
-	ss << " CYC:" << setfill(' ') << setw(3) << nes->ppu->currentCycle << " SL:" << nes->ppu->currentScanline;
-
-    nes->emulateCycle();
 	if (nes->stallCycles == 0x0) {
+
+		std::stringstream ss;
+
+		unsigned char nextInstruction = nes->memory->get(nes->cpu->reg.PC);
+
+		ss << uppercase << setfill('0') << setw(4) << hex << nes->cpu->reg.PC << "  " << uppercase << setfill('0') << setw(2) << hex << (unsigned short)nextInstruction;
+		/*if (reg.PC - startingPC > 1) {
+		debugBuffer << " " << uppercase << setfill('0') << setw(2) << hex << (unsigned short)lo;
+		}
+		else {
+		debugBuffer << "   ";
+		}
+		if (reg.PC - startingPC > 2) {
+		debugBuffer << " " << uppercase << setfill('0') << setw(2) << hex << (unsigned short)hi;
+		}
+		else {
+		debugBuffer << "   ";
+		}*/
+		ss << "      ";
+		ss << "  " << nes->cpu->debugTable[nextInstruction];
+		ss << "                             A:" << uppercase << setfill('0') << setw(2) << hex << (unsigned  short)nes->cpu->reg.A;
+		ss << " X:" << uppercase << setfill('0') << setw(2) << hex << (unsigned short)nes->cpu->reg.X;
+		ss << " Y:" << uppercase << setfill('0') << setw(2) << hex << (unsigned short)nes->cpu->reg.Y;
+		ss << " P:" << uppercase << setfill('0') << setw(2) << hex << (unsigned short)nes->cpu->reg.P.byte;
+		ss << " SP:" << uppercase << setfill('0') << setw(2) << hex << (unsigned short)nes->cpu->reg.S;
+		ss << " CYC:" << setfill(' ') << dec << setw(3) << nes->ppu->currentCycle << " SL:" << nes->ppu->currentScanline;
+
 		lineNumber++;
 		string logLine;
 		if (!getline(logfile, logLine)){
@@ -129,7 +149,7 @@ void testNES(void)
 		string logCYC = logLine.substr(78, 3);
 		string logSL = logLine.substr(85, 3);
     
-		string emuLine = nes->cpu->lastInstruction + ss.str();
+		string emuLine = ss.str();
 		string emuPc = emuLine.substr(0, 4);
 		string emuOp = emuLine.substr(6, 2);
 		string emuLo = emuLine.substr(9, 2);
@@ -144,7 +164,7 @@ void testNES(void)
 		string emuSL = emuLine.substr(85, 3);
 
 
-		if (logPc == emuPc && logOp == emuOp && logLo == emuLo && logHi == emuHi && logDesc == emuDesc && logA == emuA && logX == emuX && logY == emuY && logP == emuP && logSP == emuSP && logCYC == emuCYC && logSL == emuSL) {
+		if (logPc == emuPc && logOp == emuOp && /*logLo == emuLo && logHi == emuHi &&*/ logDesc == emuDesc && logA == emuA && logX == emuX && logY == emuY && logP == emuP && logSP == emuSP && logCYC == emuCYC && logSL == emuSL) {
 			if (lineNumber > debugStartLineNumber || fullLog == true) {
 				cout << lineNumber << " " << logLine << endl;
 				cout << lineNumber << " " << emuLine << endl;
@@ -153,17 +173,14 @@ void testNES(void)
 		}
 		else if (lineNumber > debugStartLineNumber || fullLog == true) {
 			cout << lineNumber << " " << logLine << endl;
-		    cout << lineNumber << " " << emuLine << endl;
+		    cout << lineNumber << " "   << emuLine << endl;
 			cout << "NOT CORRECT. FRAME:" << nes->ppu->frameCount << endl << endl;
  			passedTest = false;
 		}
 	}
-	else {
-		string emuLine = nes->cpu->lastInstruction + ss.str();
-		cout << "STALL CYCLE " << emuLine << endl << endl;
-	}
 
- 
+	nes->emulateCycle();
+
 	//if (cpu->drawFlag) glutPostRedisplay();
 	high_resolution_clock::time_point t2 = high_resolution_clock::now();
 	duration<double, std::micro> time_span = t2 - t1;
