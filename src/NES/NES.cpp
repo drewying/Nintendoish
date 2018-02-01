@@ -10,37 +10,29 @@
 
 using namespace std;
 
-void NES::Console::emulateCycle()
-{
-	if (stallCycles > 0x0) {
-		stallCycles--;
-		for (int i = 0; i < 3; i++) {
-			ppu->step();
-		}
-		return;
-	}
-
+void NES::Console::emulateCycle() {
 	
 
-	int estimatedCycles = cpu->timingTable[memory->get(cpu->reg.PC)]; //cpu->loadNextInstruction();
 
-	for (int i = 0; i < (estimatedCycles * 3); i++) {
+	int estimatedCycles = cpu->stallCycles > 0 ? 0x0 : cpu->timingTable[memory->get(cpu->reg.PC)];
+	estimatedCycles *= 3;
+	estimatedCycles = 0x0;
+
+	for (int i = 0; i < estimatedCycles; i++) {
 		ppu->step();
-	}
+		if (cpu->requestNMI == true) {
+			printf("\n\nNMI REQUESTED PRE EXEC\n\n");
+		}
+	};
 
-	cpu->loadNextInstruction();
+	int actualCycles = cpu->loadNextInstruction();
 
-	while (ppu->cycles < cpu->cycles * 3) {
+	for (int i = 0; i < (actualCycles * 3) - estimatedCycles; i++) {
 		ppu->step();
-	}
-
-	/*
-	int actualCycles = cpu->executeLoadedInstruction();
-
-	for (int i = 0; i < (actualCycles * 3) - (estimatedCycles * 3); i++) {
-		ppu->step();
-	}
-	*/
+		if (cpu->requestNMI == true) {
+			printf("\n\nNMI REQUESTED POST EXEC\n\n");
+		}
+	};
 }
 
 void NES::Console::loadProgram(const char * path)

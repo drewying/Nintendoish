@@ -18,19 +18,19 @@ unsigned char NES::PPU::getPPURegister(unsigned short index) {
 		break;
 	case 0x2007: //PPU Data Read/Write
 		if (parent.ppu->PPUADDR.address < 0x2000) {
-			return parent.memory->chr[parent.ppu->PPUADDR.address];
+			return parent.memory->chr[PPUADDR.address];
 		}
 		if (parent.ppu->PPUADDR.address < 0x3000) {
-			parent.ppu->PPUADDR.address += 0x1;
-			return parent.memory->vram[parent.ppu->PPUADDR.address - 0x2001];
+			return parent.memory->vram[PPUADDR.address - 0x2001];
 		}
 		if (parent.ppu->PPUADDR.address < 0x3F00) {
-			parent.ppu->PPUADDR.address += 0x1;
-			return parent.memory->vram[parent.ppu->PPUADDR.address - 0x3001];
+			return parent.memory->vram[PPUADDR.address - 0x3001];
 		}
 		if (parent.ppu->PPUADDR.address < 0x4000) {
-			return parent.memory->pal[parent.ppu->PPUADDR.address - 0x3F00];
+			return parent.memory->pal[PPUADDR.address - 0x3F00];
 		}
+		PPUADDR.address += PPUCTRL.status.VRAMAddress ? 32 : 1;
+		exit(0);
 		break;
 	default:
 		exit(0);
@@ -81,17 +81,18 @@ void NES::PPU::setPPURegister(unsigned short index, unsigned char value) {
 		}
 		break;
 	case 0x2007: //PPU Data Read/Write
-		if (PPUADDR.address < 0x3000) {
-			PPUADDR.address++;
+		if (PPUADDR.address < 0x2000) {
+			exit(0); //Shouldn't write to CHR data.
+		} else if (PPUADDR.address < 0x3000) {
 			parent.memory->vram[PPUADDR.address - 0x2001] = value;
+		} else if (PPUADDR.address < 0x3F00) { 
+			parent.memory->vram[PPUADDR.address - 0x3001] = value;
+		} else if (PPUADDR.address < 0x4000) {
+			parent.memory->pal[PPUADDR.address - 0x3F00] = value;
+		} else {
+			exit(0);
 		}
-		if (PPUADDR.address < 0x3F00) {
-			PPUADDR.address += 0x1;
-			parent.memory->vram[parent.ppu->PPUADDR.address - 0x3001] = value;
-		}
-		if (PPUADDR.address < 0x4000) {
-			parent.memory->pal[parent.ppu->PPUADDR.address - 0x3F00] = value;
-		}
+		PPUADDR.address += PPUCTRL.status.VRAMAddress ? 32 : 1;
 		break;
 	case 0x4014: // OAM DMA High Address
 		DMAINDEX = value;
@@ -160,7 +161,7 @@ void NES::PPU::processWrite() {
 */
 
 void NES::PPU::copyDMAMemory(unsigned char index) {
-	parent.stallCycles = (parent.cpu->cycles - 1) % 2 == 1 ? 514 : 513;
+	parent.cpu->stallCycles = (parent.cpu->cycles) % 2 == 1 ? 513 : 514;
 	for (int i = 0x0; i < 0xFF; i++) {
 		parent.memory->oam[i] = parent.memory->get((index * 0x100) + i);
 	}
@@ -250,30 +251,30 @@ void NES::PPU::renderPatternTable() {
 	}
 }
 
-
+ 
 void NES::PPU::renderTile(int x, int y, int tileIndex) {
-	/*for (int i = 0; i <= 8; i++) {
-		char tileSliceA = memory.chr[tileIndex + i];
-		char tileSliceB = memory.chr[tileIndex + i + 8];
+	for (int i = 0; i <= 8; i++) {
+		char tileSliceA = parent.memory->chr[tileIndex + i];
+		char tileSliceB = parent.memory->chr[tileIndex + i + 8];
 		for (int j = 7; j >= 0; j--) {
 			unsigned short colorIndex = (tileSliceB & 0x1) << 1 | (tileSliceA & 0x1);
-			colorIndex = 0x3F10  + colorIndex;
-			//colorIndex += 2;
-			//unsigned char t = memory.vram[colorIndex];
-			//unsigned char* color = colorTable[memory.vram[colorIndex]];
-			unsigned char c = (((float)colorIndex / 3.0) * 255);
-			unsigned char color[3] = { c, 0, 0 };
+
+			unsigned char* backgroundColor = colorTable[parent.memory->pal[0]];
+			unsigned char* color = colorTable[parent.memory->pal[colorIndex + 3]];
+
+			if (colorIndex == 0) color = backgroundColor;
 
 			unsigned int combinedColor = color[0] << 16 | color[1] << 8 | color[2];
 			parent.graphics[x + j + ((y + i) * 256)] = combinedColor;
 			tileSliceA = tileSliceA >> 1;
 			tileSliceB = tileSliceB >> 1;
 		}
-	}*/
+	}
 }
 
 void NES::PPU::step() {
-	
+
+
 	if (skipCycle) {
 		skipCycle = false;
 		return;
@@ -282,8 +283,20 @@ void NES::PPU::step() {
 	cycles += 1;
 	currentCycle += 1;
 
+	if (currentCycle == 341) { // Next Scanline
+		currentCycle = 0;
+		currentScanline++;
+		if (currentScanline == 261) { // Next Frame
+			frameCount++;
+			currentScanline = -1;
+			ODDFRAME = !ODDFRAME;
+		}
+	}
+
 	bool renderingEnabled = (PPUMASK.status.ShowSprite || PPUMASK.status.ShowBackground);
 	if (renderingEnabled == true && currentScanline >= 0 && currentScanline <= 239 && currentCycle >= 1 && currentCycle <= 340) {
+		printf("RENDER");
+		renderPatternTable();
 		//skipCycle = true;
 	}
 
@@ -300,22 +313,23 @@ void NES::PPU::step() {
     if (currentScanline == 240) {
         // Do Nothing. Idle Scanline
     }
-   
-	// VBlank Scanlines
-    if (currentScanline == 241 && currentCycle == 1 && parent.cpu->cycles > 100) {
-        vBlankStart();
-    }
 
-	if (currentCycle == 341) { // Next Scanline
-		currentCycle = 0;
-		currentScanline++;
-		if (currentScanline == 261) { // Next Frame
-			frameCount++;
-			currentScanline = -1;
-			ODDFRAME = !ODDFRAME;
-			vBlankEnd();
-		}
+	// VBlank Scanlines
+	if (currentScanline == -1 && currentCycle == 1 && parent.cpu->cycles > 100) {
+		vBlankEnd();
 	}
+
+	if (currentScanline == 241 && currentCycle == 1 && parent.cpu->cycles > 100) {
+		vBlankStart();
+	}
+
+
+
+
+   
+
+
+
 }
 
 void NES::PPU::vBlankStart() {

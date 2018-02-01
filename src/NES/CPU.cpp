@@ -126,6 +126,11 @@ int NES::CPU::executeLoadedInstruction() {
 
 int NES::CPU::loadNextInstruction()
 {
+	if (stallCycles > 0x0) {
+		stallCycles--;
+		return 1;
+	}
+
 	int currentCycles = cycles;
 
     unsigned char hi = 0x0;
@@ -214,7 +219,9 @@ int NES::CPU::loadNextInstruction()
     }
 	cycles += timingTable[loadedInstruction];
 	(this->*opTable[loadedInstruction])(loadedAddress);
+	
 	checkInterrurpts();
+
 	return cycles - currentCycles;
 }
 

@@ -59,6 +59,7 @@ namespace NES {
         Memory& memory;
 		
 		unsigned int cycles = 0x0;
+		unsigned int stallCycles = 0x0;
 		bool requestNMI = false;
 
         int loadNextInstruction();

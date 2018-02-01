@@ -23,8 +23,6 @@ namespace NES {
         PPU *ppu;
 
 		unsigned int graphics[256 * 240] = { 0 };
-    
-		int stallCycles = 0x0;
 
 		unsigned char controllerOne = 0x40;
 		unsigned char controllerTwo = 0x40;
