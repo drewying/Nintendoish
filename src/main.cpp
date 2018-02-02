@@ -22,7 +22,7 @@ ifstream logfile;
 bool passedTest = true;
 bool runTests = false;
 bool fullLog = false;
-int debugStartLineNumber = 26000;
+int debugStartLineNumber = 200000;
 int lineNumber = 0x0;
 
 //const int frequency = 540; //540 hertz
@@ -97,7 +97,7 @@ void testNES(void)
 {
 	high_resolution_clock::time_point t1 = high_resolution_clock::now();
 	
-	if (nes->stallCycles == 0x0) {
+	if (nes->cpu->stallCycles == 0x0) {
 
 		std::stringstream ss;
 

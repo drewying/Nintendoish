@@ -182,56 +182,36 @@ void NES::PPU::reset() {
 
 
 void NES::PPU::renderScanline() {
-/*	bool renderBackground = PPUMASK.status.ShowBackground;
+	bool renderBackground = PPUMASK.status.ShowBackground;
 	bool renderSprite = PPUMASK.status.ShowSprite;
-	bool oddCycle = currentCycle & 2 != 0;
+	if (renderBackground && currentCycle < 256) {
+		unsigned int tileX = currentCycle / 8;
+		unsigned int tileY = currentScanline / 8;
+		unsigned int paletteX = currentCycle / 32;
+		unsigned int paletteY = currentCycle / 30;
+		
+		unsigned int attributeIndex = paletteX + (paletteY * 8);
+		unsigned int nametableIndex = tileX + (tileY * 32);
 
-	static int currentSpriteIndex = 0;
-	static int currentOamIndex = 0;
-	static bool writeFlag = false;
-	static Sprite* currentSprite;
+		unsigned int tileIndex = (parent.memory->vram[nametableIndex] + 0x100) * 0x10;
+		tileIndex += currentScanline % 8;
 
-	if (currentCycle == 0) {
-		// Idle Cycle.
+		unsigned int paletteIndex = parent.memory->vram[attributeIndex + 0x3C0];
+
+		unsigned char tileSliceA = parent.memory->chr[tileIndex];
+		unsigned char tileSliceB = parent.memory->chr[tileIndex + 8];
+		
+		tileSliceA = tileSliceA >> (8 - currentCycle % 8);
+		tileSliceB = tileSliceB >> (8 - currentCycle % 8);
+		
+		unsigned short colorIndex = (tileSliceB & 0x1) << 1 | (tileSliceA & 0x1);
+		unsigned char* backgroundColor = colorTable[parent.memory->pal[0]];
+		unsigned char* color = colorTable[parent.memory->pal[colorIndex]];
+		if (colorIndex == 0) color = backgroundColor;
+		unsigned int combinedColor = color[0] << 16 | color[1] << 8 | color[2];
+		parent.graphics[currentCycle + (currentScanline * 256)] = combinedColor;
 	}
-	if (currentCycle >= 1 && currentCycle <= 64) {
-		if (currentCycle == 1) {
-			memset(&spriteList, 0xFF, 8);
-			currentSpriteIndex = 0;
-			currentOamIndex = 0;
-		}
-	}
-
-
-	if (currentCycle >= 65 && currentCycle <= 256 && currentOamIndex < 256 && renderSprite == true) {
-		// Render visible Scanline
-		//if (renderBackground) {
-		//	printf("Render Background\n");
-		//}
-
-		//printf("Render Sprite\n");
-		//renderPatternTable();
-		if (oddCycle == true) {
-			// On odd cycles, data is read from (primary) OAM
-			if (memory.oam[currentOamIndex] <= (currentScanline + 1) && (memory.oam[currentOamIndex] + 8) >= (currentScanline + 1)) {
-				currentSprite = (Sprite*)&memory.oam[currentOamIndex];
-				writeFlag = true;
-			}
-
-		} else if (writeFlag == true){
-			// On even cycles, data is written to secondary OAM
-			writeFlag = false;
-			memcpy(&spriteList[currentSpriteIndex], currentSprite, 4);
-			currentSpriteIndex += 1;
-		}
-		currentOamIndex += 4;
-
-	}
-	if (currentCycle >= 257 && currentCycle < 320) {
-		OAMADDR = 0x0;
-		//Tile Data
-	} */
-}
+} 
 
 void NES::PPU::renderPatternTable() {
 	int tileIndex = 0x0000;
@@ -260,7 +240,7 @@ void NES::PPU::renderTile(int x, int y, int tileIndex) {
 			unsigned short colorIndex = (tileSliceB & 0x1) << 1 | (tileSliceA & 0x1);
 
 			unsigned char* backgroundColor = colorTable[parent.memory->pal[0]];
-			unsigned char* color = colorTable[parent.memory->pal[colorIndex + 3]];
+			unsigned char* color = colorTable[parent.memory->pal[colorIndex + 6]];
 
 			if (colorIndex == 0) color = backgroundColor;
 
@@ -295,8 +275,9 @@ void NES::PPU::step() {
 
 	bool renderingEnabled = (PPUMASK.status.ShowSprite || PPUMASK.status.ShowBackground);
 	if (renderingEnabled == true && currentScanline >= 0 && currentScanline <= 239 && currentCycle >= 1 && currentCycle <= 340) {
-		printf("RENDER");
-		renderPatternTable();
+		//renderScanline();
+		//printf("RENDER");
+		//renderPatternTable();
 		//skipCycle = true;
 	}
 
@@ -307,7 +288,7 @@ void NES::PPU::step() {
 
     // Render Visible Scanlines
     if (currentScanline >= 0 && currentScanline <= 239) {
-		//renderScanline();
+		renderScanline();
     }
     
     if (currentScanline == 240) {
