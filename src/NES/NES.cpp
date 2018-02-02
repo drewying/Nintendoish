@@ -12,8 +12,6 @@ using namespace std;
 
 void NES::Console::emulateCycle() {
 	
-
-
 	int estimatedCycles = cpu->stallCycles > 0 ? 0x0 : cpu->timingTable[memory->get(cpu->reg.PC)];
 	estimatedCycles *= 3;
 	estimatedCycles = 0x0;
@@ -21,7 +19,7 @@ void NES::Console::emulateCycle() {
 	for (int i = 0; i < estimatedCycles; i++) {
 		ppu->step();
 		if (cpu->requestNMI == true) {
-			printf("\n\nNMI REQUESTED PRE EXEC\n\n");
+			//printf("\n\nNMI REQUESTED PRE EXEC\n\n");
 		}
 	};
 
@@ -30,7 +28,7 @@ void NES::Console::emulateCycle() {
 	for (int i = 0; i < (actualCycles * 3) - estimatedCycles; i++) {
 		ppu->step();
 		if (cpu->requestNMI == true) {
-			printf("\n\nNMI REQUESTED POST EXEC\n\n");
+			//printf("\n\nNMI REQUESTED POST EXEC\n\n");
 		}
 	};
 }

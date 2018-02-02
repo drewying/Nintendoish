@@ -46,14 +46,14 @@ void NES::PPU::setPPURegister(unsigned short index, unsigned char value) {
 		}
 		PPUCTRL.byte = value;
 		if (PPUCTRL.status.NMI == true && PPUSTATUS.status.VBlankStarted == true) {
-			printf("\n\n\nNMI REQUESTED\n\n\n");
+			//printf("\n\n\nNMI REQUESTED\n\n\n");
 			parent.cpu->requestNMI = true;
 		}
 
 		if (PPUCTRL.status.NMI == true) {
-			printf("\n\n\nNMI ENABLED\n\n\n", PPUCTRL.byte, value);
+			//printf("\n\n\nNMI ENABLED\n\n\n", PPUCTRL.byte, value);
 		} else {
-			printf("\n\n\nNMI DISABLED\n\n\n", PPUCTRL.byte, value);
+			//printf("\n\n\nNMI DISABLED\n\n\n", PPUCTRL.byte, value);
 		}
 		break;
 	case 0x2001: //PPU Render Flags
@@ -201,8 +201,8 @@ void NES::PPU::renderScanline() {
 		unsigned char tileSliceA = parent.memory->chr[tileIndex];
 		unsigned char tileSliceB = parent.memory->chr[tileIndex + 8];
 		
-		tileSliceA = tileSliceA >> (8 - currentCycle % 8);
-		tileSliceB = tileSliceB >> (8 - currentCycle % 8);
+		tileSliceA = tileSliceA >> (7 - currentCycle % 8);
+		tileSliceB = tileSliceB >> (7 - currentCycle % 8);
 		
 		unsigned short colorIndex = (tileSliceB & 0x1) << 1 | (tileSliceA & 0x1);
 		unsigned char* backgroundColor = colorTable[parent.memory->pal[0]];
@@ -270,6 +270,7 @@ void NES::PPU::step() {
 			frameCount++;
 			currentScanline = -1;
 			ODDFRAME = !ODDFRAME;
+			parent.updateGraphics = true;
 		}
 	}
 
@@ -314,10 +315,10 @@ void NES::PPU::step() {
 }
 
 void NES::PPU::vBlankStart() {
-	printf("\n\n\nVBLANK\n\n\n");
+	//printf("\n\n\nVBLANK\n\n\n");
     PPUSTATUS.status.VBlankStarted = true;
 	if (PPUCTRL.status.NMI == true) {
-		printf("\n\n\nNMI REQUESTED\n\n\n");
+		//printf("\n\n\nNMI REQUESTED\n\n\n");
 		parent.cpu->requestNMI = true;
 	}
 }
