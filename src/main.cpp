@@ -168,6 +168,7 @@ int main(int argc, char** argv)
     } else {
         nes = new NES::Console();
         nes->loadProgram("../roms/DonkeyKong.nes");
+		//nes->loadProgram("../roms/palette.nes");
         glutIdleFunc(updateNES);
     }
     

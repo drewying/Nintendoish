@@ -53,42 +53,30 @@ namespace NES {
 			unsigned short address;
 		} PPUADDR;
 
-		unsigned char DMAINDEX;
 		unsigned char OAMADDR;
 		unsigned char PPUSCROLL;
 		bool PPUADDRLATCH;
 		bool extended = false;
-
-        struct Memory {
-        public:
-            bool extended = false;
-
-            PPU &ppu;
-            
-            unsigned char &operator [](unsigned short index);
-            
-            Memory(PPU &ppu) : ppu(ppu) {}
-        } memory;
         
 		struct Sprite {
 		public:
-			char yPosition;
-			char tileIndex;
-			char attributeData;
-			char xPosition;
-			Sprite(char yPosition, 
-				   char tileIndex,
-				   char attributeData,
-				   char xPosition) : 
-				yPosition(yPosition), 
-				tileIndex(tileIndex),
-				attributeData(attributeData),
-				xPosition(xPosition) 
-			{};
-			Sprite() {}
+			unsigned char yPosition;
+			unsigned char tileIndex;
+			//union {
+				struct {
+					unsigned char palette : 2,
+						unused : 3,
+						priority : 1,
+						horizontalFlip : 1,
+						verticalFlip : 1;
+				} attributes;
+				//unsigned char byte;
+			//} attributeData;
+			//unsigned char temp;
+			unsigned char xPosition;
 		};
 
-		Sprite spriteList[8];
+		Sprite spriteBuffer[8];
 
 
   
@@ -118,7 +106,11 @@ namespace NES {
         void step();
         void reset();
 
+		void prepareSprites();
+
 		void renderScanline();
+
+		void renderPixel(unsigned int tileX, unsigned int tileY, unsigned int tileIndex, unsigned int paletteIndex, unsigned int priority, unsigned int flipHorizontal, unsigned int flipVertical);
 
 		void renderPatternTable();
 
@@ -127,7 +119,7 @@ namespace NES {
         void vBlankStart();
         void vBlankEnd();
 
-        PPU(Console &parent) : parent(parent), memory(*this) {
+        PPU(Console &parent) : parent(parent) {
             reset();
         };
         

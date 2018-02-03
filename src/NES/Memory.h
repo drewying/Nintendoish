@@ -10,7 +10,7 @@ namespace NES {
 		unsigned char vram[0x2000]  = { 0 }; // Video Memory/Name Tables 
 		unsigned char chr[0x2000]   = { 0 }; // Tile Data
 		unsigned char oam[0x100]    = { 0 }; // Object Attribute Memory
-		unsigned char pal[0x100]    = { 0 }; // Palette Memory
+		unsigned char pal[0x20]     = { 0 }; // Palette Memory
         Console &parent;
         
 		bool extended = false;

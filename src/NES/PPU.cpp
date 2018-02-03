@@ -6,6 +6,7 @@ using namespace std;
 
 unsigned char NES::PPU::getPPURegister(unsigned short index) {
 	char status;
+	short address;
 	switch (index) {
 	case 0x2002: //PPU Status Flags
 		status = PPUSTATUS.byte;
@@ -17,19 +18,20 @@ unsigned char NES::PPU::getPPURegister(unsigned short index) {
 		return parent.memory->oam[parent.ppu->OAMADDR];
 		break;
 	case 0x2007: //PPU Data Read/Write
-		if (parent.ppu->PPUADDR.address < 0x2000) {
-			return parent.memory->chr[PPUADDR.address];
-		}
-		if (parent.ppu->PPUADDR.address < 0x3000) {
-			return parent.memory->vram[PPUADDR.address - 0x2001];
-		}
-		if (parent.ppu->PPUADDR.address < 0x3F00) {
-			return parent.memory->vram[PPUADDR.address - 0x3001];
-		}
-		if (parent.ppu->PPUADDR.address < 0x4000) {
-			return parent.memory->pal[PPUADDR.address - 0x3F00];
-		}
+		address = PPUADDR.address;
 		PPUADDR.address += PPUCTRL.status.VRAMAddress ? 32 : 1;
+		if (address < 0x2000) {
+			return parent.memory->chr[address];
+		}
+		if (address < 0x3000) {
+			return parent.memory->vram[address - 0x2001];
+		}
+		if (address < 0x3F00) {
+			return parent.memory->vram[address - 0x3001];
+		}
+		if (address < 0x4000) {
+			return parent.memory->pal[address - 0x3F00];
+		}
 		exit(0);
 		break;
 	default:
@@ -95,8 +97,7 @@ void NES::PPU::setPPURegister(unsigned short index, unsigned char value) {
 		PPUADDR.address += PPUCTRL.status.VRAMAddress ? 32 : 1;
 		break;
 	case 0x4014: // OAM DMA High Address
-		DMAINDEX = value;
-		copyDMAMemory(DMAINDEX - 1);
+		copyDMAMemory(value);
 		break;
 	default:
 		exit(0);
@@ -131,7 +132,7 @@ void NES::PPU::processWrite() {
 			switch (lastWrite) {
 			case 0x2000:
 				if (lastValue != PPUCTRL.byte) {
-					// When turning on the NMI flag in bit 7, if the PPU is currently in vertical blank and the 
+					// When turning on the NMI flag in bit 7, if the PPU is currently in vertical blank and the
 					// PPUSTATUS ($2002) vblank flag is set, an NMI will be generated immediately
 					if (((lastValue >> 0x7) == 0x0) && ((PPUCTRL.byte >> 0x7) == 0x1) && PPUSTATUS.status.VBlankStarted == true) {
 						parent.cpu->requestNMI = true;
@@ -169,49 +170,126 @@ void NES::PPU::copyDMAMemory(unsigned char index) {
 }
 
 void NES::PPU::reset() {
-    PPUCTRL.byte = 0x0;
-    PPUMASK.byte = 0x0;
-    PPUSTATUS.byte = 0x10;
-    OAMADDR = 0x0;
+	PPUCTRL.byte = 0x0;
+	PPUMASK.byte = 0x0;
+	PPUSTATUS.byte = 0x10;
+	OAMADDR = 0x0;
 	PPUADDR.address = 0x0;
-    PPUADDRLATCH = false;
-    PPUSCROLL = 0x0;
-	DMAINDEX = 0xFF;
-    ODDFRAME = false;
+	PPUADDRLATCH = false;
+	PPUSCROLL = 0x0;
+	ODDFRAME = false;
 }
 
 
+void NES::PPU::prepareSprites() {
+	Sprite* spriteList = (Sprite*)parent.memory->oam;
+	int spriteCount = 0;
+	int oamIndex = 0;
+	size_t t = sizeof(Sprite);
+	memset(spriteBuffer, 0x0, sizeof(Sprite) * 8);
+	while (spriteCount < 8 && oamIndex < 64) {
+		if (spriteList->yPosition != 0 &&
+			currentScanline >= spriteList->yPosition + 1 &&
+			currentScanline < spriteList->yPosition + 1 + 8)
+		{
+			spriteBuffer[spriteCount] = *spriteList;
+			spriteCount++;
+		}
+		spriteList++;
+		oamIndex++;
+	}
+}
+
 void NES::PPU::renderScanline() {
-	bool renderBackground = PPUMASK.status.ShowBackground;
-	bool renderSprite = PPUMASK.status.ShowSprite;
-	if (renderBackground && currentCycle < 256) {
+	if (currentCycle > 256) return;
+
+	if (PPUMASK.status.ShowBackground) {
 		unsigned int tileX = currentCycle / 8;
 		unsigned int tileY = currentScanline / 8;
 		unsigned int paletteX = currentCycle / 32;
-		unsigned int paletteY = currentCycle / 30;
-		
+		unsigned int paletteY = currentScanline / 32;
+
 		unsigned int attributeIndex = paletteX + (paletteY * 8);
 		unsigned int nametableIndex = tileX + (tileY * 32);
 
-		unsigned int tileIndex = (parent.memory->vram[nametableIndex] + 0x100) * 0x10;
-		tileIndex += currentScanline % 8;
+		unsigned char paletteIndex = parent.memory->vram[0x3C0 + attributeIndex];
+		paletteX = (tileX / 2) % 2;
+		paletteY = (tileY / 2) % 2;
 
-		unsigned int paletteIndex = parent.memory->vram[attributeIndex + 0x3C0];
+		if (paletteX == 0 && paletteY == 0) paletteIndex = (paletteIndex &  0x3);      // Top Left 01
+		if (paletteX == 1 && paletteY == 0) paletteIndex = (paletteIndex &  0xF) >> 2; // Top Right 10
+		if (paletteX == 0 && paletteY == 1) paletteIndex = (paletteIndex & 0x3F) >> 4; // Bottom Left 00
+		if (paletteX == 1 && paletteY == 1) paletteIndex =  paletteIndex >> 6;         // Bottom Right 11
 
-		unsigned char tileSliceA = parent.memory->chr[tileIndex];
-		unsigned char tileSliceB = parent.memory->chr[tileIndex + 8];
-		
-		tileSliceA = tileSliceA >> (7 - currentCycle % 8);
-		tileSliceB = tileSliceB >> (7 - currentCycle % 8);
-		
-		unsigned short colorIndex = (tileSliceB & 0x1) << 1 | (tileSliceA & 0x1);
-		unsigned char* backgroundColor = colorTable[parent.memory->pal[0]];
-		unsigned char* color = colorTable[parent.memory->pal[colorIndex]];
-		if (colorIndex == 0) color = backgroundColor;
-		unsigned int combinedColor = color[0] << 16 | color[1] << 8 | color[2];
-		parent.graphics[currentCycle + (currentScanline * 256)] = combinedColor;
+		renderPixel(
+			currentCycle % 8, 
+			currentScanline % 8, 
+			parent.memory->vram[nametableIndex] + (PPUCTRL.status.BackgroundTableAddress ? 0x100 : 0x0),  //Left or Right?
+			paletteIndex,
+			0, 
+			false, 
+			false
+		);
+	} 
+
+	if (PPUMASK.status.ShowSprite == true) {
+		if (PPUCTRL.status.SpriteSize == true) {
+			printf("Large Sprite Detected");
+		}
+		for (int i = 0; i < 8; i++) {
+			Sprite sprite = spriteBuffer[i];
+			unsigned char spriteY = sprite.yPosition + 1;
+			unsigned char spriteX = sprite.xPosition - 8;
+			
+			if (sprite.xPosition != 0 &&
+				currentCycle >= spriteX &&
+				currentCycle < spriteX + 8) 
+			{
+					//if (currentCycle == spriteX) renderTile(currentCycle, currentScanline, spriteBuffer[i].tileIndex);
+					spriteX = currentCycle - spriteX;
+					spriteY = currentScanline - spriteY;
+					
+					renderPixel(
+						spriteX, 
+						spriteY, 
+						sprite.tileIndex + (PPUCTRL.status.SpriteTableAddress ? 0x100 : 0x0),
+						sprite.attributes.palette + 0x4,
+						sprite.attributes.priority, 
+						sprite.attributes.horizontalFlip, 
+						sprite.attributes.verticalFlip
+					);
+					return;
+			}
+		}
 	}
 } 
+
+void NES::PPU::renderPixel(
+	unsigned int tileX, 
+	unsigned int tileY, 
+	unsigned int tileIndex, 
+	unsigned int paletteIndex, 
+	unsigned int priority, 
+	unsigned int flipHorizontal, 
+	unsigned int flipVertical) {
+	tileIndex *= 0x10;
+	tileIndex += flipVertical ? 8 - tileY : tileY;
+
+	unsigned char tileSliceA = parent.memory->chr[tileIndex];
+	unsigned char tileSliceB = parent.memory->chr[tileIndex + 8];
+
+	tileSliceA = tileSliceA >> (flipHorizontal ? tileX : 7 - tileX);
+	tileSliceB = tileSliceB >> (flipHorizontal ? tileX : 7 - tileX);
+
+	unsigned short colorIndex = (tileSliceB & 0x1) << 1 | (tileSliceA & 0x1);
+	unsigned char* backgroundColor = colorTable[parent.memory->pal[0]];
+	unsigned char* color = colorTable[parent.memory->pal[(paletteIndex * 4) + colorIndex]];
+	
+	if (colorIndex == 0) color = backgroundColor;
+	
+	unsigned int combinedColor = color[0] << 16 | color[1] << 8 | color[2];
+	if (color != backgroundColor || priority != 1) parent.graphics[currentCycle + (currentScanline * 256)] = combinedColor;
+}
 
 void NES::PPU::renderPatternTable() {
 	int tileIndex = 0x0000;
@@ -219,20 +297,21 @@ void NES::PPU::renderPatternTable() {
 	for (int y = 0; y < 128; y += 8) {
 		for (int x = 0; x < 128; x += 8) {
 			renderTile(x, y, tileIndex);
-			tileIndex += 0x10;
+			tileIndex++;
 		}
 	}
 
 	for (int y = 0; y < 128; y += 8) {
 		for (int x = 128; x < 256; x += 8) {
 			renderTile(x, y, tileIndex);
-			tileIndex += 0x10;
+			tileIndex;
 		}
 	}
 }
 
  
 void NES::PPU::renderTile(int x, int y, int tileIndex) {
+	tileIndex *= 0x10;
 	for (int i = 0; i <= 8; i++) {
 		char tileSliceA = parent.memory->chr[tileIndex + i];
 		char tileSliceB = parent.memory->chr[tileIndex + i + 8];
@@ -286,9 +365,9 @@ void NES::PPU::step() {
 		//skipCycle = true;
 	}
 
-
     // Render Visible Scanlines
     if (currentScanline >= 0 && currentScanline <= 239) {
+		if (currentCycle == 0) prepareSprites();
 		renderScanline();
     }
     
