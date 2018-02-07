@@ -24,10 +24,10 @@ unsigned char NES::PPU::getPPURegister(unsigned short index) {
 			return parent.memory->chr[address];
 		}
 		if (address < 0x3000) {
-			return parent.memory->vram[address - 0x2001];
+			return parent.memory->vram[address - 0x2000];
 		}
 		if (address < 0x3F00) {
-			return parent.memory->vram[address - 0x3001];
+			return parent.memory->vram[address - 0x3000];
 		}
 		if (address < 0x4000) {
 			return parent.memory->pal[address - 0x3F00];
@@ -86,9 +86,9 @@ void NES::PPU::setPPURegister(unsigned short index, unsigned char value) {
 		if (PPUADDR.address < 0x2000) {
 			exit(0); //Shouldn't write to CHR data.
 		} else if (PPUADDR.address < 0x3000) {
-			parent.memory->vram[PPUADDR.address - 0x2001] = value;
+			parent.memory->vram[PPUADDR.address - 0x2000] = value;
 		} else if (PPUADDR.address < 0x3F00) { 
-			parent.memory->vram[PPUADDR.address - 0x3001] = value;
+			parent.memory->vram[PPUADDR.address - 0x3000] = value;
 		} else if (PPUADDR.address < 0x4000) {
 			parent.memory->pal[PPUADDR.address - 0x3F00] = value;
 		} else {
@@ -107,59 +107,6 @@ void NES::PPU::setPPURegister(unsigned short index, unsigned char value) {
 		PPUSTATUS.status.Address = value & 0x1F;
 	}
 }
-
-/*
-void NES::PPU::processWrite() {
-	if (lastWrite != 0x0) {
-		if (parent.cpu->cycles < 29658 &&
-			(lastWrite == 0x2000 ||
-				lastWrite == 0x2001 ||
-				lastWrite == 0x2005 ||
-				lastWrite == 0x2006)
-			) {
-			memory[lastWrite] = lastValue;
-		}
-		else {
-			if (lastWrite == 0x2000 ||
-				lastWrite == 0x2001 ||
-				lastWrite == 0x2003 ||
-				(lastWrite == 0x2004 && memory[lastWrite] != lastValue) ||
-				lastWrite == 0x2005 ||
-				lastWrite == 0x2006 ||
-				(lastWrite == 0x2007 && memory[lastWrite] != lastValue)) {
-				PPUSTATUS.status.Address = memory[lastWrite] & 0x1F;
-			}
-			switch (lastWrite) {
-			case 0x2000:
-				if (lastValue != PPUCTRL.byte) {
-					// When turning on the NMI flag in bit 7, if the PPU is currently in vertical blank and the
-					// PPUSTATUS ($2002) vblank flag is set, an NMI will be generated immediately
-					if (((lastValue >> 0x7) == 0x0) && ((PPUCTRL.byte >> 0x7) == 0x1) && PPUSTATUS.status.VBlankStarted == true) {
-						parent.cpu->requestNMI = true;
-					}
-				}
-				break;
-			case 0x2002:
-				PPUSTATUS.status.VBlankStarted = false;
-				PPUADDRLATCH = false;
-				break;
-			case 0x2004:
-				if (lastValue != memory.oam[OAMADDR]) {
-					OAMADDR += 1;
-				}
-				break;
-			case 0x4014:
-				copyDMAMemory(DMAINDEX);
-				break;
-			}
-		}
-
-		lastWrite = 0x0;
-		lastValue = 0x0;
-	}
-}
-
-*/
 
 void NES::PPU::copyDMAMemory(unsigned char index) {
 	parent.cpu->stallCycles = (parent.cpu->cycles) % 2 == 1 ? 513 : 514;
@@ -206,26 +153,27 @@ void NES::PPU::renderScanline() {
 	if (PPUMASK.status.ShowBackground) {
 		unsigned int tileX = currentCycle / 8;
 		unsigned int tileY = currentScanline / 8;
-		unsigned int paletteX = currentCycle / 32;
-		unsigned int paletteY = currentScanline / 32;
+		unsigned int tileIndex = tileX + (tileY * 32);
 
-		unsigned int attributeIndex = paletteX + (paletteY * 8);
-		unsigned int nametableIndex = tileX + (tileY * 32);
-
-		unsigned char paletteIndex = parent.memory->vram[0x3C0 + attributeIndex];
-		paletteX = (tileX / 2) % 2;
-		paletteY = (tileY / 2) % 2;
-
-		if (paletteX == 0 && paletteY == 0) paletteIndex = (paletteIndex &  0x3);      // Top Left 01
-		if (paletteX == 1 && paletteY == 0) paletteIndex = (paletteIndex &  0xF) >> 2; // Top Right 10
-		if (paletteX == 0 && paletteY == 1) paletteIndex = (paletteIndex & 0x3F) >> 4; // Bottom Left 00
-		if (paletteX == 1 && paletteY == 1) paletteIndex =  paletteIndex >> 6;         // Bottom Right 11
+		//Palette
+		unsigned char paletteX = currentCycle / 32;
+		unsigned char paletteY = currentScanline / 32;
+		unsigned char paletteIndex = paletteX + (paletteY * 8);
+		unsigned char paletteInfo = parent.memory->vram[0x3C0 + paletteIndex];
+		paletteX = (currentCycle & 0x8) >> 4;
+		paletteY = (currentScanline & 0x8) >> 4;
+	
+			
+		if (paletteX == 0 && paletteY == 0) paletteInfo = (paletteInfo &  0x3);      // Top Left 01
+		if (paletteX == 1 && paletteY == 0) paletteInfo = (paletteInfo &  0xF) >> 2; // Top Right 10
+		if (paletteX == 0 && paletteY == 1) paletteInfo = (paletteInfo & 0x3F) >> 4; // Bottom Left 00
+		if (paletteX == 1 && paletteY == 1) paletteInfo =  paletteInfo >> 6;         // Bottom Right 11
 
 		renderPixel(
 			currentCycle % 8, 
 			currentScanline % 8, 
-			parent.memory->vram[nametableIndex] + (PPUCTRL.status.BackgroundTableAddress ? 0x100 : 0x0),  //Left or Right?
-			paletteIndex,
+			parent.memory->vram[tileIndex] + (PPUCTRL.status.BackgroundTableAddress ? 0x100 : 0x0),  //Left or Right?
+			paletteInfo,
 			0, 
 			false, 
 			false
@@ -239,7 +187,7 @@ void NES::PPU::renderScanline() {
 		for (int i = 0; i < 8; i++) {
 			Sprite sprite = spriteBuffer[i];
 			unsigned char spriteY = sprite.yPosition + 1;
-			unsigned char spriteX = sprite.xPosition - 8;
+			unsigned char spriteX = sprite.xPosition;
 			
 			if (sprite.xPosition != 0 &&
 				currentCycle >= spriteX &&
@@ -286,7 +234,8 @@ void NES::PPU::renderPixel(
 	unsigned char* color = colorTable[parent.memory->pal[(paletteIndex * 4) + colorIndex]];
 	
 	if (colorIndex == 0) color = backgroundColor;
-	
+	//if (currentCycle >= 48 && currentCycle <= 68) color = backgroundColor;
+
 	unsigned int combinedColor = color[0] << 16 | color[1] << 8 | color[2];
 	if (color != backgroundColor || priority != 1) parent.graphics[currentCycle + (currentScanline * 256)] = combinedColor;
 }
@@ -353,27 +302,13 @@ void NES::PPU::step() {
 		}
 	}
 
+	if (currentCycle == 0) prepareSprites();
+	
+	//Render Visible Scanlines
 	bool renderingEnabled = (PPUMASK.status.ShowSprite || PPUMASK.status.ShowBackground);
-	if (renderingEnabled == true && currentScanline >= 0 && currentScanline <= 239 && currentCycle >= 1 && currentCycle <= 340) {
-		//renderScanline();
-		//printf("RENDER");
-		//renderPatternTable();
-		//skipCycle = true;
-	}
-
-	if (currentScanline == -1 && currentCycle == 340 && ODDFRAME == true && renderingEnabled == true) {
-		//skipCycle = true;
-	}
-
-    // Render Visible Scanlines
-    if (currentScanline >= 0 && currentScanline <= 239) {
-		if (currentCycle == 0) prepareSprites();
+	if (renderingEnabled == true && currentScanline >= 0 && currentScanline <= 239 && currentCycle >= 0 && currentCycle <= 255) {
 		renderScanline();
-    }
-    
-    if (currentScanline == 240) {
-        // Do Nothing. Idle Scanline
-    }
+	}
 
 	// VBlank Scanlines
 	if (currentScanline == -1 && currentCycle == 1 && parent.cpu->cycles > 100) {
