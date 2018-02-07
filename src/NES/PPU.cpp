@@ -150,6 +150,9 @@ void NES::PPU::prepareSprites() {
 void NES::PPU::renderScanline() {
 	if (currentCycle > 256) return;
 
+	unsigned char* defaultColor = colorTable[parent.memory->pal[0]]; //Default Background Color
+	unsigned char* finalColor = defaultColor;
+
 	if (PPUMASK.status.ShowBackground) {
 		unsigned int tileX = currentCycle / 8;
 		unsigned int tileY = currentScanline / 8;
@@ -169,22 +172,19 @@ void NES::PPU::renderScanline() {
 		if (paletteX == 0 && paletteY == 1) paletteInfo = (paletteInfo & 0x3F) >> 4; // Bottom Left 00
 		if (paletteX == 1 && paletteY == 1) paletteInfo =  paletteInfo >> 6;         // Bottom Right 11
 
-		renderPixel(
+		unsigned char* backgroundColor =  getTileColor(
+			parent.memory->vram[tileIndex] + (PPUCTRL.status.BackgroundTableAddress ? 0x100 : 0x0),  //Left or Right?
 			currentCycle % 8, 
 			currentScanline % 8, 
-			parent.memory->vram[tileIndex] + (PPUCTRL.status.BackgroundTableAddress ? 0x100 : 0x0),  //Left or Right?
 			paletteInfo,
-			0, 
 			false, 
 			false
 		);
+		finalColor = backgroundColor;
 	} 
 
 	if (PPUMASK.status.ShowSprite == true) {
-		if (PPUCTRL.status.SpriteSize == true) {
-			printf("Large Sprite Detected");
-		}
-		for (int i = 0; i < 8; i++) {
+		for (int i = 0; i < 8; i++) { 
 			Sprite sprite = spriteBuffer[i];
 			unsigned char spriteY = sprite.yPosition + 1;
 			unsigned char spriteX = sprite.xPosition;
@@ -193,31 +193,35 @@ void NES::PPU::renderScanline() {
 				currentCycle >= spriteX &&
 				currentCycle < spriteX + 8) 
 			{
-					//if (currentCycle == spriteX) renderTile(currentCycle, currentScanline, spriteBuffer[i].tileIndex);
 					spriteX = currentCycle - spriteX;
 					spriteY = currentScanline - spriteY;
 					
-					renderPixel(
+					unsigned char* spriteColor = getTileColor(
+						sprite.tileIndex + (PPUCTRL.status.SpriteTableAddress ? 0x100 : 0x0),
 						spriteX, 
 						spriteY, 
-						sprite.tileIndex + (PPUCTRL.status.SpriteTableAddress ? 0x100 : 0x0),
 						sprite.attributes.palette + 0x4,
-						sprite.attributes.priority, 
 						sprite.attributes.horizontalFlip, 
 						sprite.attributes.verticalFlip
 					);
-					return;
+					if (spriteColor != defaultColor) {
+						if (sprite.attributes.priority == 0 || finalColor == defaultColor) finalColor = spriteColor;
+						break;
+					}
 			}
 		}
 	}
+
+	unsigned int combinedColor = finalColor[0] << 16 | finalColor[1] << 8 | finalColor[2];
+	parent.graphics[currentCycle + (currentScanline * 256)] = combinedColor;
+
 } 
 
-void NES::PPU::renderPixel(
+unsigned char* NES::PPU::getTileColor(
+	unsigned int tileIndex,
 	unsigned int tileX, 
 	unsigned int tileY, 
-	unsigned int tileIndex, 
 	unsigned int paletteIndex, 
-	unsigned int priority, 
 	unsigned int flipHorizontal, 
 	unsigned int flipVertical) {
 	tileIndex *= 0x10;
@@ -230,14 +234,8 @@ void NES::PPU::renderPixel(
 	tileSliceB = tileSliceB >> (flipHorizontal ? tileX : 7 - tileX);
 
 	unsigned short colorIndex = (tileSliceB & 0x1) << 1 | (tileSliceA & 0x1);
-	unsigned char* backgroundColor = colorTable[parent.memory->pal[0]];
-	unsigned char* color = colorTable[parent.memory->pal[(paletteIndex * 4) + colorIndex]];
 	
-	if (colorIndex == 0) color = backgroundColor;
-	//if (currentCycle >= 48 && currentCycle <= 68) color = backgroundColor;
-
-	unsigned int combinedColor = color[0] << 16 | color[1] << 8 | color[2];
-	if (color != backgroundColor || priority != 1) parent.graphics[currentCycle + (currentScanline * 256)] = combinedColor;
+	return colorTable[parent.memory->pal[(paletteIndex * 4) + colorIndex]];
 }
 
 void NES::PPU::renderPatternTable() {

@@ -110,7 +110,7 @@ namespace NES {
 
 		void renderScanline();
 
-		void renderPixel(unsigned int tileX, unsigned int tileY, unsigned int tileIndex, unsigned int paletteIndex, unsigned int priority, unsigned int flipHorizontal, unsigned int flipVertical);
+		unsigned char* getTileColor(unsigned int tileIndex, unsigned int tileX, unsigned int tileY, unsigned int paletteIndex, unsigned int flipHorizontal, unsigned int flipVertical);
 
 		void renderPatternTable();
 
