@@ -108,7 +108,7 @@ namespace NES {
 
 		void prepareSprites();
 
-		void renderScanline();
+		void renderPixel(int x, int y);
 
 		unsigned char* getTileColor(unsigned int tileIndex, unsigned int tileX, unsigned int tileY, unsigned int paletteIndex, unsigned int flipHorizontal, unsigned int flipVertical);
 

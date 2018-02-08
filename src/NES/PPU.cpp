@@ -110,7 +110,7 @@ void NES::PPU::setPPURegister(unsigned short index, unsigned char value) {
 
 void NES::PPU::copyDMAMemory(unsigned char index) {
 	parent.cpu->stallCycles = (parent.cpu->cycles) % 2 == 1 ? 513 : 514;
-	for (int i = 0x0; i < 0xFF; i++) {
+	for (int i = 0x0; i < 0x100; i++) {
 		parent.memory->oam[i] = parent.memory->get((index * 0x100) + i);
 	}
 	//memcpy(memory.oam, &parent.memory[index * 0x100], 0xFF);
@@ -147,35 +147,39 @@ void NES::PPU::prepareSprites() {
 	}
 }
 
-void NES::PPU::renderScanline() {
-	if (currentCycle > 256) return;
+void NES::PPU::renderPixel(int x, int y) {
+	if (x > 256) return;
 
 	unsigned char* defaultColor = colorTable[parent.memory->pal[0]]; //Default Background Color
 	unsigned char* finalColor = defaultColor;
 
 	if (PPUMASK.status.ShowBackground) {
-		unsigned int tileX = currentCycle / 8;
-		unsigned int tileY = currentScanline / 8;
+		unsigned int tileX = x / 8;
+		unsigned int tileY = y / 8;
 		unsigned int tileIndex = tileX + (tileY * 32);
 
 		//Palette
-		unsigned char paletteX = currentCycle / 32;
-		unsigned char paletteY = currentScanline / 32;
+		unsigned char paletteX = x / 32;
+		unsigned char paletteY = y / 32;
 		unsigned char paletteIndex = paletteX + (paletteY * 8);
 		unsigned char paletteInfo = parent.memory->vram[0x3C0 + paletteIndex];
-		paletteX = (currentCycle & 0x8) >> 4;
-		paletteY = (currentScanline & 0x8) >> 4;
-	
-			
+
+		paletteX = (x & 0x1F) >> 4;
+		paletteY = (y & 0x1F) >> 4;
+
 		if (paletteX == 0 && paletteY == 0) paletteInfo = (paletteInfo &  0x3);      // Top Left 01
 		if (paletteX == 1 && paletteY == 0) paletteInfo = (paletteInfo &  0xF) >> 2; // Top Right 10
 		if (paletteX == 0 && paletteY == 1) paletteInfo = (paletteInfo & 0x3F) >> 4; // Bottom Left 00
 		if (paletteX == 1 && paletteY == 1) paletteInfo =  paletteInfo >> 6;         // Bottom Right 11
 
+		if (parent.memory->vram[tileIndex] == 0xb0) {
+			//paletteInfo = 0x2;
+		}
+
 		unsigned char* backgroundColor =  getTileColor(
 			parent.memory->vram[tileIndex] + (PPUCTRL.status.BackgroundTableAddress ? 0x100 : 0x0),  //Left or Right?
-			currentCycle % 8, 
-			currentScanline % 8, 
+			x % 8, 
+			y % 8, 
 			paletteInfo,
 			false, 
 			false
@@ -190,11 +194,11 @@ void NES::PPU::renderScanline() {
 			unsigned char spriteX = sprite.xPosition;
 			
 			if (sprite.xPosition != 0 &&
-				currentCycle >= spriteX &&
-				currentCycle < spriteX + 8) 
+				x >= spriteX &&
+				x < spriteX + 8) 
 			{
-					spriteX = currentCycle - spriteX;
-					spriteY = currentScanline - spriteY;
+					spriteX = x - spriteX;
+					spriteY = y - spriteY;
 					
 					unsigned char* spriteColor = getTileColor(
 						sprite.tileIndex + (PPUCTRL.status.SpriteTableAddress ? 0x100 : 0x0),
@@ -213,7 +217,7 @@ void NES::PPU::renderScanline() {
 	}
 
 	unsigned int combinedColor = finalColor[0] << 16 | finalColor[1] << 8 | finalColor[2];
-	parent.graphics[currentCycle + (currentScanline * 256)] = combinedColor;
+	parent.graphics[x + (y * 256)] = combinedColor;
 
 } 
 
@@ -234,7 +238,7 @@ unsigned char* NES::PPU::getTileColor(
 	tileSliceB = tileSliceB >> (flipHorizontal ? tileX : 7 - tileX);
 
 	unsigned short colorIndex = (tileSliceB & 0x1) << 1 | (tileSliceA & 0x1);
-	
+	if (colorIndex == 0) return colorTable[parent.memory->pal[0]];
 	return colorTable[parent.memory->pal[(paletteIndex * 4) + colorIndex]];
 }
 
@@ -300,30 +304,22 @@ void NES::PPU::step() {
 		}
 	}
 
-	if (currentCycle == 0) prepareSprites();
+	if (currentCycle == 0 && currentScanline < 240) prepareSprites();
 	
 	//Render Visible Scanlines
 	bool renderingEnabled = (PPUMASK.status.ShowSprite || PPUMASK.status.ShowBackground);
-	if (renderingEnabled == true && currentScanline >= 0 && currentScanline <= 239 && currentCycle >= 0 && currentCycle <= 255) {
-		renderScanline();
+	if (renderingEnabled == true && currentScanline >= 0 && currentScanline < 240 && currentCycle >= 0 && currentCycle < 256) {
+		renderPixel(currentCycle, currentScanline);
 	}
 
 	// VBlank Scanlines
-	if (currentScanline == -1 && currentCycle == 1 && parent.cpu->cycles > 100) {
-		vBlankEnd();
-	}
-
 	if (currentScanline == 241 && currentCycle == 1 && parent.cpu->cycles > 100) {
 		vBlankStart();
 	}
 
-
-
-
-   
-
-
-
+	if (currentScanline == -1 && currentCycle == 1 && parent.cpu->cycles > 100) {
+		vBlankEnd();
+	}
 }
 
 void NES::PPU::vBlankStart() {
