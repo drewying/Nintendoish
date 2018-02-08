@@ -24,14 +24,13 @@ unsigned char NES::Memory::get(unsigned short index) {
 
 	if (index == 0x4016) {
 		//Controller 1
-		parent.controllerOne = 0x40;
-		return parent.controllerOne;
+		return parent.controllerOne->pollController();
 	}
 
 	if (index == 0x4017) {
 		//Controller 2
-		parent.controllerOne = 0x40;
-		return parent.controllerOne;
+		//parent.controllerOne = 0x40;
+		return 0x40;
 	}
 
 	if (index >= 0xC000) {
@@ -62,12 +61,9 @@ void NES::Memory::set(unsigned short index, unsigned char value) {
 		parent.ppu->setPPURegister(index, value);
 	} else if (index == 0x4016) {
 		//Controller 1
-		parent.controllerOne = 0x40;
-		parent.controllerOne = value;
+		parent.controllerOne->startPoll();
 	} else if (index == 0x4017) {
 		//Controller 2
-		parent.controllerOne = 0x40;
-		parent.controllerOne = value;
 	} else if (index >= 0xC000) {
 		prg[index - 0xC000] = value;
 	} else if (index >= 0x8000) {

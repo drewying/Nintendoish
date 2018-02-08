@@ -74,6 +74,7 @@ NES::Console::Console(){
     memory = new Memory(*this);
     cpu = new CPU(*memory);
     ppu = new PPU(*this);
+	controllerOne = new Controller();
 	reset();
 }
 

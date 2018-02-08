@@ -48,6 +48,85 @@ void updateDisplay(void)
 	nes->updateGraphics = false;
 }
 
+void specialKeyDown(int key, int x, int y) {
+	switch (key) {
+	case GLUT_KEY_UP:
+		nes->controllerOne->up = true;
+		break;
+	case GLUT_KEY_DOWN:
+		nes->controllerOne->down = true;
+		break;
+	case GLUT_KEY_LEFT:
+		nes->controllerOne->left = true;
+		break;
+	case GLUT_KEY_RIGHT:
+		nes->controllerOne->right = true;
+		break;
+	default:
+		break;
+	}
+}
+
+void specialKeyUp(int key, int x, int y) {
+	switch (key) {
+	case GLUT_KEY_UP:
+		nes->controllerOne->up = false;
+		break;
+	case GLUT_KEY_DOWN:
+		nes->controllerOne->down = false;
+		break;
+	case GLUT_KEY_LEFT:
+		nes->controllerOne->left = false;
+		break;
+	case GLUT_KEY_RIGHT:
+		nes->controllerOne->right = false;
+		break;
+	default:
+		break;
+	}
+}
+
+
+void keyDown(unsigned char key, int x, int y) {
+	switch (key) {
+	case 'a':
+		nes->controllerOne->b = true;
+		break;
+	case 's':
+		nes->controllerOne->a = true;
+		break;
+	case '\\':
+		nes->controllerOne->select = true;
+		break;
+	case '\r':
+		nes->controllerOne->start = true;
+		break;
+	default:
+		break;
+	}
+}
+
+
+void keyUp(unsigned char key, int x, int y) {
+	switch (key) {
+	case 'a':
+		nes->controllerOne->b = false;
+		break;
+	case 's':
+		nes->controllerOne->a = false;
+		break;
+	case '\\':
+		nes->controllerOne->select = false;
+		break;
+	case '\r':
+		nes->controllerOne->start = false;
+		break;
+	default:
+		break;
+	}
+}
+
+
 
 void updateNES(void) {
 	//high_resolution_clock::time_point t1 = high_resolution_clock::now();
@@ -171,9 +250,11 @@ int main(int argc, char** argv)
 		//nes->loadProgram("../roms/palette.nes");
         glutIdleFunc(updateNES);
     }
-    
-	//glutKeyboardFunc(keyDown);
-	//glutKeyboardUpFunc(keyUp);
+
+	glutKeyboardFunc(keyDown);
+	glutKeyboardUpFunc(keyUp);
+	glutSpecialFunc(specialKeyDown);
+	glutSpecialUpFunc(specialKeyUp);
 	glutDisplayFunc(updateDisplay);
 	glutMainLoop();
 

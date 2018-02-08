@@ -2,6 +2,7 @@
 #include "CPU.h"
 #include "PPU.h"
 #include "Memory.h"
+#include "Controller.h"
 
 #include <functional>
 #include <string>
@@ -11,6 +12,7 @@ namespace NES {
     class CPU;
     class Memory;
     class PPU;
+	class Controller;
     
     class Console {
 	public:
@@ -21,11 +23,10 @@ namespace NES {
         CPU *cpu;
         Memory *memory;
         PPU *ppu;
+		Controller *controllerOne;
 
 		unsigned int graphics[256 * 240] = { 0 };
 		unsigned int updateGraphics = false;
-		unsigned char controllerOne = 0x40;
-		unsigned char controllerTwo = 0x40;
 
 		Console();
 		~Console();

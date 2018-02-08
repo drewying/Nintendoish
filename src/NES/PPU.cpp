@@ -167,14 +167,10 @@ void NES::PPU::renderPixel(int x, int y) {
 		paletteX = (x & 0x1F) >> 4;
 		paletteY = (y & 0x1F) >> 4;
 
-		if (paletteX == 0 && paletteY == 0) paletteInfo = (paletteInfo &  0x3);      // Top Left 01
+		if (paletteX == 0 && paletteY == 0) paletteInfo = (paletteInfo &  0x3);      // Top Left 00
 		if (paletteX == 1 && paletteY == 0) paletteInfo = (paletteInfo &  0xF) >> 2; // Top Right 10
-		if (paletteX == 0 && paletteY == 1) paletteInfo = (paletteInfo & 0x3F) >> 4; // Bottom Left 00
+		if (paletteX == 0 && paletteY == 1) paletteInfo = (paletteInfo & 0x3F) >> 4; // Bottom Left 01
 		if (paletteX == 1 && paletteY == 1) paletteInfo =  paletteInfo >> 6;         // Bottom Right 11
-
-		if (parent.memory->vram[tileIndex] == 0xb0) {
-			//paletteInfo = 0x2;
-		}
 
 		unsigned char* backgroundColor =  getTileColor(
 			parent.memory->vram[tileIndex] + (PPUCTRL.status.BackgroundTableAddress ? 0x100 : 0x0),  //Left or Right?
