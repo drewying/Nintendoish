@@ -9,28 +9,29 @@ unsigned char NES::PPU::getPPURegister(unsigned short index) {
 	short address;
 	switch (index) {
 	case 0x2002: //PPU Status Flags
-		status = PPUSTATUS.byte;
-		PPUSTATUS.status.VBlankStarted = false;
-		PPUADDRLATCH = false;
+		status = reg.status.byte;
+		reg.status.flags.VBlankStarted = false;
+		addressLatch = false;
 		return status;
 		break;
 	case 0x2004: //OAM data Read/Write
-		return parent.memory->oam[parent.ppu->OAMADDR];
+		return oam[reg.oamAddress];
 		break;
 	case 0x2007: //PPU Data Read/Write
-		address = PPUADDR.address;
-		PPUADDR.address += PPUCTRL.status.VRAMAddress ? 32 : 1;
+		address = reg.ppuAddress.address;
+		reg.ppuAddress.address += reg.control.flags.VRAMAddress ? 32 : 1;
+
 		if (address < 0x2000) {
 			return parent.memory->chr[address];
 		}
 		if (address < 0x3000) {
-			return parent.memory->vram[address - 0x2000];
+			return vram[address - 0x2000];
 		}
 		if (address < 0x3F00) {
-			return parent.memory->vram[address - 0x3000];
+			return vram[address - 0x3000];
 		}
 		if (address < 0x4000) {
-			return parent.memory->pal[address - 0x3F00];
+			return pal[address - 0x3F00];
 		}
 		exit(0);
 		break;
@@ -43,58 +44,52 @@ unsigned char NES::PPU::getPPURegister(unsigned short index) {
 void NES::PPU::setPPURegister(unsigned short index, unsigned char value) {
 	switch (index) {
 	case 0x2000: //PPU Control Flags
-		if (((PPUCTRL.byte >> 0x7) == 0x0) && ((value >> 0x7) == 0x1) && PPUSTATUS.status.VBlankStarted == true) {
+		if (((reg.control.byte >> 0x7) == 0x0) && ((value >> 0x7) == 0x1) && reg.status.flags.VBlankStarted == true) {
 			parent.cpu->requestNMI = true;
 		}
-		PPUCTRL.byte = value;
-		if (PPUCTRL.status.NMI == true && PPUSTATUS.status.VBlankStarted == true) {
-			//printf("\n\n\nNMI REQUESTED\n\n\n");
-			parent.cpu->requestNMI = true;
-		}
+		reg.control.byte = value;
 
-		if (PPUCTRL.status.NMI == true) {
-			//printf("\n\n\nNMI ENABLED\n\n\n", PPUCTRL.byte, value);
-		} else {
-			//printf("\n\n\nNMI DISABLED\n\n\n", PPUCTRL.byte, value);
+		if (reg.control.flags.NMI == true && reg.status.flags.VBlankStarted == true) {
+			parent.cpu->requestNMI = true;
 		}
 		break;
 	case 0x2001: //PPU Render Flags
-		PPUMASK.byte = value;
+		reg.mask.byte = value;
 		break;
 	case 0x2003: //OAM Read/Write Address
-		OAMADDR = value;
+		reg.oamAddress = value;
 		break;
 	case 0x2004: //OAM data Read/Write
-		parent.memory->oam[OAMADDR] = value;
-		OAMADDR += 1;
+		oam[reg.oamAddress] = value;
+		reg.oamAddress += 1;
 		break;
 	case 0x2005:
 		//TODO PPU Scroll
-		PPUSCROLL = value;
+		reg.scroll = value;
 		break;
 	case 0x2006: //PPU Read/Write Address
-		if (PPUADDRLATCH == false) {
-			PPUADDRLATCH = true;
-			PPUADDR.byte.lo = value;
+		if (addressLatch == false) {
+			addressLatch = true;
+			reg.ppuAddress.byte.lo = value;
 		}
 		else {
-			PPUADDRLATCH = false;
-			PPUADDR.byte.hi = value;
+			addressLatch = false;
+			reg.ppuAddress.byte.hi = value;
 		}
 		break;
 	case 0x2007: //PPU Data Read/Write
-		if (PPUADDR.address < 0x2000) {
+		if (reg.ppuAddress.address < 0x2000) {
 			exit(0); //Shouldn't write to CHR data.
-		} else if (PPUADDR.address < 0x3000) {
-			parent.memory->vram[PPUADDR.address - 0x2000] = value;
-		} else if (PPUADDR.address < 0x3F00) { 
-			parent.memory->vram[PPUADDR.address - 0x3000] = value;
-		} else if (PPUADDR.address < 0x4000) {
-			parent.memory->pal[PPUADDR.address - 0x3F00] = value;
+		} else if (reg.ppuAddress.address < 0x3000) {
+			vram[reg.ppuAddress.address - 0x2000] = value;
+		} else if (reg.ppuAddress.address < 0x3F00) {
+			vram[reg.ppuAddress.address - 0x3000] = value;
+		} else if (reg.ppuAddress.address < 0x4000) {
+			pal[reg.ppuAddress.address - 0x3F00] = value;
 		} else {
 			exit(0);
 		}
-		PPUADDR.address += PPUCTRL.status.VRAMAddress ? 32 : 1;
+		reg.ppuAddress.address += reg.control.flags.VRAMAddress ? 32 : 1;
 		break;
 	case 0x4014: // OAM DMA High Address
 		copyDMAMemory(value);
@@ -104,42 +99,42 @@ void NES::PPU::setPPURegister(unsigned short index, unsigned char value) {
 		break;
 	}
 	if (index != 0x4014) {
-		PPUSTATUS.status.Address = value & 0x1F;
+		reg.status.flags.Address = value & 0x1F;
 	}
 }
 
 void NES::PPU::copyDMAMemory(unsigned char index) {
 	parent.cpu->stallCycles = (parent.cpu->cycles) % 2 == 1 ? 513 : 514;
 	for (int i = 0x0; i < 0x100; i++) {
-		parent.memory->oam[i] = parent.memory->get((index * 0x100) + i);
+		oam[i] = parent.memory->get((index * 0x100) + i);
 	}
 	//memcpy(memory.oam, &parent.memory[index * 0x100], 0xFF);
 }
 
 void NES::PPU::reset() {
-	PPUCTRL.byte = 0x0;
-	PPUMASK.byte = 0x0;
-	PPUSTATUS.byte = 0x10;
-	OAMADDR = 0x0;
-	PPUADDR.address = 0x0;
-	PPUADDRLATCH = false;
-	PPUSCROLL = 0x0;
-	ODDFRAME = false;
+	reg.control.byte = 0x0;
+	reg.mask.byte = 0x0;
+	reg.status.byte = 0x10;
+	reg.oamAddress = 0x0;
+	reg.ppuAddress.address = 0x0;
+	reg.scroll = 0x0;
+	oddFrame = false;
+	addressLatch = false;
 }
 
 
 void NES::PPU::prepareSprites() {
-	Sprite* spriteList = (Sprite*)parent.memory->oam;
+	Sprite* spriteList = (Sprite*)oam;
 	int spriteCount = 0;
 	int oamIndex = 0;
 	size_t t = sizeof(Sprite);
-	memset(spriteBuffer, 0x0, sizeof(Sprite) * 8);
+	memset(spr, 0x0, sizeof(Sprite) * 8);
 	while (spriteCount < 8 && oamIndex < 64) {
 		if (spriteList->yPosition != 0 &&
 			currentScanline >= spriteList->yPosition + 1 &&
 			currentScanline < spriteList->yPosition + 1 + 8)
 		{
-			spriteBuffer[spriteCount] = *spriteList;
+			spr[spriteCount] = *spriteList;
 			spriteCount++;
 		}
 		spriteList++;
@@ -150,10 +145,10 @@ void NES::PPU::prepareSprites() {
 void NES::PPU::renderPixel(int x, int y) {
 	if (x > 256) return;
 
-	unsigned char* defaultColor = colorTable[parent.memory->pal[0]]; //Default Background Color
+	unsigned char* defaultColor = colorTable[pal[0]]; //Default Background Color
 	unsigned char* finalColor = defaultColor;
 
-	if (PPUMASK.status.ShowBackground) {
+	if (reg.mask.flags.ShowBackground == true) {
 		unsigned int tileX = x / 8;
 		unsigned int tileY = y / 8;
 		unsigned int tileIndex = tileX + (tileY * 32);
@@ -162,7 +157,7 @@ void NES::PPU::renderPixel(int x, int y) {
 		unsigned char paletteX = x / 32;
 		unsigned char paletteY = y / 32;
 		unsigned char paletteIndex = paletteX + (paletteY * 8);
-		unsigned char paletteInfo = parent.memory->vram[0x3C0 + paletteIndex];
+		unsigned char paletteInfo = vram[0x3C0 + paletteIndex];
 
 		paletteX = (x & 0x1F) >> 4;
 		paletteY = (y & 0x1F) >> 4;
@@ -173,7 +168,7 @@ void NES::PPU::renderPixel(int x, int y) {
 		if (paletteX == 1 && paletteY == 1) paletteInfo =  paletteInfo >> 6;         // Bottom Right 11
 
 		unsigned char* backgroundColor =  getTileColor(
-			parent.memory->vram[tileIndex] + (PPUCTRL.status.BackgroundTableAddress ? 0x100 : 0x0),  //Left or Right?
+			vram[tileIndex] + (reg.control.flags.BackgroundTableAddress ? 0x100 : 0x0),  //Left or Right?
 			x % 8, 
 			y % 8, 
 			paletteInfo,
@@ -183,9 +178,9 @@ void NES::PPU::renderPixel(int x, int y) {
 		finalColor = backgroundColor;
 	} 
 
-	if (PPUMASK.status.ShowSprite == true) {
+	if (reg.mask.flags.ShowSprite == true) {
 		for (int i = 0; i < 8; i++) { 
-			Sprite sprite = spriteBuffer[i];
+			Sprite sprite = spr[i];
 			unsigned char spriteY = sprite.yPosition + 1;
 			unsigned char spriteX = sprite.xPosition;
 			
@@ -197,7 +192,7 @@ void NES::PPU::renderPixel(int x, int y) {
 					spriteY = y - spriteY;
 					
 					unsigned char* spriteColor = getTileColor(
-						sprite.tileIndex + (PPUCTRL.status.SpriteTableAddress ? 0x100 : 0x0),
+						sprite.tileIndex + (reg.control.flags.SpriteTableAddress ? 0x100 : 0x0),
 						spriteX, 
 						spriteY, 
 						sprite.attributes.palette + 0x4,
@@ -234,8 +229,8 @@ unsigned char* NES::PPU::getTileColor(
 	tileSliceB = tileSliceB >> (flipHorizontal ? tileX : 7 - tileX);
 
 	unsigned short colorIndex = (tileSliceB & 0x1) << 1 | (tileSliceA & 0x1);
-	if (colorIndex == 0) return colorTable[parent.memory->pal[0]];
-	return colorTable[parent.memory->pal[(paletteIndex * 4) + colorIndex]];
+	if (colorIndex == 0) return colorTable[pal[0]];
+	return colorTable[pal[(paletteIndex * 4) + colorIndex]];
 }
 
 void NES::PPU::renderPatternTable() {
@@ -265,8 +260,8 @@ void NES::PPU::renderTile(int x, int y, int tileIndex) {
 		for (int j = 7; j >= 0; j--) {
 			unsigned short colorIndex = (tileSliceB & 0x1) << 1 | (tileSliceA & 0x1);
 
-			unsigned char* backgroundColor = colorTable[parent.memory->pal[0]];
-			unsigned char* color = colorTable[parent.memory->pal[colorIndex + 6]];
+			unsigned char* backgroundColor = colorTable[pal[0]];
+			unsigned char* color = colorTable[pal[colorIndex + 6]];
 
 			if (colorIndex == 0) color = backgroundColor;
 
@@ -280,12 +275,6 @@ void NES::PPU::renderTile(int x, int y, int tileIndex) {
 
 void NES::PPU::step() {
 
-
-	if (skipCycle) {
-		skipCycle = false;
-		return;
-	}
-
 	cycles += 1;
 	currentCycle += 1;
 
@@ -295,7 +284,7 @@ void NES::PPU::step() {
 		if (currentScanline == 261) { // Next Frame
 			frameCount++;
 			currentScanline = -1;
-			ODDFRAME = !ODDFRAME;
+			oddFrame = !oddFrame;
 			parent.updateGraphics = true;
 		}
 	}
@@ -303,8 +292,7 @@ void NES::PPU::step() {
 	if (currentCycle == 0 && currentScanline < 240) prepareSprites();
 	
 	//Render Visible Scanlines
-	bool renderingEnabled = (PPUMASK.status.ShowSprite || PPUMASK.status.ShowBackground);
-	if (renderingEnabled == true && currentScanline >= 0 && currentScanline < 240 && currentCycle >= 0 && currentCycle < 256) {
+	if ((reg.mask.flags.ShowSprite || reg.mask.flags.ShowBackground) && currentScanline >= 0 && currentScanline < 240 && currentCycle >= 0 && currentCycle < 256) {
 		renderPixel(currentCycle, currentScanline);
 	}
 
@@ -319,14 +307,12 @@ void NES::PPU::step() {
 }
 
 void NES::PPU::vBlankStart() {
-	//printf("\n\n\nVBLANK\n\n\n");
-    PPUSTATUS.status.VBlankStarted = true;
-	if (PPUCTRL.status.NMI == true) {
-		//printf("\n\n\nNMI REQUESTED\n\n\n");
+    reg.status.flags.VBlankStarted = true;
+	if (reg.control.flags.NMI == true) {
 		parent.cpu->requestNMI = true;
 	}
 }
 
 void NES::PPU::vBlankEnd() {
-    PPUSTATUS.status.VBlankStarted = false;
+    reg.status.flags.VBlankStarted = false;
 }

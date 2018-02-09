@@ -7,123 +7,111 @@ namespace NES {
     class PPU {
     public:
 
-		union {
-			struct {
-				unsigned BaseAddressHi : 1,
-					BaseAddressLo : 1,
-					VRAMAddress : 1,
-					SpriteTableAddress : 1,
-					BackgroundTableAddress : 1,
-					SpriteSize : 1,
-					MasterSlave : 1,
-					NMI : 1;
+		//Registers
+		struct Registers {
+			union {
+				struct {
+					unsigned BaseAddressHi : 1,
+						BaseAddressLo : 1,
+						VRAMAddress : 1,
+						SpriteTableAddress : 1,
+						BackgroundTableAddress : 1,
+						SpriteSize : 1,
+						MasterSlave : 1,
+						NMI : 1;
+				} flags;
+				unsigned char byte;
+			} control;
+
+			union {
+				struct {
+					unsigned Greyscale : 1,
+						LeftBackground : 1,
+						LeftSprite : 1,
+						ShowBackground : 1,
+						ShowSprite : 1,
+						EmphasizeRed : 1,
+						EmphasizeGreen : 1,
+						EmphasizeBlue : 1;
+				} flags;
+				unsigned char byte;
+			} mask;
+
+			union {
+				struct {
+					unsigned Address : 5,
+						SpriteOverflow : 1,
+						Sprite0Hit : 1,
+						VBlankStarted : 1;
+				} flags;
+				unsigned char byte;
 			} status;
-			unsigned char byte;
-		} PPUCTRL;
 
-		union {
-			struct {
-				unsigned Greyscale : 1,
-					LeftBackground : 1,
-					LeftSprite : 1,
-					ShowBackground : 1,
-					ShowSprite : 1,
-					EmphasizeRed : 1,
-					EmphasizeGreen : 1,
-					EmphasizeBlue : 1;
-			} status;
-			unsigned char byte;
-		} PPUMASK;
-
-		union {
-			struct {
-				unsigned Address : 5,
-					SpriteOverflow : 1,
-					Sprite0Hit : 1,
-					VBlankStarted : 1;
-			} status;
-			unsigned char byte;
-		} PPUSTATUS;
-
-		union {
-			struct {
-				unsigned char hi;
-				unsigned char lo;
-			} byte;
-			unsigned short address;
-		} PPUADDR;
-
-		unsigned char OAMADDR;
-		unsigned char PPUSCROLL;
-		bool PPUADDRLATCH;
-		bool extended = false;
-        
+			union {
+				struct {
+					unsigned char hi;
+					unsigned char lo;
+				} byte;
+				unsigned short address;
+			} ppuAddress;
+			unsigned char oamAddress;
+			unsigned char scroll;
+		} reg;
+		
+		bool addressLatch = false;
+		
 		struct Sprite {
 		public:
 			unsigned char yPosition;
 			unsigned char tileIndex;
-			//union {
-				struct {
-					unsigned char palette : 2,
-						unused : 3,
-						priority : 1,
-						horizontalFlip : 1,
-						verticalFlip : 1;
-				} attributes;
-				//unsigned char byte;
-			//} attributeData;
-			//unsigned char temp;
+			struct {
+				unsigned char palette : 2,
+					unused : 3,
+					priority : 1,
+					horizontalFlip : 1,
+					verticalFlip : 1;
+			} attributes;
 			unsigned char xPosition;
 		};
 
-		Sprite spriteBuffer[8];
-
+		//Memory
+		Sprite        spr[8];               // Active Sprites
+ 		unsigned char vram[0x2000] = { 0 }; // Video Memory/Name Tables
+		unsigned char oam[0x100] = { 0 };   // Object Attribute Memory
+		unsigned char pal[0x20] = { 0x3F }; // Palette Memory. Initialized to black.
+		
+		unsigned char getPPURegister(unsigned short index);
+		void setPPURegister(unsigned short index, unsigned char value);
+		void copyDMAMemory(unsigned char index);
 
   
-        bool ODDFRAME;
         
-		unsigned short lastWrite = 0x0;
-		unsigned short lastValue = 0x0;
-
-		unsigned int cycles = 0x0;
-
+        
+		// Emulation
+		int cycles = 0x0;
 		int currentCycle = 0;
 		int currentScanline = 241;
 		int frameCount = 0;
-
-		bool skipCycle = false;
+		bool oddFrame = false;
+		void step();
+		void reset();
+		void vBlankStart();
+		void vBlankEnd();
 
         Console &parent;
 
-		void processWrite();
-
-		unsigned char getPPURegister(unsigned short index);
-
-		void setPPURegister(unsigned short index, unsigned char value);
-
-		void copyDMAMemory(unsigned char index);
-        
-        void step();
-        void reset();
-
-		void prepareSprites();
-
-		void renderPixel(int x, int y);
-
-		unsigned char* getTileColor(unsigned int tileIndex, unsigned int tileX, unsigned int tileY, unsigned int paletteIndex, unsigned int flipHorizontal, unsigned int flipVertical);
-
+		// Rendering
 		void renderPatternTable();
-
 		void renderTile(int x, int y, int tileIndex);
-        
-        void vBlankStart();
-        void vBlankEnd();
+		void prepareSprites();
+		void renderPixel(int x, int y);
+		unsigned char* getTileColor(unsigned int tileIndex, unsigned int tileX, unsigned int tileY, unsigned int paletteIndex, unsigned int flipHorizontal, unsigned int flipVertical);
+		
 
         PPU(Console &parent) : parent(parent) {
             reset();
         };
         
-        ~PPU();
         
         unsigned char colorTable[0x40][0x3] = {
             {84, 84,  84},
