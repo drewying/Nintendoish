@@ -22,7 +22,7 @@ ifstream logfile;
 bool passedTest = true;
 bool runTests = false;
 bool fullLog = false;
-int debugStartLineNumber = 200000;
+int debugStartLineNumber = 40000;
 int lineNumber = 0x0;
 
 //const int frequency = 540; //540 hertz
@@ -217,7 +217,7 @@ void testNES(void)
 			}
 		}
 		else if (lineNumber > debugStartLineNumber || fullLog == true) {
-			cout << lineNumber << " " << logLine << endl;
+			//cout << lineNumber << " " << logLine << endl;
 		    cout << lineNumber << " "   << emuLine << endl;
 			cout << "NOT CORRECT. FRAME:" << nes->ppu->frameCount << endl << endl;
  			passedTest = false;
@@ -237,17 +237,16 @@ int main(int argc, char** argv)
 {
 	display = new Display(4, 256, 240);
 	display->initialize(argc, argv);
-	//chip8 = new Chip8();
-	//chip8->loadProgram("../roms/BRIX");
     if (runTests) {
         nes = new NES::Console();
-        nes->loadProgram("../roms/NESTEST.nes");
-        logfile = ifstream("../roms/nestest.log");
+        nes->loadProgram("../roms/Branch_Basics.nes");
+        logfile = ifstream("../roms/DonkeyKong.log");
         glutIdleFunc(testNES);
     } else {
         nes = new NES::Console();
-        //nes->loadProgram("../roms/Mario.nes");
-		nes->loadProgram("../roms/DonkeyKong.nes");
+		//nes->loadProgram("../roms/Mario.nes");
+        nes->loadProgram("../roms/Excitebike.nes");
+		//nes->loadProgram("../roms/DonkeyKong.nes");
 		//nes->loadProgram("../roms/palette.nes");
         glutIdleFunc(updateNES);
     }

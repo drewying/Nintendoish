@@ -55,10 +55,12 @@ namespace NES {
 				unsigned short address;
 			} ppuAddress;
 			unsigned char oamAddress;
-			unsigned char scroll;
+
+			struct {
+				unsigned char x;
+				unsigned char y;
+			} scroll;
 		} reg;
-		
-		bool addressLatch = false;
 		
 		struct Sprite {
 		public:
@@ -79,20 +81,20 @@ namespace NES {
  		unsigned char vram[0x2000] = { 0 }; // Video Memory/Name Tables
 		unsigned char oam[0x100] = { 0 };   // Object Attribute Memory
 		unsigned char pal[0x20] = { 0x3F }; // Palette Memory. Initialized to black.
-		
+		bool addressLatch = false;
+
 		unsigned char getPPURegister(unsigned short index);
 		void setPPURegister(unsigned short index, unsigned char value);
 		void copyDMAMemory(unsigned char index);
 
   
-        
-        
 		// Emulation
 		int cycles = 0x0;
 		int currentCycle = 0;
 		int currentScanline = 241;
 		int frameCount = 0;
 		bool oddFrame = false;
+
 		void step();
 		void reset();
 		void vBlankStart();
@@ -101,6 +103,9 @@ namespace NES {
         Console &parent;
 
 		// Rendering
+		unsigned char scrollOffsetX;
+		unsigned char scrollOffsetY;
+
 		void renderPatternTable();
 		void renderTile(int x, int y, int tileIndex);
 		void prepareSprites();
