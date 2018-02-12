@@ -47,13 +47,40 @@ namespace NES {
 				unsigned char byte;
 			} status;
 
-			union {
-				struct {
-					unsigned char hi;
-					unsigned char lo;
-				} byte;
-				unsigned short address;
-			} ppuAddress;
+			struct {
+				union {
+					struct {
+						unsigned lo : 8,
+							hi : 7;
+					} byte;
+					struct {
+						unsigned coarseXScroll : 5,
+							coarseYScroll : 5,
+							nameTable : 2,
+							fineYScroll : 3;
+					} scroll;
+					unsigned short address;
+				} current;
+
+				union {
+					struct {
+						unsigned lo : 8,
+							hi : 7;
+					} byte;
+					struct {
+						unsigned coarseXScroll : 5,
+							coarseYScroll : 5,
+							nameTable : 2,
+							fineYScroll : 3;
+					} scroll;
+					unsigned short address;
+				} temp;
+
+				unsigned xScroll : 3;
+
+				bool writeLatch = false;
+			} address;
+
 			unsigned char oamAddress;
 
 			struct {
@@ -81,7 +108,6 @@ namespace NES {
  		unsigned char vram[0x2000] = { 0 }; // Video Memory/Name Tables
 		unsigned char oam[0x100] = { 0 };   // Object Attribute Memory
 		unsigned char pal[0x20] = { 0x3F }; // Palette Memory. Initialized to black.
-		bool addressLatch = false;
 
 		unsigned char getPPURegister(unsigned short index);
 		void setPPURegister(unsigned short index, unsigned char value);

@@ -11,15 +11,15 @@ unsigned char NES::PPU::getPPURegister(unsigned short index) {
 	case 0x2002: //PPU Status Flags
 		status = reg.status.byte;
 		reg.status.flags.VBlankStarted = false;
-		addressLatch = false;
+		reg.address.writeLatch = false;
 		return status;
 		break;
 	case 0x2004: //OAM data Read/Write
 		return oam[reg.oamAddress];
 		break;
 	case 0x2007: //PPU Data Read/Write
-		address = reg.ppuAddress.address;
-		reg.ppuAddress.address += reg.control.flags.VRAMAddress ? 32 : 1;
+		address = reg.address.current.address;
+		reg.address.current.address += reg.control.flags.VRAMAddress ? 32 : 1;
 
 		if (address < 0x2000) {
 			return parent.memory->chr[address];
@@ -44,10 +44,8 @@ unsigned char NES::PPU::getPPURegister(unsigned short index) {
 void NES::PPU::setPPURegister(unsigned short index, unsigned char value) {
 	switch (index) {
 	case 0x2000: //PPU Control Flags
-		if (((reg.control.byte >> 0x7) == 0x0) && ((value >> 0x7) == 0x1) && reg.status.flags.VBlankStarted == true) {
-			parent.cpu->requestNMI = true;
-		}
 		reg.control.byte = value;
+		reg.address.temp.scroll.nameTable = (value & 0x3); //t: ...BA.. ........ = d: ......BA
 
 		if (reg.control.flags.NMI == true && reg.status.flags.VBlankStarted == true) {
 			parent.cpu->requestNMI = true;
@@ -63,38 +61,48 @@ void NES::PPU::setPPURegister(unsigned short index, unsigned char value) {
 		oam[reg.oamAddress] = value;
 		reg.oamAddress += 1;
 		break;
-	case 0x2005:
-		if (addressLatch == false) {
-			addressLatch = true;
-			reg.scroll.x = value;
+	case 0x2005: //Scroll
+		if (reg.address.writeLatch == false) {
+			reg.address.xScroll = value & 0x7;							   // x:              CBA = d: .....CBA
+			reg.address.temp.scroll.coarseXScroll = ((value & 0xF8) >> 3); // t: ....... ...HGFED = d : HGFED...
+			reg.address.writeLatch = true;
 		} else {
-			addressLatch = false;
-			reg.scroll.y = value;
+			// t: CBA..HG FED..... = d: HGFEDCBA
+			reg.address.temp.scroll.fineYScroll = (value & 0x7);
+			reg.address.temp.scroll.coarseYScroll = ((value & 0xF8) >> 3);
+			reg.address.writeLatch = false;
 		}
 		break;
 	case 0x2006: //PPU Read/Write Address
-		if (addressLatch == false) {
-			addressLatch = true;
-			reg.ppuAddress.byte.lo = value;
+		if (reg.address.writeLatch == false) {
+			reg.address.temp.byte.hi = value;
+			reg.address.writeLatch = true;
 		}
 		else {
-			addressLatch = false;
-			reg.ppuAddress.byte.hi = value;
+			reg.address.temp.byte.lo = value;
+			reg.address.current.address = reg.address.temp.address;
+			reg.address.writeLatch = false;
 		}
 		break;
-	case 0x2007: //PPU Data Read/Write
-		if (reg.ppuAddress.address < 0x2000) {
-			parent.memory->chr[reg.ppuAddress.address] = value;
-		} else if (reg.ppuAddress.address < 0x3000) {
-			vram[reg.ppuAddress.address - 0x2000] = value;
-		} else if (reg.ppuAddress.address < 0x3F00) {
-			vram[reg.ppuAddress.address - 0x3000] = value;
-		} else if (reg.ppuAddress.address < 0x4000) {
-			pal[reg.ppuAddress.address - 0x3F00] = value;
-		} else {
-			exit(0);
+	case 0x2007: { //PPU Data Read/Write
+			short address = reg.address.current.address;
+			if (address < 0x2000) {
+				parent.memory->chr[address] = value;
+			}
+			else if (address < 0x3000) {
+				vram[address - 0x2000] = value;
+			}
+			else if (address < 0x3F00) {
+				vram[address - 0x3000] = value;
+			}
+			else if (address < 0x4000) {
+				pal[address - 0x3F00] = value;
+			}
+			else {
+				exit(0);
+			}
+			reg.address.current.address += reg.control.flags.VRAMAddress ? 32 : 1;
 		}
-		reg.ppuAddress.address += reg.control.flags.VRAMAddress ? 32 : 1;
 		break;
 	case 0x4014: // OAM DMA High Address
 		copyDMAMemory(value);
@@ -121,11 +129,12 @@ void NES::PPU::reset() {
 	reg.mask.byte = 0x0;
 	reg.status.byte = 0x10;
 	reg.oamAddress = 0x0;
-	reg.ppuAddress.address = 0x0; 
+	reg.address.current.address = 0x0; 
+	reg.address.temp.address = 0x0;
 	scrollOffsetX = 0x0;
 	scrollOffsetY = 0x0;
 	oddFrame = false;
-	addressLatch = false;
+	reg.address.writeLatch = false;
 }
 
 
@@ -315,13 +324,14 @@ void NES::PPU::step() {
 		vBlankStart();
 	}
 	
-	if (currentScanline == -1 && currentCycle == 1 && parent.cpu->cycles > 100) {
+	if (currentScanline == -1 && currentCycle == 280 && parent.cpu->cycles > 100) {
 		vBlankEnd();
 	}
-	if (currentScanline == -1 && currentCycle == 125 && parent.cpu->cycles > 100) {
-		scrollOffsetX = reg.scroll.x;
-		scrollOffsetY = reg.scroll.y;
+
+	if (currentScanline == -1 && currentCycle >= 280 && currentCycle < 305) {
+		scrollOffsetX = reg.address.xScroll;
 	}
+
 }
 
 void NES::PPU::vBlankStart() {
@@ -332,8 +342,9 @@ void NES::PPU::vBlankStart() {
 }
 
 void NES::PPU::vBlankEnd() {
-	scrollOffsetX = reg.scroll.x;
-	scrollOffsetY = reg.scroll.y;
+	//scrollOffsetX = reg.scroll.x;
+	//scrollOffsetY = reg.scroll.y;
+	
 	reg.status.flags.VBlankStarted = false;
 	reg.status.flags.Sprite0Hit = false;
 }
