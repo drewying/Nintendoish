@@ -245,8 +245,8 @@ int main(int argc, char** argv)
     } else {
         nes = new NES::Console();
 		//nes->loadProgram("../roms/Mario.nes");
-        nes->loadProgram("../roms/Excitebike.nes");
-		//nes->loadProgram("../roms/DonkeyKong.nes");
+        //nes->loadProgram("../roms/Excitebike.nes");
+		nes->loadProgram("../roms/DonkeyKong.nes");
 		//nes->loadProgram("../roms/palette.nes");
         glutIdleFunc(updateNES);
     }

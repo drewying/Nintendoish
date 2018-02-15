@@ -56,7 +56,8 @@ namespace NES {
 					struct {
 						unsigned coarseXScroll : 5,
 							coarseYScroll : 5,
-							nameTable : 2,
+							nameTableX : 1,
+							nameTableY : 1,
 							fineYScroll : 3;
 					} scroll;
 					unsigned short address;
@@ -70,14 +71,14 @@ namespace NES {
 					struct {
 						unsigned coarseXScroll : 5,
 							coarseYScroll : 5,
-							nameTable : 2,
+							nameTableX : 1,
+							nameTableY : 1,
 							fineYScroll : 3;
 					} scroll;
 					unsigned short address;
 				} temp;
 
-				unsigned xScroll : 3;
-
+				unsigned fineXScroll : 3;
 				bool writeLatch = false;
 			} address;
 
@@ -135,7 +136,8 @@ namespace NES {
 		void renderPatternTable();
 		void renderTile(int x, int y, int tileIndex);
 		void prepareSprites();
-		void renderPixel(int x, int y);
+		void renderPixel();
+		
 		unsigned char* getTileColor(unsigned int tileIndex, unsigned int tileX, unsigned int tileY, unsigned int paletteIndex, unsigned int flipHorizontal, unsigned int flipVertical);
 		
 

@@ -45,7 +45,8 @@ void NES::PPU::setPPURegister(unsigned short index, unsigned char value) {
 	switch (index) {
 	case 0x2000: //PPU Control Flags
 		reg.control.byte = value;
-		reg.address.temp.scroll.nameTable = (value & 0x3); //t: ...BA.. ........ = d: ......BA
+		reg.address.temp.scroll.nameTableX = (value & 0x1); //t: ...BA.. ........ = d: ......BA
+		reg.address.temp.scroll.nameTableY = ((value & 0x2) >> 1);
 
 		if (reg.control.flags.NMI == true && reg.status.flags.VBlankStarted == true) {
 			parent.cpu->requestNMI = true;
@@ -63,7 +64,7 @@ void NES::PPU::setPPURegister(unsigned short index, unsigned char value) {
 		break;
 	case 0x2005: //Scroll
 		if (reg.address.writeLatch == false) {
-			reg.address.xScroll = value & 0x7;							   // x:              CBA = d: .....CBA
+			reg.address.fineXScroll = value & 0x7;						   // x:              CBA = d: .....CBA
 			reg.address.temp.scroll.coarseXScroll = ((value & 0xF8) >> 3); // t: ....... ...HGFED = d : HGFED...
 			reg.address.writeLatch = true;
 		} else {
@@ -99,7 +100,7 @@ void NES::PPU::setPPURegister(unsigned short index, unsigned char value) {
 				pal[address - 0x3F00] = value;
 			}
 			else {
-				exit(0);
+				//exit(0);
 			}
 			reg.address.current.address += reg.control.flags.VRAMAddress ? 32 : 1;
 		}
@@ -157,32 +158,26 @@ void NES::PPU::prepareSprites() {
 	}
 }
 
-void NES::PPU::renderPixel(int x, int y) {
-	if (x > 255) return;
+void NES::PPU::renderPixel() {
 
-	bool renderBackground = reg.mask.flags.ShowBackground == true && (x > 7 || reg.mask.flags.LeftBackground == true);
-	bool renderSprites = reg.mask.flags.ShowSprite == true && (x > 7 || reg.mask.flags.LeftSprite == true);
+	bool renderBackground = reg.mask.flags.ShowBackground == true && (currentCycle > 7 || reg.mask.flags.LeftBackground == true);
+	bool renderSprites = reg.mask.flags.ShowSprite == true && (currentCycle > 7 || reg.mask.flags.LeftSprite == true);
 
 	unsigned char* defaultColor = colorTable[pal[0]]; //Default Background Color
 	unsigned char* backgroundColor = defaultColor;
 	unsigned char* finalColor = defaultColor;
 
 	if (renderBackground == true) {
-		//scrollOffsetX = frameCount % 255;
-		unsigned int backgroundX = x + scrollOffsetX; // Scroll the background
-		unsigned int backgroundY = y;// +scrollOffsetY; // Scroll the background
-		unsigned int tileX = backgroundX / 8;
-		unsigned int tileY = backgroundY / 8;
-		unsigned int tileIndex = tileX + (tileY * 32);
+
+		unsigned short address = reg.address.current.address;
+		unsigned short tileAddress = address & 0x0FFF;
+		unsigned short attributeAddress = 0x3C0 | (address & 0x0C00) | ((address >> 4) & 0x38) | ((address >> 2) & 0x07);
 
 		//Palette
-		unsigned char paletteX = backgroundX / 32;
-		unsigned char paletteY = backgroundY / 32;
-		unsigned char paletteIndex = paletteX + (paletteY * 8);
-		unsigned char paletteInfo = vram[0x3C0 + paletteIndex];
+		unsigned char paletteInfo = vram[attributeAddress];
 
-		paletteX = (backgroundX & 0x1F) >> 4;
-		paletteY = (backgroundY & 0x1F) >> 4;
+		int paletteX = 0; // (backgroundX & 0x1F) >> 4;
+		int paletteY = 0; // (backgroundY & 0x1F) >> 4;
 
 		if (paletteX == 0 && paletteY == 0) paletteInfo = (paletteInfo &  0x3);      // Top Left 00
 		if (paletteX == 1 && paletteY == 0) paletteInfo = (paletteInfo &  0xF) >> 2; // Top Right 10
@@ -190,9 +185,9 @@ void NES::PPU::renderPixel(int x, int y) {
 		if (paletteX == 1 && paletteY == 1) paletteInfo =  paletteInfo >> 6;         // Bottom Right 11
 
 		backgroundColor =  getTileColor(
-			vram[tileIndex] + (reg.control.flags.BackgroundTableAddress ? 0x100 : 0x0),  //Left or Right?
-			backgroundX % 8, 
-			backgroundY % 8, 
+			vram[tileAddress] + (reg.control.flags.BackgroundTableAddress ? 0x100 : 0x0),  //Left or Right?
+			reg.address.fineXScroll + (currentCycle % 8), 
+			reg.address.current.scroll.fineYScroll, 
 			paletteInfo,
 			false, 
 			false
@@ -201,6 +196,8 @@ void NES::PPU::renderPixel(int x, int y) {
 	} 
 
 	if (renderSprites == true) {
+		int x = currentCycle;
+		int y = currentScanline;
 		for (int i = 0; i < 8; i++) { 
 			Sprite sprite = spr[i];
 			unsigned char spriteY = sprite.yPosition + 1;
@@ -231,7 +228,7 @@ void NES::PPU::renderPixel(int x, int y) {
 	}
 
 	unsigned int combinedColor = finalColor[0] << 16 | finalColor[1] << 8 | finalColor[2];
-	parent.graphics[x + (y * 256)] = combinedColor;
+	parent.graphics[currentCycle + (currentScanline * 256)] = combinedColor;
 
 } 
 
@@ -314,9 +311,45 @@ void NES::PPU::step() {
 
 	if (currentCycle == 0 && currentScanline < 240) prepareSprites();
 	
-	//Render Visible Scanlines
-	if ((reg.mask.flags.ShowSprite || reg.mask.flags.ShowBackground) && currentScanline >= 0 && currentScanline < 240 && currentCycle >= 0 && currentCycle < 256) {
-		renderPixel(currentCycle, currentScanline);
+	bool renderingEnabled = (reg.mask.flags.ShowSprite || reg.mask.flags.ShowBackground);
+
+	//Render Pixel During Visible Scanlines
+	if (renderingEnabled && currentScanline >= 0 && currentScanline < 240 && currentCycle >= 0 && currentCycle < 256) {
+		renderPixel();
+	}
+
+	
+	if (renderingEnabled && currentScanline >= -1 && currentScanline < 240 && currentCycle == 256) {
+		// Update Y
+		if (reg.address.current.scroll.fineYScroll < 0x7) {
+			reg.address.current.scroll.fineYScroll += 0x1;
+		}
+		else {
+			reg.address.current.scroll.fineYScroll = 0x0;
+			if (reg.address.current.scroll.coarseYScroll == 29) {
+				reg.address.current.scroll.coarseYScroll = 0x0;
+				reg.address.current.scroll.nameTableY ^= 1;
+			}
+			else if (reg.address.current.scroll.coarseYScroll == 31) {
+				reg.address.current.scroll.coarseYScroll = 0x0;
+			}
+			else {
+				reg.address.current.scroll.coarseYScroll += 0x1;
+			}
+		}
+	}
+
+
+
+	if (renderingEnabled && currentScanline >= -1 && currentScanline < 240 && (currentCycle >= 328 || currentCycle < 256)) {
+		if (currentCycle % 8 == 0) {
+			if (reg.address.current.scroll.coarseXScroll == 31) {
+				reg.address.current.scroll.coarseXScroll == 0;
+				reg.address.current.scroll.nameTableX ^= 1;
+			} else {
+				reg.address.current.scroll.coarseXScroll += 1;
+			}
+		}
 	}
 
 	// VBlank Scanlines
@@ -324,14 +357,22 @@ void NES::PPU::step() {
 		vBlankStart();
 	}
 	
-	if (currentScanline == -1 && currentCycle == 280 && parent.cpu->cycles > 100) {
+	if (currentScanline == -1 && currentCycle == 1 && parent.cpu->cycles > 100) {
 		vBlankEnd();
 	}
 
-	if (currentScanline == -1 && currentCycle >= 280 && currentCycle < 305) {
-		scrollOffsetX = reg.address.xScroll;
+	if (renderingEnabled && currentCycle == 257) {
+		//v: ....F.. ...EDCBA = t: ....F.. ...EDCBA
+		reg.address.current.scroll.coarseXScroll = reg.address.temp.scroll.coarseXScroll;
+		reg.address.current.scroll.nameTableX = reg.address.temp.scroll.nameTableX;
 	}
 
+	if (currentScanline == -1 && currentCycle >= 280 && currentCycle < 305) {
+		//v: IHGF.ED CBA..... = t : IHGF.ED CBA.....
+		reg.address.current.scroll.coarseYScroll = reg.address.temp.scroll.coarseYScroll;
+		reg.address.current.scroll.fineYScroll = reg.address.temp.scroll.fineYScroll;
+		reg.address.current.scroll.nameTableY = reg.address.temp.scroll.nameTableY;
+	}
 }
 
 void NES::PPU::vBlankStart() {
@@ -342,9 +383,6 @@ void NES::PPU::vBlankStart() {
 }
 
 void NES::PPU::vBlankEnd() {
-	//scrollOffsetX = reg.scroll.x;
-	//scrollOffsetY = reg.scroll.y;
-	
 	reg.status.flags.VBlankStarted = false;
 	reg.status.flags.Sprite0Hit = false;
 }
