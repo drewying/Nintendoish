@@ -83,12 +83,10 @@ namespace NES {
 			} address;
 
 			unsigned char oamAddress;
-
-			struct {
-				unsigned char x;
-				unsigned char y;
-			} scroll;
 		} reg;
+
+		unsigned short tileLo;
+		unsigned short tileHi;
 		
 		struct Sprite {
 		public:
@@ -103,6 +101,7 @@ namespace NES {
 			} attributes;
 			unsigned char xPosition;
 		};
+
 
 		//Memory
 		Sprite        spr[8];               // Active Sprites

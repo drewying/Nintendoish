@@ -184,14 +184,27 @@ void NES::PPU::renderPixel() {
 		if (paletteX == 0 && paletteY == 1) paletteInfo = (paletteInfo & 0x3F) >> 4; // Bottom Left 01
 		if (paletteX == 1 && paletteY == 1) paletteInfo =  paletteInfo >> 6;         // Bottom Right 11
 
-		backgroundColor =  getTileColor(
+		unsigned char colorIndex = (tileHi & 0x80) >> 6 | (tileLo & 0x80) >> 7;
+		if (colorIndex == 0) {
+			backgroundColor = colorTable[pal[0]];
+		}
+		else {
+			backgroundColor = colorTable[pal[(0 * 4) + colorIndex]];
+		}
+
+		//tileLo <<= 1;
+		//tileHi <<= 1;
+
+		/*
+		backgroundColor = getTileColor(
 			vram[tileAddress] + (reg.control.flags.BackgroundTableAddress ? 0x100 : 0x0),  //Left or Right?
-			reg.address.fineXScroll + (currentCycle % 8), 
-			reg.address.current.scroll.fineYScroll, 
-			paletteInfo,
-			false, 
+			reg.address.fineXScroll + (currentCycle % 8),
+			reg.address.current.scroll.fineYScroll,
+			1,
+			false,
 			false
-		);
+		);*/
+
 		finalColor = backgroundColor;
 	} 
 
@@ -312,14 +325,16 @@ void NES::PPU::step() {
 	if (currentCycle == 0 && currentScanline < 240) prepareSprites();
 	
 	bool renderingEnabled = (reg.mask.flags.ShowSprite || reg.mask.flags.ShowBackground);
+	bool visibleScanline = (currentScanline >= 0 && currentScanline < 240);
+	bool preRenderScanline = (currentScanline == -1);
 
 	//Render Pixel During Visible Scanlines
-	if (renderingEnabled && currentScanline >= 0 && currentScanline < 240 && currentCycle >= 0 && currentCycle < 256) {
+	if (renderingEnabled && visibleScanline && currentCycle >= 0 && currentCycle < 256) {
 		renderPixel();
 	}
 
 	
-	if (renderingEnabled && currentScanline >= -1 && currentScanline < 240 && currentCycle == 256) {
+	if (renderingEnabled && (visibleScanline || preRenderScanline) && currentCycle == 256) {
 		// Update Y
 		if (reg.address.current.scroll.fineYScroll < 0x7) {
 			reg.address.current.scroll.fineYScroll += 0x1;
@@ -341,15 +356,31 @@ void NES::PPU::step() {
 
 
 
-	if (renderingEnabled && currentScanline >= -1 && currentScanline < 240 && (currentCycle >= 328 || currentCycle < 256)) {
+	if (renderingEnabled && (visibleScanline || preRenderScanline) && (currentCycle >= 327 || currentCycle < 256)) {
+		int tileAddress = reg.address.current.address & 0x0FFF;
+		int tileIndex = vram[tileAddress] + 0x100;
+		tileIndex *= 0x10;
+		tileIndex += (currentScanline % 8);
+
+		if (preRenderScanline == false || currentScanline < 328) {
+			tileLo <<= 1;
+			tileHi <<= 1;
+		}
+
 		if (currentCycle % 8 == 0) {
 			if (reg.address.current.scroll.coarseXScroll == 31) {
 				reg.address.current.scroll.coarseXScroll == 0;
 				reg.address.current.scroll.nameTableX ^= 1;
-			} else {
+			}
+			else {
 				reg.address.current.scroll.coarseXScroll += 1;
 			}
+		} else if (currentCycle % 8 == 5) {
+			tileLo |= parent.memory->chr[tileIndex];
+		} else if (currentCycle % 8 == 7) {
+			tileHi |= parent.memory->chr[tileIndex + 8];
 		}
+
 	}
 
 	// VBlank Scanlines
@@ -367,7 +398,7 @@ void NES::PPU::step() {
 		reg.address.current.scroll.nameTableX = reg.address.temp.scroll.nameTableX;
 	}
 
-	if (currentScanline == -1 && currentCycle >= 280 && currentCycle < 305) {
+	if (preRenderScanline && currentCycle >= 280 && currentCycle < 305) {
 		//v: IHGF.ED CBA..... = t : IHGF.ED CBA.....
 		reg.address.current.scroll.coarseYScroll = reg.address.temp.scroll.coarseYScroll;
 		reg.address.current.scroll.fineYScroll = reg.address.temp.scroll.fineYScroll;
