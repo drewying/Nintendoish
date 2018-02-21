@@ -187,10 +187,8 @@ void NES::PPU::renderPixel() {
 		if (paletteX == 0 && paletteY == 1) paletteInfo = (paletteInfo & 0x3F) >> 4; // Bottom Left 01
 		if (paletteX == 1 && paletteY == 1) paletteInfo =  paletteInfo >> 6;         // Bottom Right 11
 
-		
 
-		unsigned char colorIndex = (shift.tileHi & (0x8000 >> reg.address.fineXScroll)) >> (14 - reg.address.fineXScroll) | (shift.tileLo & (0x8000 >> reg.address.fineXScroll)) >> (15 - reg.address
-			.fineXScroll);
+		unsigned char colorIndex = (shift.tileHi & 0x8000) >> 14 | (shift.tileLo & 0x8000) >> 15;
 		if (colorIndex == 0) {
 			backgroundColor = colorTable[pal[0]];
 		}
