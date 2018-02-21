@@ -7,6 +7,21 @@ namespace NES {
     class PPU {
     public:
 
+		union Address {
+			struct {
+				unsigned lo : 8,
+					hi : 7;
+			} byte;
+			struct {
+				unsigned coarseXScroll : 5,
+					coarseYScroll : 5,
+					nameTableX : 1,
+					nameTableY : 1,
+					fineYScroll : 3;
+			} scroll;
+			unsigned short address;
+		};
+
 		//Registers
 		struct Registers {
 			union {
@@ -48,36 +63,8 @@ namespace NES {
 			} status;
 
 			struct {
-				union {
-					struct {
-						unsigned lo : 8,
-							hi : 7;
-					} byte;
-					struct {
-						unsigned coarseXScroll : 5,
-							coarseYScroll : 5,
-							nameTableX : 1,
-							nameTableY : 1,
-							fineYScroll : 3;
-					} scroll;
-					unsigned short address;
-				} current;
-
-				union {
-					struct {
-						unsigned lo : 8,
-							hi : 7;
-					} byte;
-					struct {
-						unsigned coarseXScroll : 5,
-							coarseYScroll : 5,
-							nameTableX : 1,
-							nameTableY : 1,
-							fineYScroll : 3;
-					} scroll;
-					unsigned short address;
-				} temp;
-
+				Address current;
+				Address temp;
 				unsigned fineXScroll : 3;
 				bool writeLatch = false;
 			} address;
@@ -85,8 +72,20 @@ namespace NES {
 			unsigned char oamAddress;
 		} reg;
 
-		unsigned short tileLo;
-		unsigned short tileHi;
+		struct {
+			unsigned short tileLo = 0x0;
+			unsigned short tileHi = 0x0;
+			unsigned char attribute = 0x0;
+			unsigned char nameTable = 0x0;
+		} shift;
+
+		struct {
+			unsigned char tileLo = 0x0;
+			unsigned char tileHi = 0x0;
+			unsigned char attribute = 0x0;
+			unsigned char nameTable = 0x0;
+		} latch;
+
 		
 		struct Sprite {
 		public:
@@ -104,10 +103,10 @@ namespace NES {
 
 
 		//Memory
-		Sprite        spr[8];               // Active Sprites
- 		unsigned char vram[0x2000] = { 0 }; // Video Memory/Name Tables
-		unsigned char oam[0x100] = { 0 };   // Object Attribute Memory
-		unsigned char pal[0x20] = { 0x3F }; // Palette Memory. Initialized to black.
+		Sprite        spr[8]       = { 0 };    // Active Sprites
+ 		unsigned char vram[0x2000] = { 0 };    // Video Memory/Name Tables
+		unsigned char oam[0x100]   = { 0 };    // Object Attribute Memory
+		unsigned char pal[0x20]    = { 0x3F }; // Palette Memory. Initialized to black.
 
 		unsigned char getPPURegister(unsigned short index);
 		void setPPURegister(unsigned short index, unsigned char value);

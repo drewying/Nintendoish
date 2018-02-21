@@ -160,8 +160,11 @@ void NES::PPU::prepareSprites() {
 
 void NES::PPU::renderPixel() {
 
-	bool renderBackground = reg.mask.flags.ShowBackground == true && (currentCycle > 7 || reg.mask.flags.LeftBackground == true);
-	bool renderSprites = reg.mask.flags.ShowSprite == true && (currentCycle > 7 || reg.mask.flags.LeftSprite == true);
+	unsigned char x = currentCycle - 1;
+	unsigned char y = currentScanline;
+
+	bool renderBackground = reg.mask.flags.ShowBackground == true && (x > 7 || reg.mask.flags.LeftBackground == true);
+	bool renderSprites = reg.mask.flags.ShowSprite == true && (x > 7 || reg.mask.flags.LeftSprite == true);
 
 	unsigned char* defaultColor = colorTable[pal[0]]; //Default Background Color
 	unsigned char* backgroundColor = defaultColor;
@@ -184,7 +187,10 @@ void NES::PPU::renderPixel() {
 		if (paletteX == 0 && paletteY == 1) paletteInfo = (paletteInfo & 0x3F) >> 4; // Bottom Left 01
 		if (paletteX == 1 && paletteY == 1) paletteInfo =  paletteInfo >> 6;         // Bottom Right 11
 
-		unsigned char colorIndex = (tileHi & 0x80) >> 6 | (tileLo & 0x80) >> 7;
+		
+
+		unsigned char colorIndex = (shift.tileHi & (0x8000 >> reg.address.fineXScroll)) >> (14 - reg.address.fineXScroll) | (shift.tileLo & (0x8000 >> reg.address.fineXScroll)) >> (15 - reg.address
+			.fineXScroll);
 		if (colorIndex == 0) {
 			backgroundColor = colorTable[pal[0]];
 		}
@@ -209,8 +215,6 @@ void NES::PPU::renderPixel() {
 	} 
 
 	if (renderSprites == true) {
-		int x = currentCycle;
-		int y = currentScanline;
 		for (int i = 0; i < 8; i++) { 
 			Sprite sprite = spr[i];
 			unsigned char spriteY = sprite.yPosition + 1;
@@ -241,8 +245,7 @@ void NES::PPU::renderPixel() {
 	}
 
 	unsigned int combinedColor = finalColor[0] << 16 | finalColor[1] << 8 | finalColor[2];
-	parent.graphics[currentCycle + (currentScanline * 256)] = combinedColor;
-
+	parent.graphics[x + (y * 256)] = combinedColor;
 } 
 
 unsigned char* NES::PPU::getTileColor(
@@ -317,92 +320,114 @@ void NES::PPU::step() {
 		if (currentScanline == 261) { // Next Frame
 			frameCount++;
 			currentScanline = -1;
-			oddFrame = !oddFrame;
+			oddFrame ^= 1;
 			parent.updateGraphics = true;
 		}
 	}
 
-	if (currentCycle == 0 && currentScanline < 240) prepareSprites();
-	
-	bool renderingEnabled = (reg.mask.flags.ShowSprite || reg.mask.flags.ShowBackground);
-	bool visibleScanline = (currentScanline >= 0 && currentScanline < 240);
-	bool preRenderScanline = (currentScanline == -1);
+	bool renderingEnabled = reg.mask.flags.ShowSprite || reg.mask.flags.ShowBackground;
+	bool visibleScanline = currentScanline >= 0 && currentScanline < 240;
+	bool preRenderScanline = currentScanline == -1;
+	bool renderScanline = visibleScanline || preRenderScanline;
+	bool visibleCycle = currentCycle >= 1 && currentCycle <= 256;
+	bool preRenderCycle = (currentCycle >= 321 && currentCycle <= 336);
+
+	// Prepare Sprites
+	if (visibleScanline && currentCycle == 0) prepareSprites();
+
+
+	//Skip 0,0 on odd frames
+	if (reg.mask.flags.ShowBackground && currentCycle == 0 && currentScanline == 0) {
+		return;
+	}
 
 	//Render Pixel During Visible Scanlines
-	if (renderingEnabled && visibleScanline && currentCycle >= 0 && currentCycle < 256) {
+	if (renderingEnabled && visibleScanline && visibleCycle) {
 		renderPixel();
 	}
 
-	
-	if (renderingEnabled && (visibleScanline || preRenderScanline) && currentCycle == 256) {
-		// Update Y
-		if (reg.address.current.scroll.fineYScroll < 0x7) {
-			reg.address.current.scroll.fineYScroll += 0x1;
-		}
-		else {
-			reg.address.current.scroll.fineYScroll = 0x0;
-			if (reg.address.current.scroll.coarseYScroll == 29) {
-				reg.address.current.scroll.coarseYScroll = 0x0;
-				reg.address.current.scroll.nameTableY ^= 1;
+	if (renderingEnabled && renderScanline) {
+		if (visibleCycle || preRenderCycle) {
+			if (currentCycle % 8 == 0) {
+				//Update X Scroll
+				if (reg.address.current.scroll.coarseXScroll == 31) {
+					reg.address.current.scroll.coarseXScroll == 0;
+					reg.address.current.scroll.nameTableX ^= 1;
+				} else {
+					reg.address.current.scroll.coarseXScroll += 1;
+				}
 			}
-			else if (reg.address.current.scroll.coarseYScroll == 31) {
-				reg.address.current.scroll.coarseYScroll = 0x0;
+			if (currentCycle % 8 == 1) {
+				latch.nameTable = vram[reg.address.current.address & 0x0FFF];
+			}
+			if (currentCycle % 8 == 5) {
+				short index = latch.nameTable + (reg.control.flags.BackgroundTableAddress ? 0x100 : 0);
+				index *= 0x10;
+				index += reg.address.current.scroll.fineYScroll;
+				latch.tileLo = parent.memory->chr[index];
+			}
+			if (currentCycle % 8 == 7) {
+				short index = latch.nameTable + (reg.control.flags.BackgroundTableAddress ? 0x100 : 0);
+				index *= 0x10;
+				index += reg.address.current.scroll.fineYScroll;
+				latch.tileHi = parent.memory->chr[index + 8];
+			}
+		}
+
+		//The background shift registers shift during each of dots 2...257 and 322...337, inclusive.
+		if ((currentCycle >= 2 && currentCycle <= 257) || (currentCycle >= 322 && currentCycle <= 337)) {
+			shift.tileLo <<= 1;
+			shift.tileHi <<= 1;
+			// The lower 8 bits are reloaded into background shift registes at ticks 9, 17, 25, ..., 257 and ticks 329, and 337.
+			if (currentCycle % 8 == 1) {
+				shift.tileLo |= latch.tileLo;
+				shift.tileHi |= latch.tileHi;
+			}
+		}
+
+		if (currentCycle == 256) {
+			// Update Y Scroll
+			if (reg.address.current.scroll.fineYScroll < 0x7) {
+				reg.address.current.scroll.fineYScroll += 0x1;
 			}
 			else {
-				reg.address.current.scroll.coarseYScroll += 0x1;
+				reg.address.current.scroll.fineYScroll = 0x0;
+				if (reg.address.current.scroll.coarseYScroll == 29) {
+					reg.address.current.scroll.coarseYScroll = 0x0;
+					reg.address.current.scroll.nameTableY ^= 1;
+				}
+				else if (reg.address.current.scroll.coarseYScroll == 31) {
+					reg.address.current.scroll.coarseYScroll = 0x0;
+				}
+				else {
+					reg.address.current.scroll.coarseYScroll += 0x1;
+				}
 			}
 		}
-	}
 
-
-
-	if (renderingEnabled && (visibleScanline || preRenderScanline) && (currentCycle >= 327 || currentCycle < 256)) {
-		int tileAddress = reg.address.current.address & 0x0FFF;
-		int tileIndex = vram[tileAddress] + 0x100;
-		tileIndex *= 0x10;
-		tileIndex += (currentScanline % 8);
-
-		if (preRenderScanline == false || currentScanline < 328) {
-			tileLo <<= 1;
-			tileHi <<= 1;
+		if (currentCycle == 257) {
+			//Copy X: v: ....F.. ...EDCBA = t: ....F.. ...EDCBA
+			reg.address.current.scroll.coarseXScroll = reg.address.temp.scroll.coarseXScroll;
+			reg.address.current.scroll.nameTableX = reg.address.temp.scroll.nameTableX;
 		}
-
-		if (currentCycle % 8 == 0) {
-			if (reg.address.current.scroll.coarseXScroll == 31) {
-				reg.address.current.scroll.coarseXScroll == 0;
-				reg.address.current.scroll.nameTableX ^= 1;
-			}
-			else {
-				reg.address.current.scroll.coarseXScroll += 1;
-			}
-		} else if (currentCycle % 8 == 5) {
-			tileLo |= parent.memory->chr[tileIndex];
-		} else if (currentCycle % 8 == 7) {
-			tileHi |= parent.memory->chr[tileIndex + 8];
-		}
-
 	}
 
 	// VBlank Scanlines
-	if (currentScanline == 241 && currentCycle == 1 && parent.cpu->cycles > 100) {
+	if (currentScanline == 241 && currentCycle == 1) {
 		vBlankStart();
 	}
-	
-	if (currentScanline == -1 && currentCycle == 1 && parent.cpu->cycles > 100) {
-		vBlankEnd();
-	}
 
-	if (renderingEnabled && currentCycle == 257) {
-		//v: ....F.. ...EDCBA = t: ....F.. ...EDCBA
-		reg.address.current.scroll.coarseXScroll = reg.address.temp.scroll.coarseXScroll;
-		reg.address.current.scroll.nameTableX = reg.address.temp.scroll.nameTableX;
-	}
+	if (preRenderScanline) {
+		if (currentCycle == 1) {
+			vBlankEnd();
+		}
 
-	if (preRenderScanline && currentCycle >= 280 && currentCycle < 305) {
-		//v: IHGF.ED CBA..... = t : IHGF.ED CBA.....
-		reg.address.current.scroll.coarseYScroll = reg.address.temp.scroll.coarseYScroll;
-		reg.address.current.scroll.fineYScroll = reg.address.temp.scroll.fineYScroll;
-		reg.address.current.scroll.nameTableY = reg.address.temp.scroll.nameTableY;
+		if (currentCycle >= 280 && currentCycle <= 304) {
+			// Copy Y: v: IHGF.ED CBA..... = t : IHGF.ED CBA.....
+			reg.address.current.scroll.coarseYScroll = reg.address.temp.scroll.coarseYScroll;
+			reg.address.current.scroll.fineYScroll = reg.address.temp.scroll.fineYScroll;
+			reg.address.current.scroll.nameTableY = reg.address.temp.scroll.nameTableY;
+		}
 	}
 }
 
