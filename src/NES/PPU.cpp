@@ -216,7 +216,7 @@ void NES::PPU::renderPixel() {
 		for (int i = 0; i < 8; i++) { 
 			Sprite sprite = spr[i];
 			unsigned char spriteY = sprite.yPosition + 1;
-			unsigned char spriteX = sprite.xPosition;
+			unsigned char spriteX = sprite.xPosition + 1;
 			
 			if (sprite.xPosition != 0 &&
 				x >= spriteX &&
