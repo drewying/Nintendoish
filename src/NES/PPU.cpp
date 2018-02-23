@@ -11,21 +11,27 @@ unsigned char NES::PPU::getPPURegister(unsigned short index) {
 	case 0x2002: //PPU Status Flags
 		status = reg.status.byte;
 		reg.status.flags.VBlankStarted = false;
-		reg.address.writeLatch = false;
+		vramRegister.writeLatch = false;
 		return status;
 		break;
 	case 0x2004: //OAM data Read/Write
 		return oam[reg.oamAddress];
 		break;
 	case 0x2007: //PPU Data Read/Write
-		address = reg.address.current.address;
-		reg.address.current.address += reg.control.flags.VRAMAddress ? 32 : 1;
+		address = vramRegister.v.address;
+		vramRegister.v.address += reg.control.flags.VRAMAddress ? 32 : 1;
 
 		if (address < 0x2000) {
 			return parent.memory->chr[address];
 		}
 		if (address < 0x3000) {
-			return vram[address - 0x2000];
+			//TODO Proper Mirroring
+			if (address < 0x2800) {
+				return vram[address - 0x2000];
+			}
+			else {
+				return vram[address - 0x2800];
+			}
 		}
 		if (address < 0x3F00) {
 			return vram[address - 0x3000];
@@ -45,8 +51,8 @@ void NES::PPU::setPPURegister(unsigned short index, unsigned char value) {
 	switch (index) {
 	case 0x2000: //PPU Control Flags
 		reg.control.byte = value;
-		reg.address.temp.scroll.nameTableX = (value & 0x1); //t: ...BA.. ........ = d: ......BA
-		reg.address.temp.scroll.nameTableY = ((value & 0x2) >> 1);
+		vramRegister.t.scroll.nameTableX = (value & 0x1); //t: ...BA.. ........ = d: ......BA
+		vramRegister.t.scroll.nameTableY = ((value & 0x2) >> 1);
 
 		if (reg.control.flags.NMI == true && reg.status.flags.VBlankStarted == true) {
 			parent.cpu->requestNMI = true;
@@ -63,46 +69,45 @@ void NES::PPU::setPPURegister(unsigned short index, unsigned char value) {
 		reg.oamAddress += 1;
 		break;
 	case 0x2005: //Scroll
-		if (reg.address.writeLatch == false) {
-			reg.address.fineXScroll = value & 0x7;						   // x:              CBA = d: .....CBA
-			reg.address.temp.scroll.coarseXScroll = ((value & 0xF8) >> 3); // t: ....... ...HGFED = d : HGFED...
-			reg.address.writeLatch = true;
+		if (vramRegister.writeLatch == false) {
+			vramRegister.fineXScroll = value & 0x7;						   // x:              CBA = d: .....CBA
+			vramRegister.t.scroll.coarseXScroll = ((value & 0xF8) >> 3);   // t: ....... ...HGFED = d : HGFED...
 		} else {
 			// t: CBA..HG FED..... = d: HGFEDCBA
-			reg.address.temp.scroll.fineYScroll = (value & 0x7);
-			reg.address.temp.scroll.coarseYScroll = ((value & 0xF8) >> 3);
-			reg.address.writeLatch = false;
+			vramRegister.t.scroll.fineYScroll = (value & 0x7);
+			vramRegister.t.scroll.coarseYScroll = ((value & 0xF8) >> 3);
 		}
+		vramRegister.writeLatch = !vramRegister.writeLatch;
 		break;
 	case 0x2006: //PPU Read/Write Address
-		if (reg.address.writeLatch == false) {
-			reg.address.temp.byte.hi = value;
-			reg.address.writeLatch = true;
+		if (vramRegister.writeLatch == false) {
+			vramRegister.t.byte.hi = value;
 		}
 		else {
-			reg.address.temp.byte.lo = value;
-			reg.address.current.address = reg.address.temp.address;
-			reg.address.writeLatch = false;
+			vramRegister.t.byte.lo = value;
+			vramRegister.v.address = vramRegister.t.address;
 		}
+		vramRegister.writeLatch = !vramRegister.writeLatch;
 		break;
 	case 0x2007: { //PPU Data Read/Write
-			short address = reg.address.current.address;
+			short address = vramRegister.v.address;
 			if (address < 0x2000) {
 				parent.memory->chr[address] = value;
-			}
-			else if (address < 0x3000) {
-				vram[address - 0x2000] = value;
-			}
-			else if (address < 0x3F00) {
+			} else if (address < 0x3000) {
+				//TODO Proper Mirroring
+				if (address < 0x2800) {
+					vram[address - 0x2000] = value;
+				} else {
+					vram[address - 0x2800] = value;
+				}
+			} else if (address < 0x3F00) {
 				vram[address - 0x3000] = value;
-			}
-			else if (address < 0x4000) {
+			} else if (address < 0x4000) {
 				pal[address - 0x3F00] = value;
-			}
-			else {
+			} else {
 				//exit(0);
 			}
-			reg.address.current.address += reg.control.flags.VRAMAddress ? 32 : 1;
+			vramRegister.v.address += reg.control.flags.VRAMAddress ? 32 : 1;
 		}
 		break;
 	case 0x4014: // OAM DMA High Address
@@ -130,12 +135,10 @@ void NES::PPU::reset() {
 	reg.mask.byte = 0x0;
 	reg.status.byte = 0x10;
 	reg.oamAddress = 0x0;
-	reg.address.current.address = 0x0; 
-	reg.address.temp.address = 0x0;
-	scrollOffsetX = 0x0;
-	scrollOffsetY = 0x0;
+	vramRegister.v.address = 0x0; 
+	vramRegister.t.address = 0x0;
 	oddFrame = false;
-	reg.address.writeLatch = false;
+	vramRegister.writeLatch = false;
 }
 
 
@@ -172,13 +175,10 @@ void NES::PPU::renderPixel() {
 
 	if (renderBackground == true) {
 
-		unsigned short address = reg.address.current.address;
-		unsigned short tileAddress = address & 0x0FFF;
-		unsigned short attributeAddress = 0x3C0 | (address & 0x0C00) | ((address >> 4) & 0x38) | ((address >> 2) & 0x07);
-
 		//Palette
-		unsigned char paletteInfo = vram[attributeAddress];
-
+		
+		/*
+		
 		int paletteX = 0; // (backgroundX & 0x1F) >> 4;
 		int paletteY = 0; // (backgroundY & 0x1F) >> 4;
 
@@ -186,28 +186,19 @@ void NES::PPU::renderPixel() {
 		if (paletteX == 1 && paletteY == 0) paletteInfo = (paletteInfo &  0xF) >> 2; // Top Right 10
 		if (paletteX == 0 && paletteY == 1) paletteInfo = (paletteInfo & 0x3F) >> 4; // Bottom Left 01
 		if (paletteX == 1 && paletteY == 1) paletteInfo =  paletteInfo >> 6;         // Bottom Right 11
+		
+		*/
+		unsigned short mask = 0x8000 >> vramRegister.fineXScroll;
 
+		unsigned short colorIndex = (shift.tileHi & mask) >> (14 - vramRegister.fineXScroll) | (shift.tileLo & mask) >> (15 - vramRegister.fineXScroll);
+		unsigned short paletteInfo = ((latch.attributeTable  & 0x3) * 4) + colorIndex;
 
-		unsigned char colorIndex = (shift.tileHi & 0x8000) >> 14 | (shift.tileLo & 0x8000) >> 15;
 		if (colorIndex == 0) {
 			backgroundColor = colorTable[pal[0]];
 		}
 		else {
-			backgroundColor = colorTable[pal[(0 * 4) + colorIndex]];
+			backgroundColor = colorTable[pal[paletteInfo]];
 		}
-
-		//tileLo <<= 1;
-		//tileHi <<= 1;
-
-		/*
-		backgroundColor = getTileColor(
-			vram[tileAddress] + (reg.control.flags.BackgroundTableAddress ? 0x100 : 0x0),  //Left or Right?
-			reg.address.fineXScroll + (currentCycle % 8),
-			reg.address.current.scroll.fineYScroll,
-			1,
-			false,
-			false
-		);*/
 
 		finalColor = backgroundColor;
 	} 
@@ -348,26 +339,34 @@ void NES::PPU::step() {
 		if (visibleCycle || preRenderCycle) {
 			if (currentCycle % 8 == 0) {
 				//Update X Scroll
-				if (reg.address.current.scroll.coarseXScroll == 31) {
-					reg.address.current.scroll.coarseXScroll == 0;
-					reg.address.current.scroll.nameTableX ^= 1;
+				if (vramRegister.v.scroll.coarseXScroll == 31) {
+					vramRegister.v.scroll.coarseXScroll == 0;
+					vramRegister.v.scroll.nameTableX ^= 1;
 				} else {
-					reg.address.current.scroll.coarseXScroll += 1;
+					vramRegister.v.scroll.coarseXScroll += 1;
 				}
 			}
+			//Fetch name table Byte
 			if (currentCycle % 8 == 1) {
-				latch.nameTable = vram[reg.address.current.address & 0x0FFF];
+				latch.nameTable = vram[vramRegister.v.address & 0x0FFF];
 			}
+			//Fetch attribute table byte
+			if (currentCycle % 8 == 3) {
+				unsigned short address = vramRegister.v.address;
+				latch.attributeTable = vram[0x3C0 | (address & 0x0C00) | ((address >> 4) & 0x38) | ((address >> 2) & 0x07)];
+			}
+			//Fetch lo tile byte
 			if (currentCycle % 8 == 5) {
 				short index = latch.nameTable + (reg.control.flags.BackgroundTableAddress ? 0x100 : 0);
 				index *= 0x10;
-				index += reg.address.current.scroll.fineYScroll;
+				index += vramRegister.v.scroll.fineYScroll;
 				latch.tileLo = parent.memory->chr[index];
 			}
+			//Fetch hi tile byte
 			if (currentCycle % 8 == 7) {
 				short index = latch.nameTable + (reg.control.flags.BackgroundTableAddress ? 0x100 : 0);
 				index *= 0x10;
-				index += reg.address.current.scroll.fineYScroll;
+				index += vramRegister.v.scroll.fineYScroll;
 				latch.tileHi = parent.memory->chr[index + 8];
 			}
 		}
@@ -385,28 +384,28 @@ void NES::PPU::step() {
 
 		if (currentCycle == 256) {
 			// Update Y Scroll
-			if (reg.address.current.scroll.fineYScroll < 0x7) {
-				reg.address.current.scroll.fineYScroll += 0x1;
+			if (vramRegister.v.scroll.fineYScroll < 0x7) {
+				vramRegister.v.scroll.fineYScroll += 0x1;
 			}
 			else {
-				reg.address.current.scroll.fineYScroll = 0x0;
-				if (reg.address.current.scroll.coarseYScroll == 29) {
-					reg.address.current.scroll.coarseYScroll = 0x0;
-					reg.address.current.scroll.nameTableY ^= 1;
+				vramRegister.v.scroll.fineYScroll = 0x0;
+				if (vramRegister.v.scroll.coarseYScroll == 29) {
+					vramRegister.v.scroll.coarseYScroll = 0x0;
+					vramRegister.v.scroll.nameTableY ^= 1;
 				}
-				else if (reg.address.current.scroll.coarseYScroll == 31) {
-					reg.address.current.scroll.coarseYScroll = 0x0;
+				else if (vramRegister.v.scroll.coarseYScroll == 31) {
+					vramRegister.v.scroll.coarseYScroll = 0x0;
 				}
 				else {
-					reg.address.current.scroll.coarseYScroll += 0x1;
+					vramRegister.v.scroll.coarseYScroll += 0x1;
 				}
 			}
 		}
 
 		if (currentCycle == 257) {
 			//Copy X: v: ....F.. ...EDCBA = t: ....F.. ...EDCBA
-			reg.address.current.scroll.coarseXScroll = reg.address.temp.scroll.coarseXScroll;
-			reg.address.current.scroll.nameTableX = reg.address.temp.scroll.nameTableX;
+			vramRegister.v.scroll.coarseXScroll = vramRegister.t.scroll.coarseXScroll;
+			vramRegister.v.scroll.nameTableX    = vramRegister.t.scroll.nameTableX;
 		}
 	}
 
@@ -420,11 +419,11 @@ void NES::PPU::step() {
 			vBlankEnd();
 		}
 
-		if (currentCycle >= 280 && currentCycle <= 304) {
+		if (renderingEnabled && currentCycle >= 280 && currentCycle <= 304) {
 			// Copy Y: v: IHGF.ED CBA..... = t : IHGF.ED CBA.....
-			reg.address.current.scroll.coarseYScroll = reg.address.temp.scroll.coarseYScroll;
-			reg.address.current.scroll.fineYScroll = reg.address.temp.scroll.fineYScroll;
-			reg.address.current.scroll.nameTableY = reg.address.temp.scroll.nameTableY;
+			vramRegister.v.scroll.coarseYScroll = vramRegister.t.scroll.coarseYScroll;
+			vramRegister.v.scroll.fineYScroll   = vramRegister.t.scroll.fineYScroll;
+			vramRegister.v.scroll.nameTableY    = vramRegister.t.scroll.nameTableY;
 		}
 	}
 }

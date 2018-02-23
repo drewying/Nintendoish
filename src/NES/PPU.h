@@ -10,7 +10,7 @@ namespace NES {
 		union Address {
 			struct {
 				unsigned lo : 8,
-					hi : 7;
+					     hi : 7;
 			} byte;
 			struct {
 				unsigned coarseXScroll : 5,
@@ -19,7 +19,7 @@ namespace NES {
 					nameTableY : 1,
 					fineYScroll : 3;
 			} scroll;
-			unsigned short address;
+			unsigned address : 15;
 		};
 
 		//Registers
@@ -61,30 +61,29 @@ namespace NES {
 				} flags;
 				unsigned char byte;
 			} status;
-
-			struct {
-				Address current;
-				Address temp;
-				unsigned fineXScroll : 3;
-				bool writeLatch = false;
-			} address;
-
 			unsigned char oamAddress;
 		} reg;
 
+		//Background
 		struct {
 			unsigned short tileLo = 0x0;
 			unsigned short tileHi = 0x0;
 			unsigned char attribute = 0x0;
-			unsigned char nameTable = 0x0;
 		} shift;
 
 		struct {
 			unsigned char tileLo = 0x0;
 			unsigned char tileHi = 0x0;
-			unsigned char attribute = 0x0;
+			unsigned char attributeTable = 0x0;
 			unsigned char nameTable = 0x0;
 		} latch;
+
+		struct {
+			Address v;
+			Address t;
+			unsigned fineXScroll : 3;
+			bool writeLatch = false;
+		} vramRegister;
 
 		
 		struct Sprite {
@@ -128,9 +127,6 @@ namespace NES {
         Console &parent;
 
 		// Rendering
-		unsigned char scrollOffsetX;
-		unsigned char scrollOffsetY;
-
 		void renderPatternTable();
 		void renderTile(int x, int y, int tileIndex);
 		void prepareSprites();
