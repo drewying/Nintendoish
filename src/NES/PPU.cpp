@@ -143,20 +143,19 @@ void NES::PPU::reset() {
 
 
 void NES::PPU::prepareSprites() {
-	Sprite* spriteList = (Sprite*)oam;
+	Sprite* sprite = (Sprite*)oam;
 	int spriteCount = 0;
 	int oamIndex = 0;
-	size_t t = sizeof(Sprite);
-	memset(spr, 0x0, sizeof(Sprite) * 8);
+	std::fill_n(spr, 8, nullptr);
 	while (spriteCount < 8 && oamIndex < 64) {
-		if (spriteList->yPosition != 0 &&
-			currentScanline >= spriteList->yPosition + 1 &&
-			currentScanline < spriteList->yPosition + 1 + 8)
+		if (sprite->yPosition != 0 &&
+			currentScanline >= sprite->yPosition + 1 &&
+			currentScanline < sprite->yPosition + 1 + 8)
 		{
-			spr[spriteCount] = *spriteList;
+			spr[spriteCount] = sprite;
 			spriteCount++;
 		}
-		spriteList++;
+		sprite++; // Pointer arithmatic FTW!
 		oamIndex++;
 	}
 }
@@ -205,28 +204,26 @@ void NES::PPU::renderPixel() {
 
 	if (renderSprites == true) {
 		for (int i = 0; i < 8; i++) { 
-			Sprite sprite = spr[i];
-			unsigned char spriteY = sprite.yPosition + 1;
-			unsigned char spriteX = sprite.xPosition + 1;
-			
-			if (sprite.xPosition != 0 &&
-				x >= spriteX &&
-				x < spriteX + 8) 
+			Sprite* sprite = spr[i];
+
+			if (sprite != nullptr &&
+				x >= (sprite->xPosition + 1) &&
+				x < (sprite->xPosition + 9))
 			{
-					spriteX = x - spriteX;
-					spriteY = y - spriteY;
+					unsigned char spriteX = x - (sprite->xPosition + 1);
+					unsigned char spriteY = y - (sprite->yPosition + 1);
 					
 					unsigned char* spriteColor = getTileColor(
-						sprite.tileIndex + (reg.control.flags.SpriteTableAddress ? 0x100 : 0x0),
+						sprite->tileIndex + (reg.control.flags.SpriteTableAddress ? 0x100 : 0x0),
 						spriteX, 
 						spriteY, 
-						sprite.attributes.palette + 0x4,
-						sprite.attributes.horizontalFlip, 
-						sprite.attributes.verticalFlip
+						sprite->attributes.palette + 0x4,
+						sprite->attributes.horizontalFlip, 
+						sprite->attributes.verticalFlip
 					);
 					if (spriteColor != defaultColor) {
-						if (i == 0) reg.status.flags.Sprite0Hit = (reg.status.flags.Sprite0Hit || (x != 255 && backgroundColor != defaultColor));
-						if (sprite.attributes.priority == 0 || backgroundColor == defaultColor) finalColor = spriteColor;
+						if (sprite == (Sprite*)oam) reg.status.flags.Sprite0Hit = (reg.status.flags.Sprite0Hit || (x != 255 && backgroundColor != defaultColor));
+						if (sprite->attributes.priority == 0 || backgroundColor == defaultColor) finalColor = spriteColor;
 						break;
 					}
 			}
@@ -340,7 +337,7 @@ void NES::PPU::step() {
 			if (currentCycle % 8 == 0) {
 				//Update X Scroll
 				if (vramRegister.v.scroll.coarseXScroll == 31) {
-					vramRegister.v.scroll.coarseXScroll == 0;
+					vramRegister.v.scroll.coarseXScroll = 0x0;
 					vramRegister.v.scroll.nameTableX ^= 1;
 				} else {
 					vramRegister.v.scroll.coarseXScroll += 1;
@@ -348,10 +345,18 @@ void NES::PPU::step() {
 			}
 			//Fetch name table Byte
 			if (currentCycle % 8 == 1) {
-				latch.nameTable = vram[vramRegister.v.address & 0x0FFF];
+				unsigned short index = vramRegister.v.address & 0x0FFF;
+				//TODO Proper Mirroring
+				if (index < 0x800) {
+					latch.nameTable = vram[index];
+				}
+				else {
+					latch.nameTable = vram[index - 0x800];
+				}
 			}
 			//Fetch attribute table byte
 			if (currentCycle % 8 == 3) {
+				//TODO mirroring
 				unsigned short address = vramRegister.v.address;
 				latch.attributeTable = vram[0x3C0 | (address & 0x0C00) | ((address >> 4) & 0x38) | ((address >> 2) & 0x07)];
 			}
@@ -405,6 +410,7 @@ void NES::PPU::step() {
 		if (currentCycle == 257) {
 			//Copy X: v: ....F.. ...EDCBA = t: ....F.. ...EDCBA
 			vramRegister.v.scroll.coarseXScroll = vramRegister.t.scroll.coarseXScroll;
+			//vramRegister.v.scroll.coarseXScroll = 5;
 			vramRegister.v.scroll.nameTableX    = vramRegister.t.scroll.nameTableX;
 		}
 	}

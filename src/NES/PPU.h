@@ -102,7 +102,7 @@ namespace NES {
 
 
 		//Memory
-		Sprite        spr[8]       = { 0 };    // Active Sprites
+		Sprite*        spr[8]      = { 0 };    // Active Sprites
  		unsigned char vram[0x2000] = { 0 };    // Video Memory/Name Tables
 		unsigned char oam[0x100]   = { 0 };    // Object Attribute Memory
 		unsigned char pal[0x20]    = { 0x3F }; // Palette Memory. Initialized to black.
