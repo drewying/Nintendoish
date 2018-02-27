@@ -33,9 +33,11 @@ unsigned char NES::Memory::get(unsigned short index) {
 		return 0x40;
 	}
 
-	if (index >= 0xC000) {
+	// Here lies Mapper Acces World.
+
+	/*if (index >= 0xC000) {
 		return prg[index - 0xC000];
-	}
+	}*/
 
 	if (index >= 0x8000) {
 		//NROM Mapper access

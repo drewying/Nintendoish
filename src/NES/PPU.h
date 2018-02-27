@@ -68,7 +68,7 @@ namespace NES {
 		struct {
 			unsigned short tileLo = 0x0;
 			unsigned short tileHi = 0x0;
-			unsigned char attribute = 0x0;
+			unsigned char attributeTable = 0x0;
 		} shift;
 
 		struct {

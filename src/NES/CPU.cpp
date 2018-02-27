@@ -226,7 +226,7 @@ int NES::CPU::loadNextInstruction()
 }
 
 void NES::CPU::setNZStatus(unsigned char value) {
-    reg.P.status.Zero = (value == 0);
+    reg.P.status.Zero = (value == 0x0);
     reg.P.status.Negative = ((value & 0x80) != 0);
 }
 

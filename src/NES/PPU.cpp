@@ -39,10 +39,10 @@ unsigned char NES::PPU::getPPURegister(unsigned short index) {
 		if (address < 0x4000) {
 			return pal[address - 0x3F00];
 		}
-		exit(0);
+		//exit(0);
 		break;
 	default:
-		exit(0);
+		//exit(0);
 		break;
 	}
 }
@@ -114,7 +114,7 @@ void NES::PPU::setPPURegister(unsigned short index, unsigned char value) {
 		copyDMAMemory(value);
 		break;
 	default:
-		exit(0);
+		//exit(0);
 		break;
 	}
 	if (index != 0x4014) {
@@ -168,38 +168,31 @@ void NES::PPU::renderPixel() {
 	bool renderBackground = reg.mask.flags.ShowBackground == true && (x > 7 || reg.mask.flags.LeftBackground == true);
 	bool renderSprites = reg.mask.flags.ShowSprite == true && (x > 7 || reg.mask.flags.LeftSprite == true);
 
-	unsigned char* defaultColor = colorTable[pal[0]]; //Default Background Color
-	unsigned char* backgroundColor = defaultColor;
-	unsigned char* finalColor = defaultColor;
+
+	unsigned short backgoundPalette = 0x0;
+	unsigned short backgoundColorIndex = 0x0;
+	unsigned short spritePalette = 0x0;
+	unsigned short spriteColorIndex = 0x0;
+	bool backgroundPriority = false;
 
 	if (renderBackground == true) {
 
-		//Palette
-		
-		/*
-		
-		int paletteX = 0; // (backgroundX & 0x1F) >> 4;
-		int paletteY = 0; // (backgroundY & 0x1F) >> 4;
-
-		if (paletteX == 0 && paletteY == 0) paletteInfo = (paletteInfo &  0x3);      // Top Left 00
-		if (paletteX == 1 && paletteY == 0) paletteInfo = (paletteInfo &  0xF) >> 2; // Top Right 10
-		if (paletteX == 0 && paletteY == 1) paletteInfo = (paletteInfo & 0x3F) >> 4; // Bottom Left 01
-		if (paletteX == 1 && paletteY == 1) paletteInfo =  paletteInfo >> 6;         // Bottom Right 11
-		
-		*/
+		//Tile
 		unsigned short mask = 0x8000 >> vramRegister.fineXScroll;
+		backgoundColorIndex = (shift.tileHi & mask) >> (14 - vramRegister.fineXScroll) | (shift.tileLo & mask) >> (15 - vramRegister.fineXScroll);
 
-		unsigned short colorIndex = (shift.tileHi & mask) >> (14 - vramRegister.fineXScroll) | (shift.tileLo & mask) >> (15 - vramRegister.fineXScroll);
-		unsigned short paletteInfo = ((latch.attributeTable  & 0x3) * 4) + colorIndex;
+		//Palette
+		backgoundPalette = shift.attributeTable;
+		int paletteX = (x & 0x1F) >> 4;
+		int paletteY = (y & 0x1F) >> 4;
 
-		if (colorIndex == 0) {
-			backgroundColor = colorTable[pal[0]];
-		}
-		else {
-			backgroundColor = colorTable[pal[paletteInfo]];
-		}
-
-		finalColor = backgroundColor;
+		if (paletteX == 0 && paletteY == 0) backgoundPalette = (backgoundPalette &  0x3);      // Top Left 00
+		if (paletteX == 1 && paletteY == 0) backgoundPalette = (backgoundPalette &  0xF) >> 2; // Top Right 10
+		if (paletteX == 0 && paletteY == 1) backgoundPalette = (backgoundPalette & 0x3F) >> 4; // Bottom Left 01
+		if (paletteX == 1 && paletteY == 1) backgoundPalette = backgoundPalette >> 6;          // Bottom Right 11
+		
+		
+		
 	} 
 
 	if (renderSprites == true) {
@@ -212,23 +205,30 @@ void NES::PPU::renderPixel() {
 			{
 					unsigned char spriteX = x - (sprite->xPosition + 1);
 					unsigned char spriteY = y - (sprite->yPosition + 1);
+					unsigned short tileIndex = sprite->tileIndex + (reg.control.flags.SpriteTableAddress ? 0x100 : 0x0);
+					tileIndex *= 0x10;
+					tileIndex += sprite->attributes.verticalFlip ? 8 - spriteY : spriteY;
+	
+					unsigned char tileSliceA = parent.memory->chr[tileIndex];
+					unsigned char tileSliceB = parent.memory->chr[tileIndex + 8];
+
+					tileSliceA = tileSliceA >> (sprite->attributes.horizontalFlip ? spriteX : 7 - spriteX);
+					tileSliceB = tileSliceB >> (sprite->attributes.horizontalFlip ? spriteX : 7 - spriteX);
+
+					spriteColorIndex = (tileSliceB & 0x1) << 1 | (tileSliceA & 0x1);
+					spritePalette = sprite->attributes.palette + 0x4;
 					
-					unsigned char* spriteColor = getTileColor(
-						sprite->tileIndex + (reg.control.flags.SpriteTableAddress ? 0x100 : 0x0),
-						spriteX, 
-						spriteY, 
-						sprite->attributes.palette + 0x4,
-						sprite->attributes.horizontalFlip, 
-						sprite->attributes.verticalFlip
-					);
-					if (spriteColor != defaultColor) {
-						if (sprite == (Sprite*)oam) reg.status.flags.Sprite0Hit = (reg.status.flags.Sprite0Hit || (x != 255 && backgroundColor != defaultColor));
-						if (sprite->attributes.priority == 0 || backgroundColor == defaultColor) finalColor = spriteColor;
-						break;
-					}
+					backgroundPriority = sprite->attributes.priority == 1;
+
+					//Check for sprite 0 hit.
+					reg.status.flags.Sprite0Hit = reg.status.flags.Sprite0Hit || (sprite == (Sprite*)oam && spriteColorIndex != 0x0 && backgoundColorIndex != 0x0 && x != 255);
+					if (spriteColorIndex != 0x0) break;
 			}
 		}
 	}
+	unsigned char* finalColor = colorTable[pal[0]]; //Default Color
+	if (backgoundColorIndex != 0x0) finalColor = colorTable[pal[(backgoundPalette * 4) + backgoundColorIndex]];
+	if (spriteColorIndex != 0x0 && backgroundPriority == false) finalColor = colorTable[pal[(spritePalette * 4) + spriteColorIndex]];
 
 	unsigned int combinedColor = finalColor[0] << 16 | finalColor[1] << 8 | finalColor[2];
 	parent.graphics[x + (y * 256)] = combinedColor;
@@ -384,6 +384,7 @@ void NES::PPU::step() {
 			if (currentCycle % 8 == 1) {
 				shift.tileLo |= latch.tileLo;
 				shift.tileHi |= latch.tileHi;
+				shift.attributeTable = latch.attributeTable;
 			}
 		}
 
