@@ -179,6 +179,7 @@ void NES::PPU::renderPixel() {
 			}
 		}
 	}
+
 	unsigned char* finalColor = colorTable[parent.ppuMemory->get(0x3F00)]; //Default Color
 	if (backgoundColor != 0x0) finalColor = colorTable[parent.ppuMemory->get(0x3F00 | backgoundColor)];
 	if (spriteColor != 0x0 && backgroundPriority == false) finalColor = colorTable[parent.ppuMemory->get(0x3F00 | spriteColor)];
@@ -266,8 +267,9 @@ void NES::PPU::step() {
 
 	if (renderingEnabled && renderScanline) {
 		if (visibleCycle || preRenderCycle) {
+
+			//Update X Scroll
 			if (currentCycle % 8 == 0) {
-				//Update X Scroll
 				if (vramRegister.v.scroll.coarseXScroll == 31) {
 					vramRegister.v.scroll.coarseXScroll = 0x0;
 					vramRegister.v.scroll.nameTableX ^= 1;
@@ -275,14 +277,15 @@ void NES::PPU::step() {
 					vramRegister.v.scroll.coarseXScroll += 1;
 				}
 			}
+			
 			//Fetch name table Byte
 			if (currentCycle % 8 == 1) {
 				unsigned short index = 0x2000 | (vramRegister.v.address & 0x0FFF);
 				latch.nameTable = parent.ppuMemory->get(index);
 			}
+			
 			//Fetch attribute table byte
 			if (currentCycle % 8 == 3) {
-				//TODO mirroring
 				unsigned short address = vramRegister.v.address;
 				unsigned char attributeTable = parent.ppuMemory->get(0x23C0 | (address & 0x0C00) | ((address >> 4) & 0x38) | ((address >> 2) & 0x07));
 				
@@ -304,6 +307,7 @@ void NES::PPU::step() {
 				index += vramRegister.v.scroll.fineYScroll;
 				latch.tileLo = parent.ppuMemory->get(index);
 			}
+			
 			//Fetch hi tile byte
 			if (currentCycle % 8 == 7) {
 				unsigned short index = latch.nameTable + (reg.control.flags.BackgroundTableAddress ? 0x100 : 0);
