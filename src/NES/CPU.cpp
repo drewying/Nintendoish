@@ -288,7 +288,7 @@ void NES::CPU::pushAddress(unsigned short address) {
     push(lo);
 }
 
-unsigned  short NES::CPU::pullAddress() {
+unsigned short NES::CPU::pullAddress() {
     unsigned char lo = pull();
     unsigned char hi = pull();
     return hi << 8 | lo;

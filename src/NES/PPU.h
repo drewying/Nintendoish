@@ -1,12 +1,12 @@
 #pragma once
 
 #include "NES.h"
+#include <stdint.h>
 
 namespace NES {
     class Console;
     class PPU {
-    public:
-
+	public:
 		union Address {
 			struct {
 				unsigned lo : 8,
@@ -68,7 +68,8 @@ namespace NES {
 		struct {
 			unsigned short tileLo = 0x0;
 			unsigned short tileHi = 0x0;
-			unsigned char attributeTable = 0x0;
+			unsigned short attributeTableHi = 0x0;
+			unsigned short attributeTableLo = 0x0;
 		} shift;
 
 		struct {
@@ -87,7 +88,6 @@ namespace NES {
 
 		
 		struct Sprite {
-		public:
 			unsigned char yPosition;
 			unsigned char tileIndex;
 			struct {
@@ -103,9 +103,8 @@ namespace NES {
 
 		//Memory
 		Sprite*        spr[8]      = { 0 };    // Active Sprites
- 		unsigned char vram[0x2000] = { 0 };    // Video Memory/Name Tables
 		unsigned char oam[0x100]   = { 0 };    // Object Attribute Memory
-		unsigned char pal[0x20]    = { 0x3F }; // Palette Memory. Initialized to black.
+		
 
 		unsigned char getPPURegister(unsigned short index);
 		void setPPURegister(unsigned short index, unsigned char value);
@@ -130,10 +129,7 @@ namespace NES {
 		void renderPatternTable();
 		void renderTile(int x, int y, int tileIndex);
 		void prepareSprites();
-		void renderPixel();
-		
-		unsigned char* getTileColor(unsigned int tileIndex, unsigned int tileX, unsigned int tileY, unsigned int paletteIndex, unsigned int flipHorizontal, unsigned int flipVertical);
-		
+		void renderPixel();		
 
         PPU(Console &parent) : parent(parent) {
             reset();

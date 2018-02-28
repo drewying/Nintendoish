@@ -10,6 +10,17 @@
 
 using namespace std;
 
+NES::Console::Console() {
+	memory = new Memory(*this);
+	cpu = new CPU(*memory);
+	ppu = new PPU(*this);
+	ppuMemory = new PPUMemory();
+	controllerOne = new Controller();
+	reset();
+}
+
+NES::Console::~Console() {}
+
 void NES::Console::emulateCycle() {
 	
 	int estimatedCycles = cpu->stallCycles > 0 ? 0x0 : cpu->timingTable[memory->get(cpu->reg.PC)];
@@ -53,7 +64,7 @@ void NES::Console::loadProgram(const char * path)
         }
         memory->extended = (header[4] == 2);
 		fread(memory->prg, sizeof(char), header[4] * 16384, rom);
-        fread(memory->chr, sizeof(char), header[5] * 8192, rom);
+        fread(ppuMemory->chr, sizeof(char), header[5] * 8192, rom);
         cpu->reg.PC = memory->resetVector();
     }
 	std::cout << "Loaded" << std::endl;
@@ -69,13 +80,3 @@ void NES::Console::reset()
     cpu->reg.P.status.Interrupt = true;
     cpu->reg.S = 0xFD;
 }
-
-NES::Console::Console(){
-    memory = new Memory(*this);
-    cpu = new CPU(*memory);
-    ppu = new PPU(*this);
-	controllerOne = new Controller();
-	reset();
-}
-
-NES::Console::~Console() {}

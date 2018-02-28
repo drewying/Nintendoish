@@ -28,6 +28,7 @@
     <ClCompile Include="..\src\NES\Memory.cpp" />
     <ClCompile Include="..\src\NES\NES.cpp" />
     <ClCompile Include="..\src\NES\PPU.cpp" />
+    <ClCompile Include="..\src\NES\PPUMemory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\CHIP8\Chip8.h" />
@@ -38,6 +39,7 @@
     <ClInclude Include="..\src\NES\Memory.h" />
     <ClInclude Include="..\src\NES\NES.h" />
     <ClInclude Include="..\src\NES\PPU.h" />
+    <ClInclude Include="..\src\NES\PPUMemory.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\vendor\freeglut.dll">

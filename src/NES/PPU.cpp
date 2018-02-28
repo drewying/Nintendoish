@@ -3,10 +3,9 @@
 
 using namespace std;
 
-
 unsigned char NES::PPU::getPPURegister(unsigned short index) {
-	char status;
-	short address;
+	unsigned char status;
+	unsigned short address;
 	switch (index) {
 	case 0x2002: //PPU Status Flags
 		status = reg.status.byte;
@@ -20,25 +19,7 @@ unsigned char NES::PPU::getPPURegister(unsigned short index) {
 	case 0x2007: //PPU Data Read/Write
 		address = vramRegister.v.address;
 		vramRegister.v.address += reg.control.flags.VRAMAddress ? 32 : 1;
-
-		if (address < 0x2000) {
-			return parent.memory->chr[address];
-		}
-		if (address < 0x3000) {
-			//TODO Proper Mirroring
-			if (address < 0x2800) {
-				return vram[address - 0x2000];
-			}
-			else {
-				return vram[address - 0x2800];
-			}
-		}
-		if (address < 0x3F00) {
-			return vram[address - 0x3000];
-		}
-		if (address < 0x4000) {
-			return pal[address - 0x3F00];
-		}
+		return parent.ppuMemory->get(address);
 		//exit(0);
 		break;
 	default:
@@ -90,23 +71,8 @@ void NES::PPU::setPPURegister(unsigned short index, unsigned char value) {
 		vramRegister.writeLatch = !vramRegister.writeLatch;
 		break;
 	case 0x2007: { //PPU Data Read/Write
-			short address = vramRegister.v.address;
-			if (address < 0x2000) {
-				parent.memory->chr[address] = value;
-			} else if (address < 0x3000) {
-				//TODO Proper Mirroring
-				if (address < 0x2800) {
-					vram[address - 0x2000] = value;
-				} else {
-					vram[address - 0x2800] = value;
-				}
-			} else if (address < 0x3F00) {
-				vram[address - 0x3000] = value;
-			} else if (address < 0x4000) {
-				pal[address - 0x3F00] = value;
-			} else {
-				//exit(0);
-			}
+			unsigned short address = vramRegister.v.address;
+			parent.ppuMemory->set(address, value);
 			vramRegister.v.address += reg.control.flags.VRAMAddress ? 32 : 1;
 		}
 		break;
@@ -164,35 +130,21 @@ void NES::PPU::renderPixel() {
 
 	unsigned char x = currentCycle - 1;
 	unsigned char y = currentScanline;
+	
+	unsigned short backgoundColor = 0x0;
+	unsigned short spriteColor = 0x0;
 
 	bool renderBackground = reg.mask.flags.ShowBackground == true && (x > 7 || reg.mask.flags.LeftBackground == true);
 	bool renderSprites = reg.mask.flags.ShowSprite == true && (x > 7 || reg.mask.flags.LeftSprite == true);
-
-
-	unsigned short backgoundPalette = 0x0;
-	unsigned short backgoundColorIndex = 0x0;
-	unsigned short spritePalette = 0x0;
-	unsigned short spriteColorIndex = 0x0;
 	bool backgroundPriority = false;
 
 	if (renderBackground == true) {
 
 		//Tile
 		unsigned short mask = 0x8000 >> vramRegister.fineXScroll;
-		backgoundColorIndex = (shift.tileHi & mask) >> (14 - vramRegister.fineXScroll) | (shift.tileLo & mask) >> (15 - vramRegister.fineXScroll);
-
-		//Palette
-		backgoundPalette = shift.attributeTable;
-		int paletteX = (x & 0x1F) >> 4;
-		int paletteY = (y & 0x1F) >> 4;
-
-		if (paletteX == 0 && paletteY == 0) backgoundPalette = (backgoundPalette &  0x3);      // Top Left 00
-		if (paletteX == 1 && paletteY == 0) backgoundPalette = (backgoundPalette &  0xF) >> 2; // Top Right 10
-		if (paletteX == 0 && paletteY == 1) backgoundPalette = (backgoundPalette & 0x3F) >> 4; // Bottom Left 01
-		if (paletteX == 1 && paletteY == 1) backgoundPalette = backgoundPalette >> 6;          // Bottom Right 11
-		
-		
-		
+		unsigned short backgoundColorIndex = (shift.tileHi & mask) >> (14 - vramRegister.fineXScroll) | (shift.tileLo & mask) >> (15 - vramRegister.fineXScroll);
+		unsigned short backgoundPalette = (shift.attributeTableHi & mask) >> (14 - vramRegister.fineXScroll) | (shift.attributeTableLo & mask) >> (15 - vramRegister.fineXScroll);
+		if (backgoundColorIndex != 0x0) backgoundColor = backgoundPalette * 4 + backgoundColorIndex;
 	} 
 
 	if (renderSprites == true) {
@@ -209,51 +161,31 @@ void NES::PPU::renderPixel() {
 					tileIndex *= 0x10;
 					tileIndex += sprite->attributes.verticalFlip ? 8 - spriteY : spriteY;
 	
-					unsigned char tileSliceA = parent.memory->chr[tileIndex];
-					unsigned char tileSliceB = parent.memory->chr[tileIndex + 8];
+					unsigned char tileSliceA = parent.ppuMemory->get(tileIndex);
+					unsigned char tileSliceB = parent.ppuMemory->get(tileIndex + 8);
 
 					tileSliceA = tileSliceA >> (sprite->attributes.horizontalFlip ? spriteX : 7 - spriteX);
 					tileSliceB = tileSliceB >> (sprite->attributes.horizontalFlip ? spriteX : 7 - spriteX);
 
-					spriteColorIndex = (tileSliceB & 0x1) << 1 | (tileSliceA & 0x1);
-					spritePalette = sprite->attributes.palette + 0x4;
-					
+					unsigned short spriteColorIndex = (tileSliceB & 0x1) << 1 | (tileSliceA & 0x1);
+					unsigned short spritePalette = sprite->attributes.palette + 0x4;
+					if (spriteColorIndex != 0x0) spriteColor = spritePalette * 4 + spriteColorIndex;
+
 					backgroundPriority = sprite->attributes.priority == 1;
 
 					//Check for sprite 0 hit.
-					reg.status.flags.Sprite0Hit = reg.status.flags.Sprite0Hit || (sprite == (Sprite*)oam && spriteColorIndex != 0x0 && backgoundColorIndex != 0x0 && x != 255);
-					if (spriteColorIndex != 0x0) break;
+					reg.status.flags.Sprite0Hit = reg.status.flags.Sprite0Hit || (sprite == (Sprite*)oam && spriteColor != 0x0 && backgoundColor != 0x0 && x != 255);
+					if (spriteColor != 0x0) break;
 			}
 		}
 	}
-	unsigned char* finalColor = colorTable[pal[0]]; //Default Color
-	if (backgoundColorIndex != 0x0) finalColor = colorTable[pal[(backgoundPalette * 4) + backgoundColorIndex]];
-	if (spriteColorIndex != 0x0 && backgroundPriority == false) finalColor = colorTable[pal[(spritePalette * 4) + spriteColorIndex]];
+	unsigned char* finalColor = colorTable[parent.ppuMemory->get(0x3F00)]; //Default Color
+	if (backgoundColor != 0x0) finalColor = colorTable[parent.ppuMemory->get(0x3F00 | backgoundColor)];
+	if (spriteColor != 0x0 && backgroundPriority == false) finalColor = colorTable[parent.ppuMemory->get(0x3F00 | spriteColor)];
 
 	unsigned int combinedColor = finalColor[0] << 16 | finalColor[1] << 8 | finalColor[2];
 	parent.graphics[x + (y * 256)] = combinedColor;
 } 
-
-unsigned char* NES::PPU::getTileColor(
-	unsigned int tileIndex,
-	unsigned int tileX, 
-	unsigned int tileY, 
-	unsigned int paletteIndex, 
-	unsigned int flipHorizontal, 
-	unsigned int flipVertical) {
-	tileIndex *= 0x10;
-	tileIndex += flipVertical ? 8 - tileY : tileY;
-
-	unsigned char tileSliceA = parent.memory->chr[tileIndex];
-	unsigned char tileSliceB = parent.memory->chr[tileIndex + 8];
-
-	tileSliceA = tileSliceA >> (flipHorizontal ? tileX : 7 - tileX);
-	tileSliceB = tileSliceB >> (flipHorizontal ? tileX : 7 - tileX);
-
-	unsigned short colorIndex = (tileSliceB & 0x1) << 1 | (tileSliceA & 0x1);
-	if (colorIndex == 0) return colorTable[pal[0]];
-	return colorTable[pal[(paletteIndex * 4) + colorIndex]];
-}
 
 void NES::PPU::renderPatternTable() {
 	int tileIndex = 0x0000;
@@ -277,13 +209,13 @@ void NES::PPU::renderPatternTable() {
 void NES::PPU::renderTile(int x, int y, int tileIndex) {
 	tileIndex *= 0x10;
 	for (int i = 0; i <= 8; i++) {
-		char tileSliceA = parent.memory->chr[tileIndex + i];
-		char tileSliceB = parent.memory->chr[tileIndex + i + 8];
+		char tileSliceA = parent.ppuMemory->get(tileIndex + i);
+		char tileSliceB = parent.ppuMemory->get(tileIndex + i + 8);
 		for (int j = 7; j >= 0; j--) {
 			unsigned short colorIndex = (tileSliceB & 0x1) << 1 | (tileSliceA & 0x1);
 
-			unsigned char* backgroundColor = colorTable[pal[0]];
-			unsigned char* color = colorTable[pal[colorIndex + 6]];
+			unsigned char* backgroundColor = colorTable[parent.ppuMemory->get(0x3F00)];
+			unsigned char* color = colorTable[parent.ppuMemory->get(0x3F00 | (colorIndex + 6))];
 
 			if (colorIndex == 0) color = backgroundColor;
 
@@ -345,34 +277,39 @@ void NES::PPU::step() {
 			}
 			//Fetch name table Byte
 			if (currentCycle % 8 == 1) {
-				unsigned short index = vramRegister.v.address & 0x0FFF;
-				//TODO Proper Mirroring
-				if (index < 0x800) {
-					latch.nameTable = vram[index];
-				}
-				else {
-					latch.nameTable = vram[index - 0x800];
-				}
+				unsigned short index = 0x2000 | (vramRegister.v.address & 0x0FFF);
+				latch.nameTable = parent.ppuMemory->get(index);
 			}
 			//Fetch attribute table byte
 			if (currentCycle % 8 == 3) {
 				//TODO mirroring
 				unsigned short address = vramRegister.v.address;
-				latch.attributeTable = vram[0x3C0 | (address & 0x0C00) | ((address >> 4) & 0x38) | ((address >> 2) & 0x07)];
+				unsigned char attributeTable = parent.ppuMemory->get(0x23C0 | (address & 0x0C00) | ((address >> 4) & 0x38) | ((address >> 2) & 0x07));
+				
+				unsigned int paletteX = (vramRegister.v.scroll.coarseXScroll & 0x3) >> 1;
+				unsigned int paletteY = (vramRegister.v.scroll.coarseYScroll & 0x3) >> 1;
+
+				if (paletteX == 0 && paletteY == 0) attributeTable = (attributeTable & 0x3);       // Top Left 00
+				if (paletteX == 1 && paletteY == 0) attributeTable = (attributeTable & 0xF) >> 2;  // Top Right 10
+				if (paletteX == 0 && paletteY == 1) attributeTable = (attributeTable & 0x3F) >> 4; // Bottom Left 01
+				if (paletteX == 1 && paletteY == 1) attributeTable = attributeTable >> 6;          // Bottom Right 11
+				
+				latch.attributeTable = attributeTable;
 			}
+
 			//Fetch lo tile byte
 			if (currentCycle % 8 == 5) {
-				short index = latch.nameTable + (reg.control.flags.BackgroundTableAddress ? 0x100 : 0);
+				unsigned short index = latch.nameTable + (reg.control.flags.BackgroundTableAddress ? 0x100 : 0);
 				index *= 0x10;
 				index += vramRegister.v.scroll.fineYScroll;
-				latch.tileLo = parent.memory->chr[index];
+				latch.tileLo = parent.ppuMemory->get(index);
 			}
 			//Fetch hi tile byte
 			if (currentCycle % 8 == 7) {
-				short index = latch.nameTable + (reg.control.flags.BackgroundTableAddress ? 0x100 : 0);
+				unsigned short index = latch.nameTable + (reg.control.flags.BackgroundTableAddress ? 0x100 : 0);
 				index *= 0x10;
 				index += vramRegister.v.scroll.fineYScroll;
-				latch.tileHi = parent.memory->chr[index + 8];
+				latch.tileHi = parent.ppuMemory->get(index + 8);
 			}
 		}
 
@@ -380,11 +317,17 @@ void NES::PPU::step() {
 		if ((currentCycle >= 2 && currentCycle <= 257) || (currentCycle >= 322 && currentCycle <= 337)) {
 			shift.tileLo <<= 1;
 			shift.tileHi <<= 1;
+			shift.attributeTableLo <<= 1;
+			shift.attributeTableHi <<= 1;
+			
+			//Feed the attribute table latches
+			shift.attributeTableLo |= latch.attributeTable & 0x1;
+			shift.attributeTableHi |= (latch.attributeTable & 0x3) >> 1;
+
 			// The lower 8 bits are reloaded into background shift registes at ticks 9, 17, 25, ..., 257 and ticks 329, and 337.
 			if (currentCycle % 8 == 1) {
 				shift.tileLo |= latch.tileLo;
 				shift.tileHi |= latch.tileHi;
-				shift.attributeTable = latch.attributeTable;
 			}
 		}
 
@@ -411,7 +354,6 @@ void NES::PPU::step() {
 		if (currentCycle == 257) {
 			//Copy X: v: ....F.. ...EDCBA = t: ....F.. ...EDCBA
 			vramRegister.v.scroll.coarseXScroll = vramRegister.t.scroll.coarseXScroll;
-			//vramRegister.v.scroll.coarseXScroll = 5;
 			vramRegister.v.scroll.nameTableX    = vramRegister.t.scroll.nameTableX;
 		}
 	}

@@ -10,6 +10,7 @@
 #include <sstream>
 #include <iomanip>
 #include "NES/NES.h"
+#include "NES/PPU.h"
 
 using namespace std::chrono;
 using namespace std;
@@ -244,9 +245,9 @@ int main(int argc, char** argv)
         glutIdleFunc(testNES);
     } else {
         nes = new NES::Console();
-		//nes->loadProgram("../roms/Mario.nes");
+		nes->loadProgram("../roms/Mario.nes");
         //nes->loadProgram("../roms/Excitebike.nes");
-		nes->loadProgram("../roms/DonkeyKong.nes");
+		//nes->loadProgram("../roms/DonkeyKong.nes");
 		//nes->loadProgram("../roms/palette.nes");
         glutIdleFunc(updateNES);
     }

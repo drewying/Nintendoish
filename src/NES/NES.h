@@ -1,19 +1,21 @@
 #pragma once
+
 #include "CPU.h"
-#include "PPU.h"
-#include "Memory.h"
 #include "Controller.h"
+#include "Memory.h"
+#include "PPUMemory.h"
 
 #include <functional>
 #include <string>
-
+#include <stdint.h>
 
 namespace NES {
     class CPU;
     class Memory;
     class PPU;
 	class Controller;
-    
+	class PPUMemory;
+
     class Console {
 	public:
 		void emulateCycle();
@@ -23,6 +25,7 @@ namespace NES {
         CPU *cpu;
         Memory *memory;
         PPU *ppu;
+		PPUMemory *ppuMemory;
 		Controller *controllerOne;
 
 		unsigned int graphics[256 * 240] = { 0 };
