@@ -6,6 +6,7 @@ using namespace std;
 unsigned char NES::PPU::getPPURegister(unsigned short index) {
 	unsigned char status;
 	unsigned short address;
+	static unsigned char readBuffer = 0x0;
 	switch (index) {
 	case 0x2002: //PPU Status Flags
 		status = reg.status.byte;
@@ -19,7 +20,15 @@ unsigned char NES::PPU::getPPURegister(unsigned short index) {
 	case 0x2007: //PPU Data Read/Write
 		address = vramRegister.v.address;
 		vramRegister.v.address += reg.control.flags.VRAMAddress ? 32 : 1;
-		return parent.ppuMemory->get(address);
+		
+		if (address % 0x4000 < 0x3F00) {
+			char value = readBuffer;
+			readBuffer = parent.ppuMemory->get(address);
+			return value;
+		} else {
+			readBuffer = parent.ppuMemory->get(address - 0x1000);
+			return parent.ppuMemory->get(address);
+		}
 		//exit(0);
 		break;
 	default:
@@ -182,7 +191,7 @@ void NES::PPU::renderPixel() {
 
 	unsigned char* finalColor = colorTable[parent.ppuMemory->get(0x3F00)]; //Default Color
 	if (backgoundColor != 0x0) finalColor = colorTable[parent.ppuMemory->get(0x3F00 | backgoundColor)];
-	if (spriteColor != 0x0 && backgroundPriority == false) finalColor = colorTable[parent.ppuMemory->get(0x3F00 | spriteColor)];
+	if (spriteColor != 0x0 && (backgroundPriority == false || backgoundColor == 0x0)) finalColor = colorTable[parent.ppuMemory->get(0x3F00 | spriteColor)];
 
 	unsigned int combinedColor = finalColor[0] << 16 | finalColor[1] << 8 | finalColor[2];
 	parent.graphics[x + (y * 256)] = combinedColor;
@@ -256,13 +265,8 @@ void NES::PPU::step() {
 
 
 	//Skip 0,0 on odd frames
-	if (reg.mask.flags.ShowBackground && currentCycle == 0 && currentScanline == 0) {
+	if (oddFrame && reg.mask.flags.ShowBackground && currentCycle == 0 && currentScanline == 0) {
 		return;
-	}
-
-	//Render Pixel During Visible Scanlines
-	if (renderingEnabled && visibleScanline && visibleCycle) {
-		renderPixel();
 	}
 
 	if (renderingEnabled && renderScanline) {
@@ -323,15 +327,13 @@ void NES::PPU::step() {
 			shift.tileHi <<= 1;
 			shift.attributeTableLo <<= 1;
 			shift.attributeTableHi <<= 1;
-			
-			//Feed the attribute table latches
-			shift.attributeTableLo |= latch.attributeTable & 0x1;
-			shift.attributeTableHi |= (latch.attributeTable & 0x3) >> 1;
 
 			// The lower 8 bits are reloaded into background shift registes at ticks 9, 17, 25, ..., 257 and ticks 329, and 337.
 			if (currentCycle % 8 == 1) {
 				shift.tileLo |= latch.tileLo;
 				shift.tileHi |= latch.tileHi;
+				shift.attributeTableLo |= (latch.attributeTable & 0x1) * 0xFF;
+				shift.attributeTableHi |= ((latch.attributeTable & 0x2) >> 1) * 0xFF;
 			}
 		}
 
@@ -360,6 +362,11 @@ void NES::PPU::step() {
 			vramRegister.v.scroll.coarseXScroll = vramRegister.t.scroll.coarseXScroll;
 			vramRegister.v.scroll.nameTableX    = vramRegister.t.scroll.nameTableX;
 		}
+	}
+
+	//Render Pixel During Visible Scanlines
+	if (renderingEnabled && visibleScanline && visibleCycle) {
+		renderPixel();
 	}
 
 	// VBlank Scanlines
