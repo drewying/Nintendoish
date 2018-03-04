@@ -20,6 +20,7 @@ static Chip8 *chip8;
 static NES::Console *nes;
 
 ifstream logfile;
+bool pause = false;
 bool passedTest = true;
 bool runTests = false;
 bool fullLog = true;
@@ -102,6 +103,9 @@ void keyDown(unsigned char key, int x, int y) {
 	case '\r':
 		nes->controllerOne->start = true;
 		break;
+	case 'p':
+		pause = !pause;
+		break;
 	default:
 		break;
 	}
@@ -131,6 +135,7 @@ void keyUp(unsigned char key, int x, int y) {
 
 void updateNES(void) {
 	//high_resolution_clock::time_point t1 = high_resolution_clock::now();
+	if (pause) return;
     nes->emulateCycle();
     if (nes->updateGraphics) glutPostRedisplay();
     //high_resolution_clock::time_point t2 = high_resolution_clock::now();

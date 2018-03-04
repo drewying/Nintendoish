@@ -119,13 +119,16 @@ void NES::PPU::reset() {
 
 void NES::PPU::prepareSprites() {
 	Sprite* sprite = (Sprite*)oam;
-	int spriteCount = 0;
-	int oamIndex = 0;
+	unsigned int spriteCount = 0;
+	unsigned int oamIndex = 0;
 	std::fill_n(spr, 8, nullptr);
+	if (reg.control.flags.SpriteSize == true) {
+		printf("NOT IMPLEMENTED/n");
+	}
 	while (spriteCount < 8 && oamIndex < 64) {
 		if (sprite->yPosition != 0 &&
-			currentScanline >= sprite->yPosition + 1 &&
-			currentScanline < sprite->yPosition + 1 + 8)
+			currentScanline >= sprite->yPosition &&
+			currentScanline < sprite->yPosition + 8)
 		{
 			spr[spriteCount] = sprite;
 			spriteCount++;
@@ -137,8 +140,8 @@ void NES::PPU::prepareSprites() {
 
 void NES::PPU::renderPixel() {
 
-	unsigned char x = currentCycle - 1;
-	unsigned char y = currentScanline;
+	unsigned int x = currentCycle - 1;
+	unsigned int y = currentScanline;
 	
 	unsigned short backgoundColor = 0x0;
 	unsigned short spriteColor = 0x0;
@@ -161,14 +164,14 @@ void NES::PPU::renderPixel() {
 			Sprite* sprite = spr[i];
 
 			if (sprite != nullptr &&
-				x >= (sprite->xPosition + 1) &&
-				x < (sprite->xPosition + 9))
+				x >= sprite->xPosition &&
+				x  < (sprite->xPosition + 8))
 			{
-					unsigned char spriteX = x - (sprite->xPosition + 1);
+					unsigned char spriteX = x - sprite->xPosition;
 					unsigned char spriteY = y - (sprite->yPosition + 1);
 					unsigned short tileIndex = sprite->tileIndex + (reg.control.flags.SpriteTableAddress ? 0x100 : 0x0);
 					tileIndex *= 0x10;
-					tileIndex += sprite->attributes.verticalFlip ? 8 - spriteY : spriteY;
+					tileIndex += sprite->attributes.verticalFlip ? 7 - spriteY : spriteY;
 	
 					unsigned char tileSliceA = parent.ppuMemory->get(tileIndex);
 					unsigned char tileSliceB = parent.ppuMemory->get(tileIndex + 8);
@@ -183,12 +186,12 @@ void NES::PPU::renderPixel() {
 					backgroundPriority = sprite->attributes.priority == 1;
 
 					//Check for sprite 0 hit.
-					reg.status.flags.Sprite0Hit = reg.status.flags.Sprite0Hit || (sprite == (Sprite*)oam && spriteColor != 0x0 && backgoundColor != 0x0 && x != 255);
+					reg.status.flags.Sprite0Hit = reg.status.flags.Sprite0Hit || (sprite == (Sprite*)oam && spriteColor != 0x0 && backgoundColor != 0x0 && currentCycle != 255);
 					if (spriteColor != 0x0) break;
 			}
 		}
 	}
-
+	
 	unsigned char* finalColor = colorTable[parent.ppuMemory->get(0x3F00)]; //Default Color
 	if (backgoundColor != 0x0) finalColor = colorTable[parent.ppuMemory->get(0x3F00 | backgoundColor)];
 	if (spriteColor != 0x0 && (backgroundPriority == false || backgoundColor == 0x0)) finalColor = colorTable[parent.ppuMemory->get(0x3F00 | spriteColor)];
@@ -260,14 +263,13 @@ void NES::PPU::step() {
 	bool visibleCycle = currentCycle >= 1 && currentCycle <= 256;
 	bool preRenderCycle = (currentCycle >= 321 && currentCycle <= 336);
 
-	// Prepare Sprites
-	if (visibleScanline && currentCycle == 0) prepareSprites();
-
-
 	//Skip 0,0 on odd frames
 	if (oddFrame && reg.mask.flags.ShowBackground && currentCycle == 0 && currentScanline == 0) {
 		return;
 	}
+
+	// Prepare Sprites
+	if (visibleScanline && currentCycle == 257) prepareSprites();
 
 	if (renderingEnabled && renderScanline) {
 		if (visibleCycle || preRenderCycle) {
