@@ -23,11 +23,11 @@ unsigned char NES::PPU::getPPURegister(unsigned short index) {
 		
 		if (address % 0x4000 < 0x3F00) {
 			char value = readBuffer;
-			readBuffer = parent.ppuMemory->get(address);
+			readBuffer = console.ppuMemory->get(address);
 			return value;
 		} else {
-			readBuffer = parent.ppuMemory->get(address - 0x1000);
-			return parent.ppuMemory->get(address);
+			readBuffer = console.ppuMemory->get(address - 0x1000);
+			return console.ppuMemory->get(address);
 		}
 		//exit(0);
 		break;
@@ -45,7 +45,7 @@ void NES::PPU::setPPURegister(unsigned short index, unsigned char value) {
 		vramRegister.t.scroll.nameTableY = ((value & 0x2) >> 1);
 
 		if (reg.control.flags.NMI == true && reg.status.flags.VBlankStarted == true) {
-			parent.cpu->requestNMI = true;
+			console.cpu->requestNMI = true;
 		}
 		break;
 	case 0x2001: //PPU Render Flags
@@ -81,7 +81,7 @@ void NES::PPU::setPPURegister(unsigned short index, unsigned char value) {
 		break;
 	case 0x2007: { //PPU Data Read/Write
 			unsigned short address = vramRegister.v.address;
-			parent.ppuMemory->set(address, value);
+			console.ppuMemory->set(address, value);
 			vramRegister.v.address += reg.control.flags.VRAMAddress ? 32 : 1;
 		}
 		break;
@@ -98,9 +98,9 @@ void NES::PPU::setPPURegister(unsigned short index, unsigned char value) {
 }
 
 void NES::PPU::copyDMAMemory(unsigned char index) {
-	parent.cpu->stallCycles = (parent.cpu->cycles) % 2 == 1 ? 513 : 514;
+	console.cpu->stallCycles = (console.cpu->cycles) % 2 == 1 ? 513 : 514;
 	for (int i = 0x0; i < 0x100; i++) {
-		oam[i] = parent.memory->get((index * 0x100) + i);
+		oam[i] = console.memory->get((index * 0x100) + i);
 	}
 	//memcpy(memory.oam, &parent.memory[index * 0x100], 0xFF);
 }
@@ -173,8 +173,8 @@ void NES::PPU::renderPixel() {
 					tileIndex *= 0x10;
 					tileIndex += sprite->attributes.verticalFlip ? 7 - spriteY : spriteY;
 	
-					unsigned char tileSliceA = parent.ppuMemory->get(tileIndex);
-					unsigned char tileSliceB = parent.ppuMemory->get(tileIndex + 8);
+					unsigned char tileSliceA = console.ppuMemory->get(tileIndex);
+					unsigned char tileSliceB = console.ppuMemory->get(tileIndex + 8);
 
 					tileSliceA = tileSliceA >> (sprite->attributes.horizontalFlip ? spriteX : 7 - spriteX);
 					tileSliceB = tileSliceB >> (sprite->attributes.horizontalFlip ? spriteX : 7 - spriteX);
@@ -192,12 +192,12 @@ void NES::PPU::renderPixel() {
 		}
 	}
 	
-	unsigned char* finalColor = colorTable[parent.ppuMemory->get(0x3F00)]; //Default Color
-	if (backgoundColor != 0x0) finalColor = colorTable[parent.ppuMemory->get(0x3F00 | backgoundColor)];
-	if (spriteColor != 0x0 && (backgroundPriority == false || backgoundColor == 0x0)) finalColor = colorTable[parent.ppuMemory->get(0x3F00 | spriteColor)];
+	unsigned char* finalColor = colorTable[console.ppuMemory->get(0x3F00)]; //Default Color
+	if (backgoundColor != 0x0) finalColor = colorTable[console.ppuMemory->get(0x3F00 | backgoundColor)];
+	if (spriteColor != 0x0 && (backgroundPriority == false || backgoundColor == 0x0)) finalColor = colorTable[console.ppuMemory->get(0x3F00 | spriteColor)];
 
 	unsigned int combinedColor = finalColor[0] << 16 | finalColor[1] << 8 | finalColor[2];
-	parent.graphics[x + (y * 256)] = combinedColor;
+	console.graphics[x + (y * 256)] = combinedColor;
 } 
 
 void NES::PPU::renderPatternTable() {
@@ -222,18 +222,18 @@ void NES::PPU::renderPatternTable() {
 void NES::PPU::renderTile(int x, int y, int tileIndex) {
 	tileIndex *= 0x10;
 	for (int i = 0; i <= 8; i++) {
-		char tileSliceA = parent.ppuMemory->get(tileIndex + i);
-		char tileSliceB = parent.ppuMemory->get(tileIndex + i + 8);
+		char tileSliceA = console.ppuMemory->get(tileIndex + i);
+		char tileSliceB = console.ppuMemory->get(tileIndex + i + 8);
 		for (int j = 7; j >= 0; j--) {
 			unsigned short colorIndex = (tileSliceB & 0x1) << 1 | (tileSliceA & 0x1);
 
-			unsigned char* backgroundColor = colorTable[parent.ppuMemory->get(0x3F00)];
-			unsigned char* color = colorTable[parent.ppuMemory->get(0x3F00 | (colorIndex + 6))];
+			unsigned char* backgroundColor = colorTable[console.ppuMemory->get(0x3F00)];
+			unsigned char* color = colorTable[console.ppuMemory->get(0x3F00 | (colorIndex + 6))];
 
 			if (colorIndex == 0) color = backgroundColor;
 
 			unsigned int combinedColor = color[0] << 16 | color[1] << 8 | color[2];
-			parent.graphics[x + j + ((y + i) * 256)] = combinedColor;
+			console.graphics[x + j + ((y + i) * 256)] = combinedColor;
 			tileSliceA = tileSliceA >> 1;
 			tileSliceB = tileSliceB >> 1;
 		}
@@ -252,7 +252,7 @@ void NES::PPU::step() {
 			frameCount++;
 			currentScanline = -1;
 			oddFrame ^= 1;
-			parent.updateGraphics = true;
+			console.updateGraphics = true;
 		}
 	}
 
@@ -287,13 +287,13 @@ void NES::PPU::step() {
 			//Fetch name table Byte
 			if (currentCycle % 8 == 1) {
 				unsigned short index = 0x2000 | (vramRegister.v.address & 0x0FFF);
-				latch.nameTable = parent.ppuMemory->get(index);
+				latch.nameTable = console.ppuMemory->get(index);
 			}
 			
 			//Fetch attribute table byte
 			if (currentCycle % 8 == 3) {
 				unsigned short address = vramRegister.v.address;
-				unsigned char attributeTable = parent.ppuMemory->get(0x23C0 | (address & 0x0C00) | ((address >> 4) & 0x38) | ((address >> 2) & 0x07));
+				unsigned char attributeTable = console.ppuMemory->get(0x23C0 | (address & 0x0C00) | ((address >> 4) & 0x38) | ((address >> 2) & 0x07));
 				
 				unsigned int paletteX = (vramRegister.v.scroll.coarseXScroll & 0x3) >> 1;
 				unsigned int paletteY = (vramRegister.v.scroll.coarseYScroll & 0x3) >> 1;
@@ -311,7 +311,7 @@ void NES::PPU::step() {
 				unsigned short index = latch.nameTable + (reg.control.flags.BackgroundTableAddress ? 0x100 : 0);
 				index *= 0x10;
 				index += vramRegister.v.scroll.fineYScroll;
-				latch.tileLo = parent.ppuMemory->get(index);
+				latch.tileLo = console.ppuMemory->get(index);
 			}
 			
 			//Fetch hi tile byte
@@ -319,7 +319,7 @@ void NES::PPU::step() {
 				unsigned short index = latch.nameTable + (reg.control.flags.BackgroundTableAddress ? 0x100 : 0);
 				index *= 0x10;
 				index += vramRegister.v.scroll.fineYScroll;
-				latch.tileHi = parent.ppuMemory->get(index + 8);
+				latch.tileHi = console.ppuMemory->get(index + 8);
 			}
 		}
 
@@ -393,7 +393,7 @@ void NES::PPU::step() {
 void NES::PPU::vBlankStart() {
     reg.status.flags.VBlankStarted = true;
 	if (reg.control.flags.NMI == true) {
-		parent.cpu->requestNMI = true;
+		console.cpu->requestNMI = true;
 	}
 }
 

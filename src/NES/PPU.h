@@ -123,7 +123,7 @@ namespace NES {
 		void vBlankStart();
 		void vBlankEnd();
 
-        Console &parent;
+        Console &console;
 
 		// Rendering
 		void renderPatternTable();
@@ -131,7 +131,7 @@ namespace NES {
 		void prepareSprites();
 		void renderPixel();		
 
-        PPU(Console &parent) : parent(parent) {
+        PPU(Console &console) : console(console) {
             reset();
         };
         

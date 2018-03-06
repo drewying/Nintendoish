@@ -14,17 +14,17 @@ unsigned char NES::Memory::get(unsigned short index) {
 	if (index < 0x4000) {
 		//PPU Access. Mirrors of $2000-2007 (repeats every 8 bytes)
 		index = 0x2000 + (index % 0x8);
-		return parent.ppu->getPPURegister(index);
+		return console.ppu->getPPURegister(index);
 	}
 
 	if (index == 0x4014) {
 		//OAM DMA Access
-		return parent.ppu->getPPURegister(index);
+		return console.ppu->getPPURegister(index);
 	}
 
 	if (index == 0x4016) {
 		//Controller 1
-		return parent.controllerOne->pollController();
+		return console.controllerOne->pollController();
 	}
 
 	if (index == 0x4017) {
@@ -33,21 +33,11 @@ unsigned char NES::Memory::get(unsigned short index) {
 		return 0x40;
 	}
 
-	// Here lies Mapper Acces World.
-
-	/*if (index >= 0xC000) {
-		return prg[index - 0xC000];
-	}*/
-
 	if (index >= 0x8000) {
-		//NROM Mapper access
-		if (extended == false && index > 0x4000) {
-			index -= 0x4000;
-		}
-		return prg[index - 0x8000];
+		return console.cartridge->getProgramData(index);
 	}
 
-	return prg[index];
+	return 0x0;
 }
 
 void NES::Memory::set(unsigned short index, unsigned char value) {
@@ -57,23 +47,19 @@ void NES::Memory::set(unsigned short index, unsigned char value) {
 	} else if (index < 0x4000) {
 		//PPU Access. Mirrors of $2000-2007 (repeats every 8 bytes)
 		index = 0x2000 + (index % 0x8);
-		parent.ppu->setPPURegister(index, value);
+		console.ppu->setPPURegister(index, value);
 	} else if (index == 0x4014) {
 		//OAM DMA Access
-		parent.ppu->setPPURegister(index, value);
+		console.ppu->setPPURegister(index, value);
 	} else if (index == 0x4016) {
 		//Controller 1
-		parent.controllerOne->startPoll();
+		console.controllerOne->startPoll();
 	} else if (index == 0x4017) {
 		//Controller 2
 	} else if (index >= 0xC000) {
-		prg[index - 0xC000] = value;
+		//Not implemented yet
 	} else if (index >= 0x8000) {
-		//NROM Mapper access
-		if (extended == false && index > 0x4000) {
-			index -= 0x4000;
-		}
-		prg[index - 0x8000] = value;
+		console.cartridge->setProgramData(index, value);
 	}
 }
 

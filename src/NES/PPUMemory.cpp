@@ -2,7 +2,7 @@
 
 unsigned char NES::PPUMemory::get(unsigned short index) {
 	if (index < 0x2000) {
-		return chr[index];
+		return console.cartridge->getTileData(index);
 	}
 	if (index < 0x3000) {
 		//TODO Proper Mirroring
@@ -24,7 +24,7 @@ unsigned char NES::PPUMemory::get(unsigned short index) {
 
 void  NES::PPUMemory::set(unsigned short index, unsigned char value) {
 	if (index < 0x2000) {
-		chr[index] = value;
+		console.cartridge->setTileData(index, value);
 	} else if (index < 0x3000) {
 		//TODO Proper Mirroring
 		if (index < 0x2800) {
@@ -39,8 +39,4 @@ void  NES::PPUMemory::set(unsigned short index, unsigned char value) {
 		if (index >= 0x3F10 && (index - 0x3F10) % 0x4 == 0) index -= 0x10; // Pallette Mirroring
 		pal[index - 0x3F00] = value;
 	}
-}
-
-NES::PPUMemory::PPUMemory()
-{
 }

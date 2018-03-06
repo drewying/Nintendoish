@@ -1,8 +1,10 @@
 #pragma once
 
+#include "Cartridge.h"
 #include "CPU.h"
 #include "Controller.h"
 #include "Memory.h"
+#include "PPU.h"
 #include "PPUMemory.h"
 
 #include <functional>
@@ -10,10 +12,11 @@
 #include <stdint.h>
 
 namespace NES {
+	class Cartridge;
     class CPU;
-    class Memory;
-    class PPU;
 	class Controller;
+	class Memory;
+    class PPU;
 	class PPUMemory;
 
     class Console {
@@ -22,6 +25,7 @@ namespace NES {
 		void loadProgram(const char* path);
 		void reset();
 
+		Cartridge *cartridge;
         CPU *cpu;
         Memory *memory;
         PPU *ppu;

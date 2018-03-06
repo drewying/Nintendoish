@@ -2,11 +2,13 @@
 #include "CPU.h"
 #include "Memory.h"
 #include "PPU.h"
+#include "Mapper0.h"
 
 #include <iostream>
 #include <sstream>
 #include <iomanip>
 #include <stdio.h>
+
 
 using namespace std;
 
@@ -14,7 +16,7 @@ NES::Console::Console() {
 	memory = new Memory(*this);
 	cpu = new CPU(*memory);
 	ppu = new PPU(*this);
-	ppuMemory = new PPUMemory();
+	ppuMemory = new PPUMemory(*this);
 	controllerOne = new Controller();
 	reset();
 }
@@ -44,29 +46,10 @@ void NES::Console::emulateCycle() {
 	};
 }
 
-void NES::Console::loadProgram(const char * path)
+void NES::Console::loadProgram(const char* path)
 {
-	FILE *rom = fopen(path, "rb");
-	if (rom) {
-        char header[16];
-        fread(header, sizeof(char), 16, rom);
-        if (header[0] != 'N' ||
-            header[1] != 'E' ||
-            header[2] != 'S' ||
-            header[3] != '\x1A') {
-            std::cout << "Invalid Format" << std::endl;
-            exit(0);
-        }
-        
-        bool hasTrainer = (header[6] & 0x4) >> 2;
-        if (hasTrainer) {
-            fseek(rom, 512, SEEK_SET);
-        }
-        memory->extended = (header[4] == 2);
-		fread(memory->prg, sizeof(char), header[4] * 16384, rom);
-        fread(ppuMemory->chr, sizeof(char), header[5] * 8192, rom);
-        cpu->reg.PC = memory->resetVector();
-    }
+	cartridge = new Cartridge(path);
+	cpu->reg.PC = memory->resetVector();
 	std::cout << "Loaded" << std::endl;
 }
 
