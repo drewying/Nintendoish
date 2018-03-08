@@ -26,7 +26,7 @@ Cartridge::Cartridge(const char* path) {
         if (chrSize == 0) chrSize = (header[8] == 0 ? 0x1 : header[8]);  //No ROM present, allocate RAM instead.
         verticalMirroring = (header[6] & 0x1) == 0x1;
         horizontalMirroring = (header[6] & 0x1) == 0x0;
-        if (header[6] & 0x4 == 0x4) verticalMirroring = horizontalMirroring = true;
+        if ((header[6] & 0x4) == 0x4) verticalMirroring = horizontalMirroring = true;
         batteryBackup = header[6] & 0x2 == 0x2;
         mapperNumber = (header[7] & 0xF) | (header[6] >> 4);
 

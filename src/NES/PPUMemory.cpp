@@ -38,20 +38,24 @@ void PPUMemory::set(uint16_t index, uint8_t value) {
 }
 
 uint16_t PPUMemory::mirrorIndex(uint16_t index) {
-    bool horizontal = false;
-    if (horizontal) {
+    bool h = console.cartridge->horizontalMirroring;
+    bool v = console.cartridge->verticalMirroring;
+
+    if (h && !v) {
         // Horizontal Mirroring
         index -= 0x2000;
         if (index % 0x800 >= 0x400) index -= 0x400;
-        return vram[index];
-    }
-    else {
+        return index;
+    } else if (!h && v) {
         // Vertical Mirroring
-        if (index < 0x2800) {
-            return vram[index - 0x2000];
-        }
-        else {
-            return vram[index - 0x2800];
-        }
+        index -= 0x2000;
+        if (index >= 0x800) index -= 0x800;
+        return index;
+    } else if (!h && !v) {
+        // No Mirroring
+        return index;
+    } else if (h && v) {
+        // Single Screen Mirroring
+        return index & 0x800;
     }
 }
