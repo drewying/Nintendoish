@@ -10,11 +10,11 @@ namespace NES {
 
 		Mapper0(Cartridge &cartridge) : Mapper(cartridge) {}
 
-		unsigned char getTileData(unsigned short index);
-		void  setTileData(unsigned short index, unsigned char value);
+		uint8_t getTileData(uint16_t index);
+		void  setTileData(uint16_t index, uint8_t value);
 
-		unsigned char getProgramData(unsigned short index);
-		void  setProgramData(unsigned short index, unsigned char value);
+		uint8_t getProgramData(uint16_t index);
+		void  setProgramData(uint16_t index, uint8_t value);
 	};
 
 }

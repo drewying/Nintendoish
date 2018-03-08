@@ -1,7 +1,7 @@
 #include "Controller.h"
 
 
-unsigned char NES::Controller::pollController()
+uint8_t NES::Controller::pollController()
 {
 
 	

@@ -1,9 +1,16 @@
 #pragma once
+
+#include "NES.h"
+
+#include <stdint.h>
+
 namespace NES {
-	class Controller
-	{
+	class Controller {
 	public:
-		unsigned char pollController();
+		Controller();
+		~Controller();
+
+		uint8_t pollController();
 		void startPoll();
 
 		bool a      = false;
@@ -15,15 +22,9 @@ namespace NES {
 		bool left   = false;
 		bool right  = false;
 
-		Controller();
-		~Controller();
-	
-	private:
 		bool strobeLatch = false;
 		int currentPoll = 0;
 	};
-
-
-}
+};
 
 

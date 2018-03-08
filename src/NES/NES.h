@@ -7,6 +7,7 @@
 #include "PPU.h"
 #include "PPUMemory.h"
 
+#include <stdint.h>
 #include <functional>
 #include <string>
 #include <stdint.h>

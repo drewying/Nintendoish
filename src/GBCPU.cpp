@@ -1,14 +1,14 @@
 #include "GBCPU.h"
 #include <iostream>
 #include <string>
-void GBCPU::handleKeyPress(unsigned char key, bool isKeyDown)
+void GBCPU::handleKeyPress(uint8_t key, bool isKeyDown)
 {
 }
 
 void GBCPU::emulateCycle()
 {
 	
-	unsigned char op = mem[r.pc];
+	uint8_t op = mem[r.pc];
 	std::string desc;
 	switch (op) {
 		case 0x0: // NOP
@@ -558,13 +558,13 @@ GBCPU::~GBCPU()
 }
 
 
-void GBCPU::loadByte(unsigned char *targetRegister) {
+void GBCPU::loadByte(uint8_t *targetRegister) {
 	*targetRegister = mem[r.pc + 1];
 	r.pc += 3;
 }
 
-void GBCPU::loadWord(unsigned short *targetRegister) {
-	unsigned short val = mem[r.pc + 1];
+void GBCPU::loadWord(uint16_t *targetRegister) {
+	uint16_t val = mem[r.pc + 1];
 	*targetRegister = val;
 	r.pc += 3;
 }

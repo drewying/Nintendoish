@@ -8,12 +8,12 @@ namespace NES {
 	public:
 		PPUMemory(Console &console) : console(console) {}
 
-		unsigned char get(unsigned short index);
-		void  set(unsigned short index, unsigned char value);
+		uint8_t get(uint16_t index);
+		void  set(uint16_t index, uint8_t value);
 
 	private:
-		unsigned char vram[0x2000] = { 0 };    // Video Memory/Name Tables
-		unsigned char    pal[0x20] = { 0x3F }; // Palette Memory. Initialized to black.
+		uint8_t vram[0x2000] = { 0 };    // Video Memory/Name Tables
+		uint8_t    pal[0x20] = { 0x3F }; // Palette Memory. Initialized to black.
 	
 		Console &console;
 	};

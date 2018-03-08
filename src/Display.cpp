@@ -1,15 +1,13 @@
 #include "Display.h"
 #include <GL/GLUT.h>
 
-Display::Display(float scale, int width, int  height)
-{
+Display::Display(float scale, int width, int  height) {
 	this->scale = scale;
 	this->width = width;
 	this->height = height;
 }
 
-void Display::plotPixel(int x, int y, float r, float g, float b)
-{
+void Display::plotPixel(int x, int y, float r, float g, float b) {
 
 	float scaledWidth = float(this->scale * this->width);
 	float scaledHeight = float(this->scale * this->height);
@@ -29,16 +27,12 @@ void Display::plotPixel(int x, int y, float r, float g, float b)
 	
 }
 
-void Display::initialize(int argc, char **argv)
-{
+void Display::initialize(int argc, char **argv) {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_SINGLE);
 	glutInitWindowSize(this->width * this->scale, this->height * this->scale);
 	glutCreateWindow("Nintendoish");
 }
 
-
-
-Display::~Display()
-{
+Display::~Display() {
 }

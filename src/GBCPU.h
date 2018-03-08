@@ -8,62 +8,62 @@ class GBCPU
 		struct {
 			union {
 				struct {
-					unsigned char f;
-					unsigned char a;
+					uint8_t f;
+					uint8_t a;
 				};
-				unsigned short af;
+				uint16_t af;
 			};
 		};
 
 		struct {
 			union {
 				struct {
-					unsigned char c;
-					unsigned char b;
+					uint8_t c;
+					uint8_t b;
 				};
-				unsigned short bc;
+				uint16_t bc;
 			};
 		};
 
 		struct {
 			union {
 				struct {
-					unsigned char e;
-					unsigned char d;
+					uint8_t e;
+					uint8_t d;
 				};
-				unsigned short de;
+				uint16_t de;
 			};
 		};
 
 		struct {
 			union {
 				struct {
-					unsigned char l;
-					unsigned char h;
+					uint8_t l;
+					uint8_t h;
 				};
-				unsigned short hl;
+				uint16_t hl;
 			};
 		};
 
-		unsigned short sp;
-		unsigned short pc;
+		uint16_t sp;
+		uint16_t pc;
 	};
 
 	struct clock {
-		unsigned short m;
-		unsigned short p;
+		uint16_t m;
+		uint16_t p;
 	};
 
 	registers r;
 	clock c;
 
-	unsigned char mem[0xFFFF];
+	uint8_t mem[0xFFFF];
 
-	void loadWord(unsigned short *targetRegister);
-	void loadByte(unsigned char *targetRegister);
+	void loadWord(uint16_t *targetRegister);
+	void loadByte(uint8_t *targetRegister);
 	
 public:
-	void handleKeyPress(unsigned char key, bool isKeyDown);
+	void handleKeyPress(uint8_t key, bool isKeyDown);
 	void createInstructionTable();
 	void emulateCycle();
 	void loadProgram(const char* path);

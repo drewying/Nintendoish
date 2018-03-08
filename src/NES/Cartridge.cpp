@@ -11,8 +11,8 @@ using namespace NES;
 Cartridge::Cartridge(const char* path) {
 	FILE *rom = fopen(path, "rb");
 	if (rom) {
-		unsigned char header[16];
-		fread(header, sizeof(char), 16, rom);
+		uint8_t header[16];
+		fread(header, sizeof(uint8_t), 16, rom);
 		if (header[0] != 'N' ||
 			header[1] != 'E' ||
 			header[2] != 'S' ||
@@ -35,11 +35,11 @@ Cartridge::Cartridge(const char* path) {
 			fseek(rom, 512, SEEK_SET);
 		}
 
-		prg = (unsigned char*)calloc(prgSize * 0x4000, sizeof(char));
-		chr = (unsigned char*)calloc(chrSize * 0x2000, sizeof(char));
+		prg = (uint8_t*)calloc(prgSize * 0x4000, sizeof(uint8_t));
+		chr = (uint8_t*)calloc(chrSize * 0x2000, sizeof(uint8_t));
 		
-		fread(prg, sizeof(char), prgSize * 0x4000, rom);
-		fread(chr, sizeof(char), header[5] * 0x2000, rom);
+		fread(prg, sizeof(uint8_t), prgSize * 0x4000, rom);
+		fread(chr, sizeof(uint8_t), header[5] * 0x2000, rom);
 
 		switch (mapperNumber) {
 		case 0:
@@ -58,13 +58,13 @@ Cartridge::Cartridge(const char* path) {
 	}
 }
 
-unsigned char Cartridge::getTileData(unsigned short index) { return mapper->getTileData(index); }
+uint8_t Cartridge::getTileData(uint16_t index) { return mapper->getTileData(index); }
 
-void Cartridge::setTileData(unsigned short index, unsigned char value) { return mapper->setTileData(index, value); }
+void Cartridge::setTileData(uint16_t index, uint8_t value) { return mapper->setTileData(index, value); }
 
-unsigned char Cartridge::getProgramData(unsigned short index) { return mapper->getProgramData(index); }
+uint8_t Cartridge::getProgramData(uint16_t index) { return mapper->getProgramData(index); }
 
-void  Cartridge::setProgramData(unsigned short index, unsigned char value) { return mapper->setProgramData(index, value); }
+void  Cartridge::setProgramData(uint16_t index, uint8_t value) { return mapper->setProgramData(index, value); }
 
 NES::Cartridge::~Cartridge() {
 	free(prg);

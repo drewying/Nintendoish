@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <stdlib.h>
 
-unsigned char FONTSET[80] =
+uint8_t FONTSET[80] =
 {
 	0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
 	0x20, 0x60, 0x20, 0x20, 0x70, // 1
@@ -23,7 +23,7 @@ unsigned char FONTSET[80] =
 	0xF0, 0x80, 0xF0, 0x80, 0x80  // F
 };
 
-void Chip8::handleKeyPress(unsigned char key, bool isKeyDown)
+void Chip8::handleKeyPress(uint8_t key, bool isKeyDown)
 {
 	switch (key) {
 	case '1':
@@ -79,14 +79,14 @@ void Chip8::handleKeyPress(unsigned char key, bool isKeyDown)
 
 void Chip8::emulateCycle()
 {
-	unsigned short opcode = memory[PC] << 8 | memory[PC + 1];
-	unsigned char X = (opcode & 0x0F00) >> 8;
-	unsigned char Y = (opcode & 0x00F0) >> 4;
-	unsigned char VX = V[X];
-	unsigned char VY = V[Y];
-	unsigned short N = opcode & 0x000F;
-	unsigned short NN = opcode & 0x00FF;
-	unsigned short NNN = opcode & 0x0FFF;
+	uint16_t opcode = memory[PC] << 8 | memory[PC + 1];
+	uint8_t X = (opcode & 0x0F00) >> 8;
+	uint8_t Y = (opcode & 0x00F0) >> 4;
+	uint8_t VX = V[X];
+	uint8_t VY = V[Y];
+	uint16_t N = opcode & 0x000F;
+	uint16_t NN = opcode & 0x00FF;
+	uint16_t NNN = opcode & 0x0FFF;
 
 	drawFlag = false;
 
@@ -205,7 +205,7 @@ void Chip8::emulateCycle()
 			break;
 		case 0xD000:
 			// Draws a sprite at coordinate (VX, VY)
-			unsigned short pixel;
+			uint16_t pixel;
 			V[0xF] = 0;
 			for (int yline = 0; yline < N; yline++)
 			{

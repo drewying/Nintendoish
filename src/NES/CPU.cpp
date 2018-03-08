@@ -111,7 +111,7 @@ CPU::~CPU()
 {
 }
 
-unsigned char CPU::readProgram() {
+uint8_t CPU::readProgram() {
     return memory.get(reg.PC++);
 }
 
@@ -124,10 +124,10 @@ unsigned int CPU::step()
 
 	int currentCycles = cycles;
 
-    unsigned char hi = 0x0;
-    unsigned char lo = 0x0;
-	unsigned short loadedAddress = 0x0;
-	unsigned char loadedInstruction = readProgram();
+    uint8_t hi = 0x0;
+    uint8_t lo = 0x0;
+	uint16_t loadedAddress = 0x0;
+	uint8_t loadedInstruction = readProgram();
     
     currentAddressMode = static_cast<AddressMode>(addressTable[loadedInstruction]);
     switch (currentAddressMode) {
@@ -146,7 +146,7 @@ unsigned int CPU::step()
             // Branch instructions(e.g.BEQ, BCS) have a relative addressing mode that
             // specifies an 8 - bit signed offset relative to the current PC.
             lo = readProgram();
-			loadedAddress = reg.PC + (signed char)lo;
+			loadedAddress = reg.PC + (int8_t)lo;
             break;
         case ZeroPage:
             // A single byte specifies an address in the first page of memory ($00xx),
@@ -171,7 +171,7 @@ unsigned int CPU::step()
             hi = readProgram();
             //address = hi << 8 | lo;
             //address = memory[(hi << 8 | lo)];
-			loadedAddress = (unsigned short)(memory.get(hi << 8 | lo) + memory.get((hi << 8 | (unsigned char)(lo + 1))) * 256);
+			loadedAddress = (uint16_t)(memory.get(hi << 8 | lo) + memory.get((hi << 8 | (uint8_t)(lo + 1))) * 256);
             break;
         case Absolute:
             // A full 16 - bit address is specified and the byte at that address is used to perform the computation.
@@ -196,14 +196,14 @@ unsigned int CPU::step()
             // The little-endian address stored at the two-byte pair of sum address (LSB) and sum address plus one (MSB)
             // is loaded and the value at that address is used to perform the computation.
             lo = readProgram();
-			loadedAddress = (unsigned short)(memory.get((lo + reg.X) % 256) + memory.get((lo + reg.X + 1) % 256) * 256);
+			loadedAddress = (uint16_t)(memory.get((lo + reg.X) % 256) + memory.get((lo + reg.X + 1) % 256) * 256);
             break;
         case IndirectIndexY:
             // The value in Y is added to the address at the little-endian address stored at the two-byte pair of the
             // specified address (LSB) and the specified address plus one (MSB). The value at the sum address is used
             // to perform the computation. Indeed addressing mode actually repeats exactly the accumulator register's digits.
             lo = readProgram();
-			loadedAddress = (unsigned short)(memory.get(lo) + memory.get((lo + 1) % 256) * 256 + reg.Y);
+			loadedAddress = (uint16_t)(memory.get(lo) + memory.get((lo + 1) % 256) * 256 + reg.Y);
             break;
         default:
             break;
@@ -216,12 +216,12 @@ unsigned int CPU::step()
 	return cycles - currentCycles;
 }
 
-void CPU::setNZStatus(unsigned char value) {
+void CPU::setNZStatus(uint8_t value) {
     reg.P.status.Zero = (value == 0x0);
     reg.P.status.Negative = ((value & 0x80) != 0);
 }
 
-void CPU::branchOnCondition(bool condition, unsigned short address) {
+void CPU::branchOnCondition(bool condition, uint16_t address) {
     if (condition) {
         cycles++;
         oopsCycle(address);
@@ -229,8 +229,8 @@ void CPU::branchOnCondition(bool condition, unsigned short address) {
     }
 }
 
-void CPU::oopsCycle(unsigned short address) {
-    unsigned short indexAddress;
+void CPU::oopsCycle(uint16_t address) {
+    uint16_t indexAddress;
     switch (currentAddressMode) {
         case AbsoluteIndexX:
             indexAddress = address - reg.X;
@@ -259,29 +259,29 @@ void CPU::checkInterrurpts() {
 	}
 }
 
-void CPU::compareValues(unsigned char a, unsigned char b) {
+void CPU::compareValues(uint8_t a, uint8_t b) {
     setNZStatus(a - b);
     reg.P.status.Carry = (a >= b);
 }
 
-void CPU::push(unsigned char byte) {
+void CPU::push(uint8_t byte) {
     memory.set(0x100 | reg.S--, byte);
 }
 
-unsigned char CPU::pull() {
+uint8_t CPU::pull() {
     return memory.get(0x100 | ++reg.S);
 }
 
-void CPU::pushAddress(unsigned short address) {
-    unsigned char lo = address & 0x00FF;
-    unsigned char hi = address >> 8;
+void CPU::pushAddress(uint16_t address) {
+    uint8_t lo = address & 0x00FF;
+    uint8_t hi = address >> 8;
     push(hi);
     push(lo);
 }
 
-unsigned short CPU::pullAddress() {
-    unsigned char lo = pull();
-    unsigned char hi = pull();
+uint16_t CPU::pullAddress() {
+    uint8_t lo = pull();
+    uint8_t hi = pull();
     return hi << 8 | lo;
 }
 
@@ -294,118 +294,118 @@ void CPU::NMI() {
     cycles += 7;
 }
 
-void CPU::BCC(unsigned  short address) {
+void CPU::BCC(uint16_t address) {
     //Branch on Carry Clear
     branchOnCondition(reg.P.status.Carry == 0, address);
 }
 
-void CPU::BCS(unsigned  short address) {
+void CPU::BCS(uint16_t address) {
     //Branch on Carry Set
     branchOnCondition(reg.P.status.Carry == 1, address);
 }
 
-void CPU::BEQ(unsigned short address) {
+void CPU::BEQ(uint16_t address) {
     //Branch on Result Zero
     branchOnCondition(reg.P.status.Zero == 1, address);
 }
 
-void CPU::BIT(unsigned short address) {
+void CPU::BIT(uint16_t address) {
     //Test Bits in Memory with Accumulator
-	char value = memory.get(address);
+	uint8_t value = memory.get(address);
     reg.P.status.Overflow = (value >> 6) & 1;
     reg.P.status.Zero = (value & reg.A) == 0;
     reg.P.status.Negative = (value & 0x80) != 0;
 }
 
-void CPU::BMI(unsigned short address) {
+void CPU::BMI(uint16_t address) {
     //Branch on Result Minus
     branchOnCondition(reg.P.status.Negative == 1, address);
 }
 
-void CPU::BNE(unsigned short address) {
+void CPU::BNE(uint16_t address) {
     //Branch on Result not Zero
     branchOnCondition(reg.P.status.Zero == 0, address);
 }
 
-void CPU::BPL(unsigned short address) {
+void CPU::BPL(uint16_t address) {
     //Branch on Result Plus
     branchOnCondition(reg.P.status.Negative == 0, address);
 }
 
-void CPU::BRK(unsigned short address) {
+void CPU::BRK(uint16_t address) {
     //Force an Interrupt
     reg.P.status.Interrupt = 1;
 }
 
-void CPU::BVC(unsigned short address) {
+void CPU::BVC(uint16_t address) {
     //Branch on Overflow Clear
     branchOnCondition(reg.P.status.Overflow == 0, address);
 }
 
-void CPU::BVS(unsigned short address) {
+void CPU::BVS(uint16_t address) {
     //Branch on Overflow Set
     branchOnCondition(reg.P.status.Overflow == 1, address);
 }
 
-void CPU::CLC(unsigned short address) {
+void CPU::CLC(uint16_t address) {
     //Clear Carry Flag
     reg.P.status.Carry = 0;
 }
 
-void CPU::CLD(unsigned short address) {
+void CPU::CLD(uint16_t address) {
     //Clear Decimal Mode
     reg.P.status.Decimal = 0;
 }
 
-void CPU::CLI(unsigned short address) {
+void CPU::CLI(uint16_t address) {
     //Clear Interrupt Disable Status
     reg.P.status.Interrupt = 0;
 }
 
-void CPU::CLV(unsigned short address) {
+void CPU::CLV(uint16_t address) {
     //Clear Overflow Flag
     reg.P.status.Overflow = 0;
 }
 
-void CPU::CPX(unsigned short address) {
+void CPU::CPX(uint16_t address) {
     //Compare Memory and Index X
     compareValues(reg.X, memory.get(address));
 }
 
-void CPU::CPY(unsigned short address) {
+void CPU::CPY(uint16_t address) {
     //Compare Memory with Index Y
     compareValues(reg.Y, memory.get(address));
 }
 
-void CPU::DEX(unsigned short address) {
+void CPU::DEX(uint16_t address) {
     //Decrement Index X by One
     //Flags: N, Z
     reg.X -= 1;
     setNZStatus(reg.X);
 }
 
-void CPU::DEY(unsigned short address) {
+void CPU::DEY(uint16_t address) {
     //Decrement Index Y by One
     //Flags: N, Z
     reg.Y -= 1;
     setNZStatus(reg.Y);
 }
 
-void CPU::INX(unsigned short address) {
+void CPU::INX(uint16_t address) {
     //Increment Index X by One
     //Flags: N, Z
     reg.X += 1;
     setNZStatus(reg.X);
 }
 
-void CPU::INY(unsigned short address) {
+void CPU::INY(uint16_t address) {
     //Increment Index Y by One
     //Flags: N, Z
     reg.Y += 1;
     setNZStatus(reg.Y);
 }
 
-void CPU::LDX(unsigned short address) {
+void CPU::LDX(uint16_t address) {
     //Load Index X with Memory
     //Flags: N, Z
     reg.X = memory.get(address);
@@ -413,7 +413,7 @@ void CPU::LDX(unsigned short address) {
     oopsCycle(address);
 }
 
-void CPU::LDY(unsigned short address) {
+void CPU::LDY(uint16_t address) {
     //Load Index Y with Memory
     //Flags: N, Z
     reg.Y = memory.get(address);
@@ -421,44 +421,44 @@ void CPU::LDY(unsigned short address) {
     oopsCycle(address);
 }
 
-void CPU::JMP(unsigned short address) {
+void CPU::JMP(uint16_t address) {
     //Jump to New Location
     reg.PC = address;
 }
 
-void CPU::JSR(unsigned short address) {
+void CPU::JSR(uint16_t address) {
     //Jump to New Location Saving Return Address
     pushAddress(reg.PC - 1);
     reg.PC = address;
 }
 
-void CPU::NOP(unsigned short address) {
+void CPU::NOP(uint16_t address) {
     //No Operation
     oopsCycle(address);
 }
 
-void CPU::PHA(unsigned short address) {
+void CPU::PHA(uint16_t address) {
     //Push Accumulator on Stack
     push(reg.A);
 }
 
-void CPU::PHP(unsigned short address) {
+void CPU::PHP(uint16_t address) {
     //Push Processor Status on Stack
-    char s = reg.P.byte;
+    uint8_t s = reg.P.byte;
     s |= 0x30;
     push(s);
 }
 
-void CPU::PLA(unsigned short address) {
+void CPU::PLA(uint16_t address) {
     //Pull Accumulator from Stack
     //Flags: N, Z
     reg.A = pull();
     setNZStatus(reg.A);
 }
 
-void CPU::PLP(unsigned short address) {
+void CPU::PLP(uint16_t address) {
     //Pull Processor Status from Stack
-    unsigned char s = pull();
+    uint8_t s = pull();
     reg.P.status.Negative  = (s & 128) != 0x0;
     reg.P.status.Overflow  = (s & 64)  != 0x0;
     reg.P.status.Decimal   = (s & 8)   != 0x0;
@@ -467,109 +467,109 @@ void CPU::PLP(unsigned short address) {
     reg.P.status.Carry     = (s & 1)   != 0x0;
 }
 
-void CPU::RTI(unsigned short address) {
+void CPU::RTI(uint16_t address) {
     //Return from interrupt
     //Flags: all
     reg.P.byte = ((pull() & 0xEF) | 0x20);
     reg.PC = pullAddress();
 }
 
-void CPU::RTS(unsigned short address) {
+void CPU::RTS(uint16_t address) {
     //Return from Subroutines
     reg.PC = pullAddress() + 1;
 }
 
-void CPU::SEC(unsigned short address) {
+void CPU::SEC(uint16_t address) {
     //Set Carry Flag
     reg.P.status.Carry = 1;
 }
 
-void CPU::SED(unsigned short address) {
+void CPU::SED(uint16_t address) {
     //Set Decimal Mode
     reg.P.status.Decimal = 1;
 }
 
-void CPU::SEI(unsigned short address) {
+void CPU::SEI(uint16_t address) {
     //Set Interrupt Disable Status
     reg.P.status.Interrupt = 1;
 }
 
-void CPU::STX(unsigned short address) {
+void CPU::STX(uint16_t address) {
     //Store Index X in Memory
     memory.set(address, reg.X);
 }
 
-void CPU::STY(unsigned short address) {
+void CPU::STY(uint16_t address) {
     //Store Index Y in Memory
     memory.set(address, reg.Y);
 }
 
-void CPU::TAX(unsigned short address) {
+void CPU::TAX(uint16_t address) {
     //Transfer Accumulator to Index X
     //Flags: N, Z
     reg.X = reg.A;
     setNZStatus(reg.X);
 }
 
-void CPU::TAY(unsigned short address) {
+void CPU::TAY(uint16_t address) {
     //Transfer Accumulator to Index Y
     //Flags: N, Z
     reg.Y = reg.A;
     setNZStatus(reg.Y);
 }
 
-void CPU::TSX(unsigned short address) {
+void CPU::TSX(uint16_t address) {
     //Transfer Stack Pointer to Index X
     //Flags: N, Z
     reg.X = reg.S;
     setNZStatus(reg.X);
 }
 
-void CPU::TYA(unsigned short address) {
+void CPU::TYA(uint16_t address) {
     //Transfer Index Y to Accumulator
     //Flags: N, Z
     reg.A = reg.Y;
     setNZStatus(reg.A);
 }
 
-void CPU::TXA(unsigned short address) {
+void CPU::TXA(uint16_t address) {
     //Transfer Index X to Accumulator
     //Flags: N, Z
     reg.A = reg.X;
     setNZStatus(reg.A);
 }
 
-void CPU::TXS(unsigned short address) {
+void CPU::TXS(uint16_t address) {
     //Transfer Index X to Stack Pointer
     reg.S = reg.X;
 }
 
 // ALU
-void CPU::ORA(unsigned short address) {
+void CPU::ORA(uint16_t address) {
     //OR Memory with Accumulator
     //Flags: N, Z
     reg.A = reg.A | memory.get(address);
     setNZStatus(reg.A);
 }
 
-void CPU::AND(unsigned short address) {
+void CPU::AND(uint16_t address) {
     //AND Memory with Accumulator
     //Flags: N, Z
     reg.A = reg.A & memory.get(address);
     setNZStatus(reg.A);
 }
 
-void CPU::EOR(unsigned short address) {
+void CPU::EOR(uint16_t address) {
     //Exclusive-OR Memory with Accumulator
     //Flags: N, Z
     reg.A = reg.A ^ memory.get(address);
     setNZStatus(reg.A);
 }
 
-void CPU::ADC(unsigned short address) {
+void CPU::ADC(uint16_t address) {
     //Add Memory to Accumulator with Carry
     //Flags: N, V, Z, C
-    unsigned char a = reg.A;
+    uint8_t a = reg.A;
     reg.A = reg.A + memory.get(address) + reg.P.status.Carry;
     
     reg.P.status.Carry = ((int)a + (int)memory.get(address) + (int)reg.P.status.Carry) > 0xFF;
@@ -579,12 +579,12 @@ void CPU::ADC(unsigned short address) {
     setNZStatus(reg.A);
 }
 
-void CPU::STA(unsigned short address) {
+void CPU::STA(uint16_t address) {
     //Store Accumulator in Memory
     memory.set(address, reg.A);
 }
 
-void CPU::LDA(unsigned short address) {
+void CPU::LDA(uint16_t address) {
     //Load Accumulator with Memory
     //Flags: N, Z
     reg.A = memory.get(address);
@@ -592,16 +592,16 @@ void CPU::LDA(unsigned short address) {
     oopsCycle(address);
 }
 
-void CPU::CMP(unsigned short address) {
+void CPU::CMP(uint16_t address) {
     //Compare Memory and Accumulator
     compareValues(reg.A, memory.get(address));
 }
 
-void CPU::SBC(unsigned short address) {
+void CPU::SBC(uint16_t address) {
     //Subtract Memory from Accumulator with Borrow
     //Flags: N, V, Z, C
     
-    unsigned char a = reg.A;
+    uint8_t a = reg.A;
     reg.A = reg.A - memory.get(address) - (1 - reg.P.status.Carry);
     
     reg.P.status.Carry = ((int)a - (int)memory.get(address) - (int)(1 - reg.P.status.Carry)) >= 0x0;
@@ -612,10 +612,10 @@ void CPU::SBC(unsigned short address) {
 }
 
 // RMW
-void CPU::ASL(unsigned short address) {
+void CPU::ASL(uint16_t address) {
     //Arithmetic Shift Left One Bit
     //Flags: N, Z, C
-    unsigned char value;
+    uint8_t value;
     if (currentAddressMode == Accumulator) {
         value = reg.A;
     } else {
@@ -635,24 +635,24 @@ void CPU::ASL(unsigned short address) {
 	setNZStatus(value);
 }
 
-void CPU::DEC(unsigned short address) {
+void CPU::DEC(uint16_t address) {
     //Decrement Memory by One
     //Flags: N, Z
     memory.set(address, memory.get(address) - 1);
     setNZStatus(memory.get(address));
 }
 
-void CPU::INC(unsigned short address) {
+void CPU::INC(uint16_t address) {
     //Increment Memory by One
     //Flags: N, Z
 	memory.set(address, memory.get(address) + 1);
 	setNZStatus(memory.get(address));
 }
 
-void CPU::LSR(unsigned short address) {
+void CPU::LSR(uint16_t address) {
     //Logical Shift Right One Bit
     //Flags: N, Z, C
-    unsigned char value;
+    uint8_t value;
     if (currentAddressMode == Accumulator) {
         value = reg.A;
     } else {
@@ -672,10 +672,10 @@ void CPU::LSR(unsigned short address) {
     setNZStatus(value);
 }
 
-void CPU::ROL(unsigned short address) {
+void CPU::ROL(uint16_t address) {
     //Rotate Left One Bit
     //Flags: N, Z, C
-    unsigned char value;
+    uint8_t value;
     if (currentAddressMode == Accumulator) {
         value = reg.A;
     } else {
@@ -696,24 +696,23 @@ void CPU::ROL(unsigned short address) {
     setNZStatus(value);
 }
 
-void CPU::ROR(unsigned short address) {
+void CPU::ROR(uint16_t address) {
     //Rotate Right One Bit
     //Flags: N, Z, C
-    unsigned char value;
+    uint8_t value;
     if (currentAddressMode == Accumulator) {
         value = reg.A;
     } else {
         value = memory.get(address);
     }
     
-    char c = reg.P.status.Carry;
+    uint8_t c = reg.P.status.Carry;
     reg.P.status.Carry = value & 0x1;
     value = (value >> 0x1) | (c << 0x7);
 
 	if (currentAddressMode == Accumulator) {
 		reg.A = value;
-	}
-	else {
+	} else {
 		memory.set(address, value);
 	}
 
@@ -721,48 +720,48 @@ void CPU::ROR(unsigned short address) {
 }
 
 // Unimplemented
-void CPU::AHX(unsigned short address) {}
-void CPU::ALR(unsigned short address) {}
-void CPU::ANC(unsigned short address) {}
-void CPU::ARR(unsigned short address) {}
-void CPU::AXS(unsigned short address) {}
-void CPU::DCP(unsigned short address) {
+void CPU::AHX(uint16_t address) {}
+void CPU::ALR(uint16_t address) {}
+void CPU::ANC(uint16_t address) {}
+void CPU::ARR(uint16_t address) {}
+void CPU::AXS(uint16_t address) {}
+void CPU::DCP(uint16_t address) {
     DEC(address);
     CMP(address);
 }
-void CPU::ISB(unsigned short address) {
+void CPU::ISB(uint16_t address) {
     INC(address);
     SBC(address);
 }
-void CPU::LAS(unsigned short address) {}
-void CPU::LAX(unsigned short address) {
+void CPU::LAS(uint16_t address) {}
+void CPU::LAX(uint16_t address) {
     reg.A = memory.get(address);
     setNZStatus(reg.A);
     reg.X = memory.get(address);
     setNZStatus(reg.X);
     oopsCycle(address);
 }
-void CPU::RLA(unsigned short address) {
+void CPU::RLA(uint16_t address) {
     ROL(address);
     AND(address);
 }
-void CPU::RRA(unsigned short address) {
+void CPU::RRA(uint16_t address) {
     ROR(address);
     ADC(address);
 }
-void CPU::SLO(unsigned short address) {
+void CPU::SLO(uint16_t address) {
     ASL(address);
     ORA(address);
 }
-void CPU::SAX(unsigned short address) {
+void CPU::SAX(uint16_t address) {
     memory.set(address, reg.A & reg.X);
 }
-void CPU::SHX(unsigned short address) {}
-void CPU::SHY(unsigned short address) {}
-void CPU::SRE(unsigned short address) {
+void CPU::SHX(uint16_t address) {}
+void CPU::SHY(uint16_t address) {}
+void CPU::SRE(uint16_t address) {
     LSR(address);
     EOR(address);
 }
-void CPU::STP(unsigned short address) {}
-void CPU::TAS(unsigned short address) {}
-void CPU::XAA(unsigned short address) {}
+void CPU::STP(uint16_t address) {}
+void CPU::TAS(uint16_t address) {}
+void CPU::XAA(uint16_t address) {}

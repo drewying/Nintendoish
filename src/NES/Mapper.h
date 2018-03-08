@@ -3,6 +3,8 @@
 #include "NES.h"
 #include "Cartridge.h"
 
+#include <stdint.h>
+
 namespace NES {
 	class Cartridge;
 	class Mapper {
@@ -12,11 +14,11 @@ namespace NES {
 		Mapper(Cartridge &cartridge) : cartridge(cartridge) {}
 		~Mapper() {}
 
-		virtual unsigned char getTileData(unsigned short index) { return 0x0;  };
-		virtual void  setTileData(unsigned short index, unsigned char value) {};
+		virtual uint8_t getTileData(uint16_t index) { return 0x0;  };
+		virtual void  setTileData(uint16_t index, uint8_t value) {};
 
-		virtual unsigned char getProgramData(unsigned short index) { return 0x0;  };
-		virtual void  setProgramData(unsigned short index, unsigned char value) {};
+		virtual uint8_t getProgramData(uint16_t index) { return 0x0;  };
+		virtual void  setProgramData(uint16_t index, uint8_t value) {};
 	};
-}
+};
 

@@ -1,6 +1,6 @@
 #include "PPUMemory.h"
 
-unsigned char NES::PPUMemory::get(unsigned short index) {
+uint8_t NES::PPUMemory::get(uint16_t index) {
 	if (index < 0x2000) {
 		// Pattern Table Access
 		return console.cartridge->getTileData(index);
@@ -24,7 +24,7 @@ unsigned char NES::PPUMemory::get(unsigned short index) {
 	return 0x0;
 }
 
-void  NES::PPUMemory::set(unsigned short index, unsigned char value) {
+void  NES::PPUMemory::set(uint16_t index, uint8_t value) {
 	if (index < 0x2000) {
 		// Pattern Table Access
 		console.cartridge->setTileData(index, value);

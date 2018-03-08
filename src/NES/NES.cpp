@@ -28,15 +28,13 @@ void NES::Console::emulateCycle() {
 	for (int i = 0; i < (cycles * 3); i++) ppu->step();
 }
 
-void NES::Console::loadProgram(const char* path)
-{
+void NES::Console::loadProgram(const char* path) {
 	cartridge = new Cartridge(path);
 	cpu->reg.PC = memory->resetVector();
 	std::cout << "Loaded" << std::endl;
 }
 
-void NES::Console::reset()
-{
+void NES::Console::reset() {
 	cpu->reg.A = 0;
 	cpu->reg.X = 0;
 	cpu->reg.Y = 0;

@@ -11,11 +11,11 @@ namespace NES {
 
 		Console &console;
 
-		unsigned char ram[0x800] = { 0 }; // System Memory
+		uint8_t ram[0x800] = { 0 }; // System Memory
 		
-		unsigned char get(unsigned short index);
-		void  set(unsigned short index, unsigned char value);
-		unsigned short resetVector();
+		uint8_t get(uint16_t index);
+		void  set(uint16_t index, uint8_t value);
+		uint16_t resetVector();
     };
 };
 

@@ -24,7 +24,7 @@ namespace NES {
 						MasterSlave : 1,
 						NMI : 1;
 				} flags;
-				unsigned char byte;
+				uint8_t byte;
 			} control;
 
 			union {
@@ -38,7 +38,7 @@ namespace NES {
 						EmphasizeGreen : 1,
 						EmphasizeBlue : 1;
 				} flags;
-				unsigned char byte;
+				uint8_t byte;
 			} mask;
 
 			union {
@@ -48,24 +48,24 @@ namespace NES {
 						Sprite0Hit : 1,
 						VBlankEnabled : 1;
 				} flags;
-				unsigned char byte;
+				uint8_t byte;
 			} status;
-			unsigned char oamAddress;
+			uint8_t oamAddress;
 		} reg;
 
 		//Background Registers
 		struct {
-			unsigned short tileLo = 0x0;
-			unsigned short tileHi = 0x0;
-			unsigned short attributeTableHi = 0x0;
-			unsigned short attributeTableLo = 0x0;
+			uint16_t tileLo = 0x0;
+			uint16_t tileHi = 0x0;
+			uint16_t attributeTableHi = 0x0;
+			uint16_t attributeTableLo = 0x0;
 		} shift;
 
 		struct {
-			unsigned char tileLo = 0x0;
-			unsigned char tileHi = 0x0;
-			unsigned char attributeTable = 0x0;
-			unsigned char nameTable = 0x0;
+			uint8_t tileLo = 0x0;
+			uint8_t tileHi = 0x0;
+			uint8_t attributeTable = 0x0;
+			uint8_t nameTable = 0x0;
 		} latch;
 
 		union Address {
@@ -92,25 +92,25 @@ namespace NES {
 
 		//Sprite Memory
 		struct Sprite {
-			unsigned char yPosition;
-			unsigned char tileIndex;
+			uint8_t yPosition;
+			uint8_t tileIndex;
 			struct {
-				unsigned char palette : 2,
+				uint8_t palette : 2,
 					unused : 3,
 					priority : 1,
 					horizontalFlip : 1,
 					verticalFlip : 1;
 			} attributes;
-			unsigned char xPosition;
+			uint8_t xPosition;
 		};
 
 		Sprite*        spr[8]      = { 0 };    // Active Sprites
-		unsigned char oam[0x100]   = { 0 };    // Object Attribute Memory
+		uint8_t oam[0x100]   = { 0 };    // Object Attribute Memory
 		
 		//PPU Access Methods
-		unsigned char getPPURegister(unsigned short index);
-		void setPPURegister(unsigned short index, unsigned char value);
-		void copyDMAMemory(unsigned char index);
+		uint8_t getPPURegister(uint16_t index);
+		void setPPURegister(uint16_t index, uint8_t value);
+		void copyDMAMemory(uint8_t index);
 
   
 		// Emulation
@@ -131,7 +131,7 @@ namespace NES {
 		void prepareSprites();
 		void renderPixel();		
         
-        unsigned char colorTable[0x40][0x3] = {
+        uint8_t colorTable[0x40][0x3] = {
             {84, 84,  84},
             {0,  30, 116},
             {8,  16, 144},
@@ -201,4 +201,4 @@ namespace NES {
 			{0,     0,   0}
         };
     };
-}
+};

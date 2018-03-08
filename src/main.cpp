@@ -89,7 +89,7 @@ void specialKeyUp(int key, int x, int y) {
 }
 
 
-void keyDown(unsigned char key, int x, int y) {
+void keyDown(uint8_t key, int x, int y) {
 	switch (key) {
 	case 'a':
 		nes->controllerOne->b = true;
@@ -112,7 +112,7 @@ void keyDown(unsigned char key, int x, int y) {
 }
 
 
-void keyUp(unsigned char key, int x, int y) {
+void keyUp(uint8_t key, int x, int y) {
 	switch (key) {
 	case 'a':
 		nes->controllerOne->b = false;
@@ -152,28 +152,28 @@ void testNES(void)
 
 		std::stringstream ss;
 
-		unsigned char nextInstruction = nes->memory->get(nes->cpu->reg.PC);
+		uint8_t nextInstruction = nes->memory->get(nes->cpu->reg.PC);
 
-		ss << uppercase << setfill('0') << setw(4) << hex << nes->cpu->reg.PC << "  " << uppercase << setfill('0') << setw(2) << hex << (unsigned short)nextInstruction;
+		ss << uppercase << setfill('0') << setw(4) << hex << nes->cpu->reg.PC << "  " << uppercase << setfill('0') << setw(2) << hex << (uint16_t)nextInstruction;
 		/*if (reg.PC - startingPC > 1) {
-		debugBuffer << " " << uppercase << setfill('0') << setw(2) << hex << (unsigned short)lo;
+		debugBuffer << " " << uppercase << setfill('0') << setw(2) << hex << (uint16_t)lo;
 		}
 		else {
 		debugBuffer << "   ";
 		}
 		if (reg.PC - startingPC > 2) {
-		debugBuffer << " " << uppercase << setfill('0') << setw(2) << hex << (unsigned short)hi;
+		debugBuffer << " " << uppercase << setfill('0') << setw(2) << hex << (uint16_t)hi;
 		}
 		else {
 		debugBuffer << "   ";
 		}*/
 		ss << "      ";
 		ss << "  " << nes->cpu->debugTable[nextInstruction];
-		ss << "                             A:" << uppercase << setfill('0') << setw(2) << hex << (unsigned  short)nes->cpu->reg.A;
-		ss << " X:" << uppercase << setfill('0') << setw(2) << hex << (unsigned short)nes->cpu->reg.X;
-		ss << " Y:" << uppercase << setfill('0') << setw(2) << hex << (unsigned short)nes->cpu->reg.Y;
-		ss << " P:" << uppercase << setfill('0') << setw(2) << hex << (unsigned short)nes->cpu->reg.P.byte;
-		ss << " SP:" << uppercase << setfill('0') << setw(2) << hex << (unsigned short)nes->cpu->reg.S;
+		ss << "                             A:" << uppercase << setfill('0') << setw(2) << hex << (uint16_t)nes->cpu->reg.A;
+		ss << " X:" << uppercase << setfill('0') << setw(2) << hex << (uint16_t)nes->cpu->reg.X;
+		ss << " Y:" << uppercase << setfill('0') << setw(2) << hex << (uint16_t)nes->cpu->reg.Y;
+		ss << " P:" << uppercase << setfill('0') << setw(2) << hex << (uint16_t)nes->cpu->reg.P.byte;
+		ss << " SP:" << uppercase << setfill('0') << setw(2) << hex << (uint16_t)nes->cpu->reg.S;
 		ss << " CYC:" << setfill(' ') << dec << setw(3) << nes->ppu->currentCycle << " SL:" << nes->ppu->currentScanline;
 
 		lineNumber++;
@@ -286,11 +286,11 @@ glEnd();
 glutSwapBuffers();
 }
 
-void CHIP8KeyDown(unsigned char key, int x, int y) {
+void CHIP8KeyDown(uint8_t key, int x, int y) {
 chip8->handleKeyPress(key, true);
 }
 
-void CHIP8KeyUp(unsigned char key, int x, int y) {
+void CHIP8KeyUp(uint8_t key, int x, int y) {
 chip8->handleKeyPress(key, false);
 }
 

@@ -5,7 +5,7 @@
 
 using namespace std;
 
-unsigned char NES::Memory::get(unsigned short index) {
+uint8_t NES::Memory::get(uint16_t index) {
 	if (index < 0x2000) {
 		//RAM Access
 		return ram[index % 0x800];
@@ -40,7 +40,7 @@ unsigned char NES::Memory::get(unsigned short index) {
 	return 0x0;
 }
 
-void NES::Memory::set(unsigned short index, unsigned char value) {
+void NES::Memory::set(uint16_t index, uint8_t value) {
 	if (index < 0x2000) {
 		//RAM Access
 		ram[index % 0x800] = value;
@@ -61,8 +61,8 @@ void NES::Memory::set(unsigned short index, unsigned char value) {
 	}
 }
 
-unsigned short NES::Memory::resetVector() {
-    unsigned char lo = (*this).get(0xFFFC);
-    unsigned char hi = (*this).get(0xFFFD);
+uint16_t NES::Memory::resetVector() {
+    uint8_t lo = (*this).get(0xFFFC);
+    uint8_t hi = (*this).get(0xFFFD);
 	return hi << 8 | lo;
 }

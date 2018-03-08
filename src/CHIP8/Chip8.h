@@ -3,21 +3,21 @@
 
 class Chip8
 {
-	unsigned char delayTimer;
-	unsigned char soundTimer;
-	unsigned char V[16];
-	unsigned char memory[4096];
-	unsigned char keys[16];
-	unsigned short stack[16];
-	unsigned short SP;
-	unsigned short I;
-	unsigned short PC;
+	uint8_t delayTimer;
+	uint8_t soundTimer;
+	uint8_t V[16];
+	uint8_t memory[4096];
+	uint8_t keys[16];
+	uint16_t stack[16];
+	uint16_t SP;
+	uint16_t I;
+	uint16_t PC;
 	unsigned int   instructionCount;
 public:
 	bool drawFlag;
-	unsigned char graphics[64 * 32];
+	uint8_t graphics[64 * 32];
 
-	void handleKeyPress(unsigned char key, bool isKeyDown);
+	void handleKeyPress(uint8_t key, bool isKeyDown);
 	void emulateCycle();
 	void loadProgram(const char* path);
 	void reset();
