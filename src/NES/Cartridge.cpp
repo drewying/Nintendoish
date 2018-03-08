@@ -35,7 +35,7 @@ Cartridge::Cartridge(const char* path) {
 			fseek(rom, 512, SEEK_SET);
 		}
 
-		//prg = (unsigned char*)calloc(prgSize * 0x4000, sizeof(char));
+		prg = (unsigned char*)calloc(prgSize * 0x4000, sizeof(char));
 		chr = (unsigned char*)calloc(chrSize * 0x2000, sizeof(char));
 		
 		fread(prg, sizeof(char), prgSize * 0x4000, rom);

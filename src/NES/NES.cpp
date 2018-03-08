@@ -24,26 +24,8 @@ NES::Console::Console() {
 NES::Console::~Console() {}
 
 void NES::Console::emulateCycle() {
-	
-	int estimatedCycles = cpu->stallCycles > 0 ? 0x0 : cpu->timingTable[memory->get(cpu->reg.PC)];
-	estimatedCycles *= 3;
-	estimatedCycles = 0x0;
-
-	for (int i = 0; i < estimatedCycles; i++) {
-		ppu->step();
-		if (cpu->requestNMI == true) {
-			//printf("\n\nNMI REQUESTED PRE EXEC\n\n");
-		}
-	};
-
-	int actualCycles = cpu->loadNextInstruction();
-
-	for (int i = 0; i < (actualCycles * 3) - estimatedCycles; i++) {
-		ppu->step();
-		if (cpu->requestNMI == true) {
-			//printf("\n\nNMI REQUESTED POST EXEC\n\n");
-		}
-	};
+	int cycles = cpu->step();
+	for (int i = 0; i < (cycles * 3); i++) ppu->step();
 }
 
 void NES::Console::loadProgram(const char* path)

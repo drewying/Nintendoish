@@ -6,8 +6,9 @@
 #include <stdio.h>
 
 using namespace std;
+using namespace NES;
 
-NES::CPU::CPU(NES::Memory &memory):
+CPU::CPU(NES::Memory &memory):
     memory(memory),
     debugTable {
         "BRK", "ORA", "STP", "SLO", "NOP", "ORA", "ASL", "SLO", "PHP", "ORA", "ASL", "ANC", "NOP", "ORA", "ASL", "SLO",
@@ -35,29 +36,29 @@ NES::CPU::CPU(NES::Memory &memory):
         "BEQ", "SBC", "STP", "ISB", "NOP", "SBC", "INC", "ISB", "SED", "SBC", "NOP", "ISB", "NOP", "SBC", "INC", "ISB"
     },
     opTable {
-        &NES::CPU::BRK, &NES::CPU::ORA, &NES::CPU::STP, &NES::CPU::SLO, &NES::CPU::NOP, &NES::CPU::ORA, &NES::CPU::ASL, &NES::CPU::SLO, &NES::CPU::PHP, &NES::CPU::ORA, &NES::CPU::ASL, &NES::CPU::ANC, &NES::CPU::NOP, &NES::CPU::ORA, &NES::CPU::ASL, &NES::CPU::SLO,
-        &NES::CPU::BPL, &NES::CPU::ORA, &NES::CPU::STP, &NES::CPU::SLO, &NES::CPU::NOP, &NES::CPU::ORA, &NES::CPU::ASL, &NES::CPU::SLO, &NES::CPU::CLC, &NES::CPU::ORA, &NES::CPU::NOP, &NES::CPU::SLO, &NES::CPU::NOP, &NES::CPU::ORA, &NES::CPU::ASL, &NES::CPU::SLO,
+        &CPU::BRK, &CPU::ORA, &CPU::STP, &CPU::SLO, &CPU::NOP, &CPU::ORA, &CPU::ASL, &CPU::SLO, &CPU::PHP, &CPU::ORA, &CPU::ASL, &CPU::ANC, &CPU::NOP, &CPU::ORA, &CPU::ASL, &CPU::SLO,
+        &CPU::BPL, &CPU::ORA, &CPU::STP, &CPU::SLO, &CPU::NOP, &CPU::ORA, &CPU::ASL, &CPU::SLO, &CPU::CLC, &CPU::ORA, &CPU::NOP, &CPU::SLO, &CPU::NOP, &CPU::ORA, &CPU::ASL, &CPU::SLO,
         
-        &NES::CPU::JSR, &NES::CPU::AND, &NES::CPU::STP, &NES::CPU::RLA, &NES::CPU::BIT, &NES::CPU::AND, &NES::CPU::ROL, &NES::CPU::RLA, &NES::CPU::PLP, &NES::CPU::AND, &NES::CPU::ROL, &NES::CPU::ANC, &NES::CPU::BIT, &NES::CPU::AND, &NES::CPU::ROL, &NES::CPU::RLA,
-        &NES::CPU::BMI, &NES::CPU::AND, &NES::CPU::STP, &NES::CPU::RLA, &NES::CPU::NOP, &NES::CPU::AND, &NES::CPU::ROL, &NES::CPU::RLA, &NES::CPU::SEC, &NES::CPU::AND, &NES::CPU::NOP, &NES::CPU::RLA, &NES::CPU::NOP, &NES::CPU::AND, &NES::CPU::ROL, &NES::CPU::RLA,
+        &CPU::JSR, &CPU::AND, &CPU::STP, &CPU::RLA, &CPU::BIT, &CPU::AND, &CPU::ROL, &CPU::RLA, &CPU::PLP, &CPU::AND, &CPU::ROL, &CPU::ANC, &CPU::BIT, &CPU::AND, &CPU::ROL, &CPU::RLA,
+        &CPU::BMI, &CPU::AND, &CPU::STP, &CPU::RLA, &CPU::NOP, &CPU::AND, &CPU::ROL, &CPU::RLA, &CPU::SEC, &CPU::AND, &CPU::NOP, &CPU::RLA, &CPU::NOP, &CPU::AND, &CPU::ROL, &CPU::RLA,
         
-        &NES::CPU::RTI, &NES::CPU::EOR, &NES::CPU::STP, &NES::CPU::SRE, &NES::CPU::NOP, &NES::CPU::EOR, &NES::CPU::LSR, &NES::CPU::SRE, &NES::CPU::PHA, &NES::CPU::EOR, &NES::CPU::LSR, &NES::CPU::ALR, &NES::CPU::JMP, &NES::CPU::EOR, &NES::CPU::LSR, &NES::CPU::SRE,
-        &NES::CPU::BVC, &NES::CPU::EOR, &NES::CPU::STP, &NES::CPU::SRE, &NES::CPU::NOP, &NES::CPU::EOR, &NES::CPU::LSR, &NES::CPU::SRE, &NES::CPU::CLI, &NES::CPU::EOR, &NES::CPU::NOP, &NES::CPU::SRE, &NES::CPU::NOP, &NES::CPU::EOR, &NES::CPU::LSR, &NES::CPU::SRE,
+        &CPU::RTI, &CPU::EOR, &CPU::STP, &CPU::SRE, &CPU::NOP, &CPU::EOR, &CPU::LSR, &CPU::SRE, &CPU::PHA, &CPU::EOR, &CPU::LSR, &CPU::ALR, &CPU::JMP, &CPU::EOR, &CPU::LSR, &CPU::SRE,
+        &CPU::BVC, &CPU::EOR, &CPU::STP, &CPU::SRE, &CPU::NOP, &CPU::EOR, &CPU::LSR, &CPU::SRE, &CPU::CLI, &CPU::EOR, &CPU::NOP, &CPU::SRE, &CPU::NOP, &CPU::EOR, &CPU::LSR, &CPU::SRE,
         
-        &NES::CPU::RTS, &NES::CPU::ADC, &NES::CPU::STP, &NES::CPU::RRA, &NES::CPU::NOP, &NES::CPU::ADC, &NES::CPU::ROR, &NES::CPU::RRA, &NES::CPU::PLA, &NES::CPU::ADC, &NES::CPU::ROR, &NES::CPU::ARR, &NES::CPU::JMP, &NES::CPU::ADC, &NES::CPU::ROR, &NES::CPU::RRA,
-        &NES::CPU::BVS, &NES::CPU::ADC, &NES::CPU::STP, &NES::CPU::RRA, &NES::CPU::NOP, &NES::CPU::ADC, &NES::CPU::ROR, &NES::CPU::RRA, &NES::CPU::SEI, &NES::CPU::ADC, &NES::CPU::NOP, &NES::CPU::RRA, &NES::CPU::NOP, &NES::CPU::ADC, &NES::CPU::ROR, &NES::CPU::RRA,
+        &CPU::RTS, &CPU::ADC, &CPU::STP, &CPU::RRA, &CPU::NOP, &CPU::ADC, &CPU::ROR, &CPU::RRA, &CPU::PLA, &CPU::ADC, &CPU::ROR, &CPU::ARR, &CPU::JMP, &CPU::ADC, &CPU::ROR, &CPU::RRA,
+        &CPU::BVS, &CPU::ADC, &CPU::STP, &CPU::RRA, &CPU::NOP, &CPU::ADC, &CPU::ROR, &CPU::RRA, &CPU::SEI, &CPU::ADC, &CPU::NOP, &CPU::RRA, &CPU::NOP, &CPU::ADC, &CPU::ROR, &CPU::RRA,
         
-        &NES::CPU::NOP, &NES::CPU::STA, &NES::CPU::NOP, &NES::CPU::SAX, &NES::CPU::STY, &NES::CPU::STA, &NES::CPU::STX, &NES::CPU::SAX, &NES::CPU::DEY, &NES::CPU::NOP, &NES::CPU::TXA, &NES::CPU::XAA, &NES::CPU::STY, &NES::CPU::STA, &NES::CPU::STX, &NES::CPU::SAX,
-        &NES::CPU::BCC, &NES::CPU::STA, &NES::CPU::STP, &NES::CPU::AHX, &NES::CPU::STY, &NES::CPU::STA, &NES::CPU::STX, &NES::CPU::SAX, &NES::CPU::TYA, &NES::CPU::STA, &NES::CPU::TXS, &NES::CPU::TAS, &NES::CPU::SHY, &NES::CPU::STA, &NES::CPU::SHX, &NES::CPU::AHX,
+        &CPU::NOP, &CPU::STA, &CPU::NOP, &CPU::SAX, &CPU::STY, &CPU::STA, &CPU::STX, &CPU::SAX, &CPU::DEY, &CPU::NOP, &CPU::TXA, &CPU::XAA, &CPU::STY, &CPU::STA, &CPU::STX, &CPU::SAX,
+        &CPU::BCC, &CPU::STA, &CPU::STP, &CPU::AHX, &CPU::STY, &CPU::STA, &CPU::STX, &CPU::SAX, &CPU::TYA, &CPU::STA, &CPU::TXS, &CPU::TAS, &CPU::SHY, &CPU::STA, &CPU::SHX, &CPU::AHX,
         
-        &NES::CPU::LDY, &NES::CPU::LDA, &NES::CPU::LDX, &NES::CPU::LAX, &NES::CPU::LDY, &NES::CPU::LDA, &NES::CPU::LDX, &NES::CPU::LAX, &NES::CPU::TAY, &NES::CPU::LDA, &NES::CPU::TAX, &NES::CPU::LAX, &NES::CPU::LDY, &NES::CPU::LDA, &NES::CPU::LDX, &NES::CPU::LAX,
-        &NES::CPU::BCS, &NES::CPU::LDA, &NES::CPU::STP, &NES::CPU::LAX, &NES::CPU::LDY, &NES::CPU::LDA, &NES::CPU::LDX, &NES::CPU::LAX, &NES::CPU::CLV, &NES::CPU::LDA, &NES::CPU::TSX, &NES::CPU::LAS, &NES::CPU::LDY, &NES::CPU::LDA, &NES::CPU::LDX, &NES::CPU::LAX,
+        &CPU::LDY, &CPU::LDA, &CPU::LDX, &CPU::LAX, &CPU::LDY, &CPU::LDA, &CPU::LDX, &CPU::LAX, &CPU::TAY, &CPU::LDA, &CPU::TAX, &CPU::LAX, &CPU::LDY, &CPU::LDA, &CPU::LDX, &CPU::LAX,
+        &CPU::BCS, &CPU::LDA, &CPU::STP, &CPU::LAX, &CPU::LDY, &CPU::LDA, &CPU::LDX, &CPU::LAX, &CPU::CLV, &CPU::LDA, &CPU::TSX, &CPU::LAS, &CPU::LDY, &CPU::LDA, &CPU::LDX, &CPU::LAX,
         
-        &NES::CPU::CPY, &NES::CPU::CMP, &NES::CPU::NOP, &NES::CPU::DCP, &NES::CPU::CPY, &NES::CPU::CMP, &NES::CPU::DEC, &NES::CPU::DCP, &NES::CPU::INY, &NES::CPU::CMP, &NES::CPU::DEX, &NES::CPU::AXS, &NES::CPU::CPY, &NES::CPU::CMP, &NES::CPU::DEC, &NES::CPU::DCP,
-        &NES::CPU::BNE, &NES::CPU::CMP, &NES::CPU::STP, &NES::CPU::DCP, &NES::CPU::NOP, &NES::CPU::CMP, &NES::CPU::DEC, &NES::CPU::DCP, &NES::CPU::CLD, &NES::CPU::CMP, &NES::CPU::NOP, &NES::CPU::DCP, &NES::CPU::NOP, &NES::CPU::CMP, &NES::CPU::DEC, &NES::CPU::DCP,
+        &CPU::CPY, &CPU::CMP, &CPU::NOP, &CPU::DCP, &CPU::CPY, &CPU::CMP, &CPU::DEC, &CPU::DCP, &CPU::INY, &CPU::CMP, &CPU::DEX, &CPU::AXS, &CPU::CPY, &CPU::CMP, &CPU::DEC, &CPU::DCP,
+        &CPU::BNE, &CPU::CMP, &CPU::STP, &CPU::DCP, &CPU::NOP, &CPU::CMP, &CPU::DEC, &CPU::DCP, &CPU::CLD, &CPU::CMP, &CPU::NOP, &CPU::DCP, &CPU::NOP, &CPU::CMP, &CPU::DEC, &CPU::DCP,
         
-        &NES::CPU::CPX, &NES::CPU::SBC, &NES::CPU::NOP, &NES::CPU::ISB, &NES::CPU::CPX, &NES::CPU::SBC, &NES::CPU::INC, &NES::CPU::ISB, &NES::CPU::INX, &NES::CPU::SBC, &NES::CPU::NOP, &NES::CPU::SBC, &NES::CPU::CPX, &NES::CPU::SBC, &NES::CPU::INC, &NES::CPU::ISB,
-        &NES::CPU::BEQ, &NES::CPU::SBC, &NES::CPU::STP, &NES::CPU::ISB, &NES::CPU::NOP, &NES::CPU::SBC, &NES::CPU::INC, &NES::CPU::ISB, &NES::CPU::SED, &NES::CPU::SBC, &NES::CPU::NOP, &NES::CPU::ISB, &NES::CPU::NOP, &NES::CPU::SBC, &NES::CPU::INC, &NES::CPU::ISB
+        &CPU::CPX, &CPU::SBC, &CPU::NOP, &CPU::ISB, &CPU::CPX, &CPU::SBC, &CPU::INC, &CPU::ISB, &CPU::INX, &CPU::SBC, &CPU::NOP, &CPU::SBC, &CPU::CPX, &CPU::SBC, &CPU::INC, &CPU::ISB,
+        &CPU::BEQ, &CPU::SBC, &CPU::STP, &CPU::ISB, &CPU::NOP, &CPU::SBC, &CPU::INC, &CPU::ISB, &CPU::SED, &CPU::SBC, &CPU::NOP, &CPU::ISB, &CPU::NOP, &CPU::SBC, &CPU::INC, &CPU::ISB
     },
     timingTable {
         7, 6, 2, 8, 3, 3, 5, 5, 3, 2, 2, 2, 4, 4, 6, 6,
@@ -106,25 +107,15 @@ NES::CPU::CPU(NES::Memory &memory):
         reg.P.byte = 0x24;
     }
 
-NES::CPU::~CPU()
+CPU::~CPU()
 {
 }
 
-unsigned char NES::CPU::readProgram() {
+unsigned char CPU::readProgram() {
     return memory.get(reg.PC++);
 }
 
-int NES::CPU::executeLoadedInstruction() {
-	/*int currentCycles = cycles;
-	cycles += timingTable[loadedInstruction];
-	(this->*opTable[loadedInstruction])(loadedAddress);
-	loadedInstruction = 0x0;
-	loadedAddress = 0x0;
-	return cycles - currentCycles;*/
-	return 0;
-}
-
-int NES::CPU::loadNextInstruction()
+unsigned int CPU::step()
 {
 	if (stallCycles > 0x0) {
 		stallCycles--;
@@ -225,12 +216,12 @@ int NES::CPU::loadNextInstruction()
 	return cycles - currentCycles;
 }
 
-void NES::CPU::setNZStatus(unsigned char value) {
+void CPU::setNZStatus(unsigned char value) {
     reg.P.status.Zero = (value == 0x0);
     reg.P.status.Negative = ((value & 0x80) != 0);
 }
 
-void NES::CPU::branchOnCondition(bool condition, unsigned short address) {
+void CPU::branchOnCondition(bool condition, unsigned short address) {
     if (condition) {
         cycles++;
         oopsCycle(address);
@@ -238,7 +229,7 @@ void NES::CPU::branchOnCondition(bool condition, unsigned short address) {
     }
 }
 
-void NES::CPU::oopsCycle(unsigned short address) {
+void CPU::oopsCycle(unsigned short address) {
     unsigned short indexAddress;
     switch (currentAddressMode) {
         case AbsoluteIndexX:
@@ -261,40 +252,40 @@ void NES::CPU::oopsCycle(unsigned short address) {
     }
 }
 
-void NES::CPU::checkInterrurpts() {
+void CPU::checkInterrurpts() {
 	if (requestNMI == true) {
 		NMI();
 		requestNMI = false;
 	}
 }
 
-void NES::CPU::compareValues(unsigned char a, unsigned char b) {
+void CPU::compareValues(unsigned char a, unsigned char b) {
     setNZStatus(a - b);
     reg.P.status.Carry = (a >= b);
 }
 
-void NES::CPU::push(unsigned char byte) {
+void CPU::push(unsigned char byte) {
     memory.set(0x100 | reg.S--, byte);
 }
 
-unsigned char NES::CPU::pull() {
+unsigned char CPU::pull() {
     return memory.get(0x100 | ++reg.S);
 }
 
-void NES::CPU::pushAddress(unsigned short address) {
+void CPU::pushAddress(unsigned short address) {
     unsigned char lo = address & 0x00FF;
     unsigned char hi = address >> 8;
     push(hi);
     push(lo);
 }
 
-unsigned short NES::CPU::pullAddress() {
+unsigned short CPU::pullAddress() {
     unsigned char lo = pull();
     unsigned char hi = pull();
     return hi << 8 | lo;
 }
 
-void NES::CPU::NMI() {
+void CPU::NMI() {
     // Non-Maskable Interrupt
     pushAddress(reg.PC);
     PHP(0x0);
@@ -303,22 +294,22 @@ void NES::CPU::NMI() {
     cycles += 7;
 }
 
-void NES::CPU::BCC(unsigned  short address) {
+void CPU::BCC(unsigned  short address) {
     //Branch on Carry Clear
     branchOnCondition(reg.P.status.Carry == 0, address);
 }
 
-void NES::CPU::BCS(unsigned  short address) {
+void CPU::BCS(unsigned  short address) {
     //Branch on Carry Set
     branchOnCondition(reg.P.status.Carry == 1, address);
 }
 
-void NES::CPU::BEQ(unsigned short address) {
+void CPU::BEQ(unsigned short address) {
     //Branch on Result Zero
     branchOnCondition(reg.P.status.Zero == 1, address);
 }
 
-void NES::CPU::BIT(unsigned short address) {
+void CPU::BIT(unsigned short address) {
     //Test Bits in Memory with Accumulator
 	char value = memory.get(address);
     reg.P.status.Overflow = (value >> 6) & 1;
@@ -326,95 +317,95 @@ void NES::CPU::BIT(unsigned short address) {
     reg.P.status.Negative = (value & 0x80) != 0;
 }
 
-void NES::CPU::BMI(unsigned short address) {
+void CPU::BMI(unsigned short address) {
     //Branch on Result Minus
     branchOnCondition(reg.P.status.Negative == 1, address);
 }
 
-void NES::CPU::BNE(unsigned short address) {
+void CPU::BNE(unsigned short address) {
     //Branch on Result not Zero
     branchOnCondition(reg.P.status.Zero == 0, address);
 }
 
-void NES::CPU::BPL(unsigned short address) {
+void CPU::BPL(unsigned short address) {
     //Branch on Result Plus
     branchOnCondition(reg.P.status.Negative == 0, address);
 }
 
-void NES::CPU::BRK(unsigned short address) {
+void CPU::BRK(unsigned short address) {
     //Force an Interrupt
     reg.P.status.Interrupt = 1;
 }
 
-void NES::CPU::BVC(unsigned short address) {
+void CPU::BVC(unsigned short address) {
     //Branch on Overflow Clear
     branchOnCondition(reg.P.status.Overflow == 0, address);
 }
 
-void NES::CPU::BVS(unsigned short address) {
+void CPU::BVS(unsigned short address) {
     //Branch on Overflow Set
     branchOnCondition(reg.P.status.Overflow == 1, address);
 }
 
-void NES::CPU::CLC(unsigned short address) {
+void CPU::CLC(unsigned short address) {
     //Clear Carry Flag
     reg.P.status.Carry = 0;
 }
 
-void NES::CPU::CLD(unsigned short address) {
+void CPU::CLD(unsigned short address) {
     //Clear Decimal Mode
     reg.P.status.Decimal = 0;
 }
 
-void NES::CPU::CLI(unsigned short address) {
+void CPU::CLI(unsigned short address) {
     //Clear Interrupt Disable Status
     reg.P.status.Interrupt = 0;
 }
 
-void NES::CPU::CLV(unsigned short address) {
+void CPU::CLV(unsigned short address) {
     //Clear Overflow Flag
     reg.P.status.Overflow = 0;
 }
 
-void NES::CPU::CPX(unsigned short address) {
+void CPU::CPX(unsigned short address) {
     //Compare Memory and Index X
     compareValues(reg.X, memory.get(address));
 }
 
-void NES::CPU::CPY(unsigned short address) {
+void CPU::CPY(unsigned short address) {
     //Compare Memory with Index Y
     compareValues(reg.Y, memory.get(address));
 }
 
-void NES::CPU::DEX(unsigned short address) {
+void CPU::DEX(unsigned short address) {
     //Decrement Index X by One
     //Flags: N, Z
     reg.X -= 1;
     setNZStatus(reg.X);
 }
 
-void NES::CPU::DEY(unsigned short address) {
+void CPU::DEY(unsigned short address) {
     //Decrement Index Y by One
     //Flags: N, Z
     reg.Y -= 1;
     setNZStatus(reg.Y);
 }
 
-void NES::CPU::INX(unsigned short address) {
+void CPU::INX(unsigned short address) {
     //Increment Index X by One
     //Flags: N, Z
     reg.X += 1;
     setNZStatus(reg.X);
 }
 
-void NES::CPU::INY(unsigned short address) {
+void CPU::INY(unsigned short address) {
     //Increment Index Y by One
     //Flags: N, Z
     reg.Y += 1;
     setNZStatus(reg.Y);
 }
 
-void NES::CPU::LDX(unsigned short address) {
+void CPU::LDX(unsigned short address) {
     //Load Index X with Memory
     //Flags: N, Z
     reg.X = memory.get(address);
@@ -422,7 +413,7 @@ void NES::CPU::LDX(unsigned short address) {
     oopsCycle(address);
 }
 
-void NES::CPU::LDY(unsigned short address) {
+void CPU::LDY(unsigned short address) {
     //Load Index Y with Memory
     //Flags: N, Z
     reg.Y = memory.get(address);
@@ -430,42 +421,42 @@ void NES::CPU::LDY(unsigned short address) {
     oopsCycle(address);
 }
 
-void NES::CPU::JMP(unsigned short address) {
+void CPU::JMP(unsigned short address) {
     //Jump to New Location
     reg.PC = address;
 }
 
-void NES::CPU::JSR(unsigned short address) {
+void CPU::JSR(unsigned short address) {
     //Jump to New Location Saving Return Address
     pushAddress(reg.PC - 1);
     reg.PC = address;
 }
 
-void NES::CPU::NOP(unsigned short address) {
+void CPU::NOP(unsigned short address) {
     //No Operation
     oopsCycle(address);
 }
 
-void NES::CPU::PHA(unsigned short address) {
+void CPU::PHA(unsigned short address) {
     //Push Accumulator on Stack
     push(reg.A);
 }
 
-void NES::CPU::PHP(unsigned short address) {
+void CPU::PHP(unsigned short address) {
     //Push Processor Status on Stack
     char s = reg.P.byte;
     s |= 0x30;
     push(s);
 }
 
-void NES::CPU::PLA(unsigned short address) {
+void CPU::PLA(unsigned short address) {
     //Pull Accumulator from Stack
     //Flags: N, Z
     reg.A = pull();
     setNZStatus(reg.A);
 }
 
-void NES::CPU::PLP(unsigned short address) {
+void CPU::PLP(unsigned short address) {
     //Pull Processor Status from Stack
     unsigned char s = pull();
     reg.P.status.Negative  = (s & 128) != 0x0;
@@ -476,106 +467,106 @@ void NES::CPU::PLP(unsigned short address) {
     reg.P.status.Carry     = (s & 1)   != 0x0;
 }
 
-void NES::CPU::RTI(unsigned short address) {
+void CPU::RTI(unsigned short address) {
     //Return from interrupt
     //Flags: all
     reg.P.byte = ((pull() & 0xEF) | 0x20);
     reg.PC = pullAddress();
 }
 
-void NES::CPU::RTS(unsigned short address) {
+void CPU::RTS(unsigned short address) {
     //Return from Subroutines
     reg.PC = pullAddress() + 1;
 }
 
-void NES::CPU::SEC(unsigned short address) {
+void CPU::SEC(unsigned short address) {
     //Set Carry Flag
     reg.P.status.Carry = 1;
 }
 
-void NES::CPU::SED(unsigned short address) {
+void CPU::SED(unsigned short address) {
     //Set Decimal Mode
     reg.P.status.Decimal = 1;
 }
 
-void NES::CPU::SEI(unsigned short address) {
+void CPU::SEI(unsigned short address) {
     //Set Interrupt Disable Status
     reg.P.status.Interrupt = 1;
 }
 
-void NES::CPU::STX(unsigned short address) {
+void CPU::STX(unsigned short address) {
     //Store Index X in Memory
     memory.set(address, reg.X);
 }
 
-void NES::CPU::STY(unsigned short address) {
+void CPU::STY(unsigned short address) {
     //Store Index Y in Memory
     memory.set(address, reg.Y);
 }
 
-void NES::CPU::TAX(unsigned short address) {
+void CPU::TAX(unsigned short address) {
     //Transfer Accumulator to Index X
     //Flags: N, Z
     reg.X = reg.A;
     setNZStatus(reg.X);
 }
 
-void NES::CPU::TAY(unsigned short address) {
+void CPU::TAY(unsigned short address) {
     //Transfer Accumulator to Index Y
     //Flags: N, Z
     reg.Y = reg.A;
     setNZStatus(reg.Y);
 }
 
-void NES::CPU::TSX(unsigned short address) {
+void CPU::TSX(unsigned short address) {
     //Transfer Stack Pointer to Index X
     //Flags: N, Z
     reg.X = reg.S;
     setNZStatus(reg.X);
 }
 
-void NES::CPU::TYA(unsigned short address) {
+void CPU::TYA(unsigned short address) {
     //Transfer Index Y to Accumulator
     //Flags: N, Z
     reg.A = reg.Y;
     setNZStatus(reg.A);
 }
 
-void NES::CPU::TXA(unsigned short address) {
+void CPU::TXA(unsigned short address) {
     //Transfer Index X to Accumulator
     //Flags: N, Z
     reg.A = reg.X;
     setNZStatus(reg.A);
 }
 
-void NES::CPU::TXS(unsigned short address) {
+void CPU::TXS(unsigned short address) {
     //Transfer Index X to Stack Pointer
     reg.S = reg.X;
 }
 
 // ALU
-void NES::CPU::ORA(unsigned short address) {
+void CPU::ORA(unsigned short address) {
     //OR Memory with Accumulator
     //Flags: N, Z
     reg.A = reg.A | memory.get(address);
     setNZStatus(reg.A);
 }
 
-void NES::CPU::AND(unsigned short address) {
+void CPU::AND(unsigned short address) {
     //AND Memory with Accumulator
     //Flags: N, Z
     reg.A = reg.A & memory.get(address);
     setNZStatus(reg.A);
 }
 
-void NES::CPU::EOR(unsigned short address) {
+void CPU::EOR(unsigned short address) {
     //Exclusive-OR Memory with Accumulator
     //Flags: N, Z
     reg.A = reg.A ^ memory.get(address);
     setNZStatus(reg.A);
 }
 
-void NES::CPU::ADC(unsigned short address) {
+void CPU::ADC(unsigned short address) {
     //Add Memory to Accumulator with Carry
     //Flags: N, V, Z, C
     unsigned char a = reg.A;
@@ -588,12 +579,12 @@ void NES::CPU::ADC(unsigned short address) {
     setNZStatus(reg.A);
 }
 
-void NES::CPU::STA(unsigned short address) {
+void CPU::STA(unsigned short address) {
     //Store Accumulator in Memory
     memory.set(address, reg.A);
 }
 
-void NES::CPU::LDA(unsigned short address) {
+void CPU::LDA(unsigned short address) {
     //Load Accumulator with Memory
     //Flags: N, Z
     reg.A = memory.get(address);
@@ -601,12 +592,12 @@ void NES::CPU::LDA(unsigned short address) {
     oopsCycle(address);
 }
 
-void NES::CPU::CMP(unsigned short address) {
+void CPU::CMP(unsigned short address) {
     //Compare Memory and Accumulator
     compareValues(reg.A, memory.get(address));
 }
 
-void NES::CPU::SBC(unsigned short address) {
+void CPU::SBC(unsigned short address) {
     //Subtract Memory from Accumulator with Borrow
     //Flags: N, V, Z, C
     
@@ -621,7 +612,7 @@ void NES::CPU::SBC(unsigned short address) {
 }
 
 // RMW
-void NES::CPU::ASL(unsigned short address) {
+void CPU::ASL(unsigned short address) {
     //Arithmetic Shift Left One Bit
     //Flags: N, Z, C
     unsigned char value;
@@ -644,21 +635,21 @@ void NES::CPU::ASL(unsigned short address) {
 	setNZStatus(value);
 }
 
-void NES::CPU::DEC(unsigned short address) {
+void CPU::DEC(unsigned short address) {
     //Decrement Memory by One
     //Flags: N, Z
     memory.set(address, memory.get(address) - 1);
     setNZStatus(memory.get(address));
 }
 
-void NES::CPU::INC(unsigned short address) {
+void CPU::INC(unsigned short address) {
     //Increment Memory by One
     //Flags: N, Z
 	memory.set(address, memory.get(address) + 1);
 	setNZStatus(memory.get(address));
 }
 
-void NES::CPU::LSR(unsigned short address) {
+void CPU::LSR(unsigned short address) {
     //Logical Shift Right One Bit
     //Flags: N, Z, C
     unsigned char value;
@@ -681,7 +672,7 @@ void NES::CPU::LSR(unsigned short address) {
     setNZStatus(value);
 }
 
-void NES::CPU::ROL(unsigned short address) {
+void CPU::ROL(unsigned short address) {
     //Rotate Left One Bit
     //Flags: N, Z, C
     unsigned char value;
@@ -705,7 +696,7 @@ void NES::CPU::ROL(unsigned short address) {
     setNZStatus(value);
 }
 
-void NES::CPU::ROR(unsigned short address) {
+void CPU::ROR(unsigned short address) {
     //Rotate Right One Bit
     //Flags: N, Z, C
     unsigned char value;
@@ -730,48 +721,48 @@ void NES::CPU::ROR(unsigned short address) {
 }
 
 // Unimplemented
-void NES::CPU::AHX(unsigned short address) {}
-void NES::CPU::ALR(unsigned short address) {}
-void NES::CPU::ANC(unsigned short address) {}
-void NES::CPU::ARR(unsigned short address) {}
-void NES::CPU::AXS(unsigned short address) {}
-void NES::CPU::DCP(unsigned short address) {
+void CPU::AHX(unsigned short address) {}
+void CPU::ALR(unsigned short address) {}
+void CPU::ANC(unsigned short address) {}
+void CPU::ARR(unsigned short address) {}
+void CPU::AXS(unsigned short address) {}
+void CPU::DCP(unsigned short address) {
     DEC(address);
     CMP(address);
 }
-void NES::CPU::ISB(unsigned short address) {
+void CPU::ISB(unsigned short address) {
     INC(address);
     SBC(address);
 }
-void NES::CPU::LAS(unsigned short address) {}
-void NES::CPU::LAX(unsigned short address) {
+void CPU::LAS(unsigned short address) {}
+void CPU::LAX(unsigned short address) {
     reg.A = memory.get(address);
     setNZStatus(reg.A);
     reg.X = memory.get(address);
     setNZStatus(reg.X);
     oopsCycle(address);
 }
-void NES::CPU::RLA(unsigned short address) {
+void CPU::RLA(unsigned short address) {
     ROL(address);
     AND(address);
 }
-void NES::CPU::RRA(unsigned short address) {
+void CPU::RRA(unsigned short address) {
     ROR(address);
     ADC(address);
 }
-void NES::CPU::SLO(unsigned short address) {
+void CPU::SLO(unsigned short address) {
     ASL(address);
     ORA(address);
 }
-void NES::CPU::SAX(unsigned short address) {
+void CPU::SAX(unsigned short address) {
     memory.set(address, reg.A & reg.X);
 }
-void NES::CPU::SHX(unsigned short address) {}
-void NES::CPU::SHY(unsigned short address) {}
-void NES::CPU::SRE(unsigned short address) {
+void CPU::SHX(unsigned short address) {}
+void CPU::SHY(unsigned short address) {}
+void CPU::SRE(unsigned short address) {
     LSR(address);
     EOR(address);
 }
-void NES::CPU::STP(unsigned short address) {}
-void NES::CPU::TAS(unsigned short address) {}
-void NES::CPU::XAA(unsigned short address) {}
+void CPU::STP(unsigned short address) {}
+void CPU::TAS(unsigned short address) {}
+void CPU::XAA(unsigned short address) {}

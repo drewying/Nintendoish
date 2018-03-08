@@ -10,7 +10,7 @@ unsigned char NES::PPU::getPPURegister(unsigned short index) {
 	switch (index) {
 	case 0x2002: //PPU Status Flags
 		status = reg.status.byte;
-		reg.status.flags.VBlankStarted = false;
+		reg.status.flags.VBlankEnabled = false;
 		vramRegister.writeLatch = false;
 		return status;
 		break;
@@ -19,7 +19,7 @@ unsigned char NES::PPU::getPPURegister(unsigned short index) {
 		break;
 	case 0x2007: //PPU Data Read/Write
 		address = vramRegister.v.address;
-		vramRegister.v.address += reg.control.flags.VRAMAddress ? 32 : 1;
+		vramRegister.v.address += reg.control.flags.VRAMAddressIncrement ? 32 : 1;
 		
 		if (address % 0x4000 < 0x3F00) {
 			char value = readBuffer;
@@ -29,10 +29,8 @@ unsigned char NES::PPU::getPPURegister(unsigned short index) {
 			readBuffer = console.ppuMemory->get(address - 0x1000);
 			return console.ppuMemory->get(address);
 		}
-		//exit(0);
 		break;
 	default:
-		//exit(0);
 		break;
 	}
 }
@@ -44,7 +42,7 @@ void NES::PPU::setPPURegister(unsigned short index, unsigned char value) {
 		vramRegister.t.scroll.nameTableX = (value & 0x1); //t: ...BA.. ........ = d: ......BA
 		vramRegister.t.scroll.nameTableY = ((value & 0x2) >> 1);
 
-		if (reg.control.flags.NMI == true && reg.status.flags.VBlankStarted == true) {
+		if (reg.control.flags.NMI == true && reg.status.flags.VBlankEnabled == true) {
 			console.cpu->requestNMI = true;
 		}
 		break;
@@ -82,7 +80,7 @@ void NES::PPU::setPPURegister(unsigned short index, unsigned char value) {
 	case 0x2007: { //PPU Data Read/Write
 			unsigned short address = vramRegister.v.address;
 			console.ppuMemory->set(address, value);
-			vramRegister.v.address += reg.control.flags.VRAMAddress ? 32 : 1;
+			vramRegister.v.address += reg.control.flags.VRAMAddressIncrement ? 32 : 1;
 		}
 		break;
 	case 0x4014: // OAM DMA High Address
@@ -93,7 +91,7 @@ void NES::PPU::setPPURegister(unsigned short index, unsigned char value) {
 		break;
 	}
 	if (index != 0x4014) {
-		reg.status.flags.Address = value & 0x1F;
+		reg.status.flags.LastWrite = value & 0x1F;
 	}
 }
 
@@ -122,8 +120,8 @@ void NES::PPU::prepareSprites() {
 	unsigned int spriteCount = 0;
 	unsigned int oamIndex = 0;
 	std::fill_n(spr, 8, nullptr);
-	if (reg.control.flags.SpriteSize == true) {
-		printf("Ruh Roh. Large Sprites not working\n");
+	if (reg.control.flags.TallSprites == true) {
+		printf("Ruh Roh. Tall Sprites not working\n");
 	}
 	while (spriteCount < 8 && oamIndex < 64) {
 		if (sprite->yPosition != 0 &&
@@ -146,8 +144,8 @@ void NES::PPU::renderPixel() {
 	unsigned short backgoundColor = 0x0;
 	unsigned short spriteColor = 0x0;
 
-	bool renderBackground = reg.mask.flags.ShowBackground == true && (x > 7 || reg.mask.flags.LeftBackground == true);
-	bool renderSprites = reg.mask.flags.ShowSprite == true && (x > 7 || reg.mask.flags.LeftSprite == true);
+	bool renderBackground = reg.mask.flags.RenderBackground == true && (x > 7 || reg.mask.flags.RenderLeftBackground == true);
+	bool renderSprites = reg.mask.flags.RenderSprites == true && (x > 7 || reg.mask.flags.RenderLeftSprites == true);
 	bool backgroundPriority = false;
 
 	if (renderBackground == true) {
@@ -169,7 +167,7 @@ void NES::PPU::renderPixel() {
 			{
 					unsigned char spriteX = x - sprite->xPosition;
 					unsigned char spriteY = y - (sprite->yPosition + 1);
-					unsigned short tileIndex = sprite->tileIndex + (reg.control.flags.SpriteTableAddress ? 0x100 : 0x0);
+					unsigned short tileIndex = sprite->tileIndex + (reg.control.flags.SpriteTableSelect ? 0x100 : 0x0);
 					tileIndex *= 0x10;
 					tileIndex += sprite->attributes.verticalFlip ? 7 - spriteY : spriteY;
 	
@@ -256,15 +254,15 @@ void NES::PPU::step() {
 		}
 	}
 
-	bool renderingEnabled = reg.mask.flags.ShowSprite || reg.mask.flags.ShowBackground;
+	bool renderingEnabled = reg.mask.flags.RenderSprites || reg.mask.flags.RenderBackground;
 	bool visibleScanline = currentScanline >= 0 && currentScanline < 240;
 	bool preRenderScanline = currentScanline == -1;
 	bool renderScanline = visibleScanline || preRenderScanline;
 	bool visibleCycle = currentCycle >= 1 && currentCycle <= 256;
 	bool preRenderCycle = (currentCycle >= 321 && currentCycle <= 336);
 
-	//Skip 0,0 on odd frames
-	if (oddFrame && reg.mask.flags.ShowBackground && currentCycle == 0 && currentScanline == 0) {
+	// Skip 0,0 on odd frames
+	if (oddFrame && reg.mask.flags.RenderBackground && currentCycle == 0 && currentScanline == 0) {
 		return;
 	}
 
@@ -308,7 +306,7 @@ void NES::PPU::step() {
 
 			//Fetch lo tile byte
 			if (currentCycle % 8 == 5) {
-				unsigned short index = latch.nameTable + (reg.control.flags.BackgroundTableAddress ? 0x100 : 0);
+				unsigned short index = latch.nameTable + (reg.control.flags.BackgroundTableSelect ? 0x100 : 0);
 				index *= 0x10;
 				index += vramRegister.v.scroll.fineYScroll;
 				latch.tileLo = console.ppuMemory->get(index);
@@ -316,7 +314,7 @@ void NES::PPU::step() {
 			
 			//Fetch hi tile byte
 			if (currentCycle % 8 == 7) {
-				unsigned short index = latch.nameTable + (reg.control.flags.BackgroundTableAddress ? 0x100 : 0);
+				unsigned short index = latch.nameTable + (reg.control.flags.BackgroundTableSelect ? 0x100 : 0);
 				index *= 0x10;
 				index += vramRegister.v.scroll.fineYScroll;
 				latch.tileHi = console.ppuMemory->get(index + 8);
@@ -391,13 +389,13 @@ void NES::PPU::step() {
 }
 
 void NES::PPU::vBlankStart() {
-    reg.status.flags.VBlankStarted = true;
+    reg.status.flags.VBlankEnabled = true;
 	if (reg.control.flags.NMI == true) {
 		console.cpu->requestNMI = true;
 	}
 }
 
 void NES::PPU::vBlankEnd() {
-	reg.status.flags.VBlankStarted = false;
+	reg.status.flags.VBlankEnabled = false;
 	reg.status.flags.Sprite0Hit = false;
 }

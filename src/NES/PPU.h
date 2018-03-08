@@ -7,31 +7,20 @@ namespace NES {
     class Console;
     class PPU {
 	public:
-		union Address {
-			struct {
-				unsigned lo : 8,
-					     hi : 7;
-			} byte;
-			struct {
-				unsigned coarseXScroll : 5,
-					coarseYScroll : 5,
-					nameTableX : 1,
-					nameTableY : 1,
-					fineYScroll : 3;
-			} scroll;
-			unsigned address : 15;
-		};
+		PPU(Console &console) : console(console) { reset(); };
 
-		//Registers
+		Console &console;
+
+		// Internal Registers
 		struct Registers {
 			union {
 				struct {
 					unsigned BaseAddressHi : 1,
 						BaseAddressLo : 1,
-						VRAMAddress : 1,
-						SpriteTableAddress : 1,
-						BackgroundTableAddress : 1,
-						SpriteSize : 1,
+						VRAMAddressIncrement : 1,
+						SpriteTableSelect : 1,
+						BackgroundTableSelect : 1,
+						TallSprites : 1,
 						MasterSlave : 1,
 						NMI : 1;
 				} flags;
@@ -41,10 +30,10 @@ namespace NES {
 			union {
 				struct {
 					unsigned Greyscale : 1,
-						LeftBackground : 1,
-						LeftSprite : 1,
-						ShowBackground : 1,
-						ShowSprite : 1,
+						RenderLeftBackground : 1,
+						RenderLeftSprites : 1,
+						RenderBackground : 1,
+						RenderSprites : 1,
 						EmphasizeRed : 1,
 						EmphasizeGreen : 1,
 						EmphasizeBlue : 1;
@@ -54,17 +43,17 @@ namespace NES {
 
 			union {
 				struct {
-					unsigned Address : 5,
+					unsigned LastWrite : 5,
 						SpriteOverflow : 1,
 						Sprite0Hit : 1,
-						VBlankStarted : 1;
+						VBlankEnabled : 1;
 				} flags;
 				unsigned char byte;
 			} status;
 			unsigned char oamAddress;
 		} reg;
 
-		//Background
+		//Background Registers
 		struct {
 			unsigned short tileLo = 0x0;
 			unsigned short tileHi = 0x0;
@@ -79,14 +68,29 @@ namespace NES {
 			unsigned char nameTable = 0x0;
 		} latch;
 
+		union Address {
+			struct {
+				unsigned lo : 8,
+					hi : 7;
+			} byte;
+			struct {
+				unsigned coarseXScroll : 5,
+					coarseYScroll : 5,
+					nameTableX : 1,
+					nameTableY : 1,
+					fineYScroll : 3;
+			} scroll;
+			unsigned address : 15;
+		};
+
 		struct {
-			Address v;
-			Address t;
+			Address v; // Current VRAM Address
+			Address t; // Temporary VRAM Address
 			unsigned fineXScroll : 3;
 			bool writeLatch = false;
 		} vramRegister;
 
-		
+		//Sprite Memory
 		struct Sprite {
 			unsigned char yPosition;
 			unsigned char tileIndex;
@@ -100,12 +104,10 @@ namespace NES {
 			unsigned char xPosition;
 		};
 
-
-		//Memory
 		Sprite*        spr[8]      = { 0 };    // Active Sprites
 		unsigned char oam[0x100]   = { 0 };    // Object Attribute Memory
 		
-
+		//PPU Access Methods
 		unsigned char getPPURegister(unsigned short index);
 		void setPPURegister(unsigned short index, unsigned char value);
 		void copyDMAMemory(unsigned char index);
@@ -123,18 +125,11 @@ namespace NES {
 		void vBlankStart();
 		void vBlankEnd();
 
-        Console &console;
-
-		// Rendering
+		// Rendering Helpers
 		void renderPatternTable();
 		void renderTile(int x, int y, int tileIndex);
 		void prepareSprites();
 		void renderPixel();		
-
-        PPU(Console &console) : console(console) {
-            reset();
-        };
-        
         
         unsigned char colorTable[0x40][0x3] = {
             {84, 84,  84},

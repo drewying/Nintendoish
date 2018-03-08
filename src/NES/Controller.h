@@ -3,7 +3,6 @@ namespace NES {
 	class Controller
 	{
 	public:
-		
 		unsigned char pollController();
 		void startPoll();
 

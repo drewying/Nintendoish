@@ -62,8 +62,7 @@ namespace NES {
 		unsigned int stallCycles = 0x0;
 		bool requestNMI = false;
 
-        int loadNextInstruction();
-		int executeLoadedInstruction();
+		unsigned int step();
 
         void setNZStatus(unsigned char value);
         void oopsCycle(unsigned short address);
