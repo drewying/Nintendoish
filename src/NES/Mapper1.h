@@ -8,6 +8,9 @@ namespace NES {
 	{
 	public:
 
+		unsigned char loadRegister = 0x10;
+		unsigned char controlRegister;
+
 		Mapper1(Cartridge &cartridge) : Mapper(cartridge) {}
 
 		unsigned char getTileData(unsigned short index);

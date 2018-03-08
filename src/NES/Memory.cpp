@@ -56,8 +56,6 @@ void NES::Memory::set(unsigned short index, unsigned char value) {
 		console.controllerOne->startPoll();
 	} else if (index == 0x4017) {
 		//Controller 2
-	} else if (index >= 0xC000) {
-		//Not implemented yet
 	} else if (index >= 0x8000) {
 		console.cartridge->setProgramData(index, value);
 	}
@@ -66,5 +64,5 @@ void NES::Memory::set(unsigned short index, unsigned char value) {
 unsigned short NES::Memory::resetVector() {
     unsigned char lo = (*this).get(0xFFFC);
     unsigned char hi = (*this).get(0xFFFD);
-    return hi << 8 | lo;
+	return hi << 8 | lo;
 }

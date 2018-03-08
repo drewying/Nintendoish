@@ -21,9 +21,9 @@ static NES::Console *nes;
 
 ifstream logfile;
 bool pause = false;
-bool passedTest = true;
+bool passedTest = false;
 bool runTests = false;
-bool fullLog = true;
+bool fullLog = false;
 int debugStartLineNumber = 0000;
 int lineNumber = 0x0;
 
@@ -219,13 +219,13 @@ void testNES(void)
 			if (lineNumber > debugStartLineNumber || fullLog == true) {
 				//cout << lineNumber << " " << logLine << endl;
 				cout << lineNumber << " " << emuLine << endl;
-				cout << "CORRECT. FRAME:" << nes->ppu->frameCount << endl << endl;
+				//cout << "CORRECT. FRAME:" << nes->ppu->frameCount << endl << endl;
 			}
 		}
 		else if (lineNumber > debugStartLineNumber || fullLog == true) {
 			//cout << lineNumber << " " << logLine << endl;
 		    cout << lineNumber << " "   << emuLine << endl;
-			cout << "NOT CORRECT. FRAME:" << nes->ppu->frameCount << endl << endl;
+			//cout << "NOT CORRECT. FRAME:" << nes->ppu->frameCount << endl << endl;
  			passedTest = false;
 		}
 	}
@@ -245,13 +245,16 @@ int main(int argc, char** argv)
 	display->initialize(argc, argv);
     if (runTests) {
         nes = new NES::Console();
-        nes->loadProgram("../roms/Mario.nes");
+        nes->loadProgram("../roms/Megaman.nes");
         logfile = ifstream("../roms/DonkeyKong.log");
         glutIdleFunc(testNES);
     } else {
         nes = new NES::Console();
-		nes->loadProgram("../roms/Mario.nes");
-        //nes->loadProgram("../roms/Excitebike.nes");
+		//nes->loadProgram("../roms/Megaman.nes");
+		nes->loadProgram("../roms/Castlevania.nes");
+		//nes->loadProgram("../roms/Zelda.nes");
+		//nes->loadProgram("../roms/Mario.nes");
+		//nes->loadProgram("../roms/Excitebike.nes");
 		//nes->loadProgram("../roms/DonkeyKong.nes");
 		//nes->loadProgram("../roms/palette.nes");
         glutIdleFunc(updateNES);

@@ -6,7 +6,7 @@ namespace NES {
 	class Mapper;
 	class Cartridge {
 	public:
-		unsigned char* prg;
+		unsigned char prg[0x8 * 0x4000];
 		unsigned char* chr;
 		unsigned char prgSize;
 		unsigned char chrSize;

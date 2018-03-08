@@ -1,6 +1,7 @@
 #include "PPUMemory.h"
 
 unsigned char NES::PPUMemory::get(unsigned short index) {
+	//index = index & 0x4000;
 	if (index < 0x2000) {
 		return console.cartridge->getTileData(index);
 	}
@@ -23,6 +24,7 @@ unsigned char NES::PPUMemory::get(unsigned short index) {
 }
 
 void  NES::PPUMemory::set(unsigned short index, unsigned char value) {
+	//index = index & 0x4000;
 	if (index < 0x2000) {
 		console.cartridge->setTileData(index, value);
 	} else if (index < 0x3000) {
@@ -35,7 +37,7 @@ void  NES::PPUMemory::set(unsigned short index, unsigned char value) {
 		}
 	} else if (index < 0x3F00) {
 		vram[index - 0x3000] = value;
-	}else if (index < 0x4000) {
+	} else if (index < 0x4000) {
 		if (index >= 0x3F10 && (index - 0x3F10) % 0x4 == 0) index -= 0x10; // Pallette Mirroring
 		pal[index - 0x3F00] = value;
 	}

@@ -123,7 +123,7 @@ void NES::PPU::prepareSprites() {
 	unsigned int oamIndex = 0;
 	std::fill_n(spr, 8, nullptr);
 	if (reg.control.flags.SpriteSize == true) {
-		printf("NOT IMPLEMENTED/n");
+		printf("Ruh Roh. Large Sprites not working\n");
 	}
 	while (spriteCount < 8 && oamIndex < 64) {
 		if (sprite->yPosition != 0 &&
