@@ -6,130 +6,130 @@
 namespace NES {
     class Console;
     class PPU {
-	public:
-		PPU(Console &console) : console(console) { reset(); };
+    public:
+        PPU(Console &console) : console(console) { reset(); };
 
-		Console &console;
+        Console &console;
 
-		// Internal Registers
-		struct Registers {
-			union {
-				struct {
-					unsigned BaseAddressHi : 1,
-						BaseAddressLo : 1,
-						VRAMAddressIncrement : 1,
-						SpriteTableSelect : 1,
-						BackgroundTableSelect : 1,
-						TallSprites : 1,
-						MasterSlave : 1,
-						NMI : 1;
-				} flags;
-				uint8_t byte;
-			} control;
+        // Internal Registers
+        struct Registers {
+            union {
+                struct {
+                    unsigned BaseAddressHi : 1,
+                        BaseAddressLo : 1,
+                        VRAMAddressIncrement : 1,
+                        SpriteTableSelect : 1,
+                        BackgroundTableSelect : 1,
+                        TallSprites : 1,
+                        MasterSlave : 1,
+                        NMI : 1;
+                } flags;
+                uint8_t byte;
+            } control;
 
-			union {
-				struct {
-					unsigned Greyscale : 1,
-						RenderLeftBackground : 1,
-						RenderLeftSprites : 1,
-						RenderBackground : 1,
-						RenderSprites : 1,
-						EmphasizeRed : 1,
-						EmphasizeGreen : 1,
-						EmphasizeBlue : 1;
-				} flags;
-				uint8_t byte;
-			} mask;
+            union {
+                struct {
+                    unsigned Greyscale : 1,
+                        RenderLeftBackground : 1,
+                        RenderLeftSprites : 1,
+                        RenderBackground : 1,
+                        RenderSprites : 1,
+                        EmphasizeRed : 1,
+                        EmphasizeGreen : 1,
+                        EmphasizeBlue : 1;
+                } flags;
+                uint8_t byte;
+            } mask;
 
-			union {
-				struct {
-					unsigned LastWrite : 5,
-						SpriteOverflow : 1,
-						Sprite0Hit : 1,
-						VBlankEnabled : 1;
-				} flags;
-				uint8_t byte;
-			} status;
-			uint8_t oamAddress;
-		} reg;
+            union {
+                struct {
+                    unsigned LastWrite : 5,
+                        SpriteOverflow : 1,
+                        Sprite0Hit : 1,
+                        VBlankEnabled : 1;
+                } flags;
+                uint8_t byte;
+            } status;
+            uint8_t oamAddress;
+        } reg;
 
-		//Background Registers
-		struct {
-			uint16_t tileLo = 0x0;
-			uint16_t tileHi = 0x0;
-			uint16_t attributeTableHi = 0x0;
-			uint16_t attributeTableLo = 0x0;
-		} shift;
+        //Background Registers
+        struct {
+            uint16_t tileLo = 0x0;
+            uint16_t tileHi = 0x0;
+            uint16_t attributeTableHi = 0x0;
+            uint16_t attributeTableLo = 0x0;
+        } shift;
 
-		struct {
-			uint8_t tileLo = 0x0;
-			uint8_t tileHi = 0x0;
-			uint8_t attributeTable = 0x0;
-			uint8_t nameTable = 0x0;
-		} latch;
+        struct {
+            uint8_t tileLo = 0x0;
+            uint8_t tileHi = 0x0;
+            uint8_t attributeTable = 0x0;
+            uint8_t nameTable = 0x0;
+        } latch;
 
-		union Address {
-			struct {
-				unsigned lo : 8,
-					hi : 7;
-			} byte;
-			struct {
-				unsigned coarseXScroll : 5,
-					coarseYScroll : 5,
-					nameTableX : 1,
-					nameTableY : 1,
-					fineYScroll : 3;
-			} scroll;
-			unsigned address : 15;
-		};
+        union Address {
+            struct {
+                unsigned lo : 8,
+                    hi : 7;
+            } byte;
+            struct {
+                unsigned coarseXScroll : 5,
+                    coarseYScroll : 5,
+                    nameTableX : 1,
+                    nameTableY : 1,
+                    fineYScroll : 3;
+            } scroll;
+            unsigned address : 15;
+        };
 
-		struct {
-			Address v; // Current VRAM Address
-			Address t; // Temporary VRAM Address
-			unsigned fineXScroll : 3;
-			bool writeLatch = false;
-		} vramRegister;
+        struct {
+            Address v; // Current VRAM Address
+            Address t; // Temporary VRAM Address
+            unsigned fineXScroll : 3;
+            bool writeLatch = false;
+        } vramRegister;
 
-		//Sprite Memory
-		struct Sprite {
-			uint8_t yPosition;
-			uint8_t tileIndex;
-			struct {
-				uint8_t palette : 2,
-					unused : 3,
-					priority : 1,
-					horizontalFlip : 1,
-					verticalFlip : 1;
-			} attributes;
-			uint8_t xPosition;
-		};
+        //Sprite Memory
+        struct Sprite {
+            uint8_t yPosition;
+            uint8_t tileIndex;
+            struct {
+                uint8_t palette : 2,
+                    unused : 3,
+                    priority : 1,
+                    horizontalFlip : 1,
+                    verticalFlip : 1;
+            } attributes;
+            uint8_t xPosition;
+        };
 
-		Sprite*        spr[8]      = { 0 };    // Active Sprites
-		uint8_t oam[0x100]   = { 0 };    // Object Attribute Memory
-		
-		//PPU Access Methods
-		uint8_t getPPURegister(uint16_t index);
-		void setPPURegister(uint16_t index, uint8_t value);
-		void copyDMAMemory(uint8_t index);
+        Sprite*        spr[8]      = { 0 };    // Active Sprites
+        uint8_t oam[0x100]   = { 0 };    // Object Attribute Memory
+        
+        //PPU Access Methods
+        uint8_t getPPURegister(uint16_t index);
+        void setPPURegister(uint16_t index, uint8_t value);
+        void copyDMAMemory(uint8_t index);
 
   
-		// Emulation
-		int cycles = 0x0;
-		int currentCycle = 0;
-		int currentScanline = 241;
-		int frameCount = 0;
-		bool oddFrame = false;
+        // Emulation
+        int cycles = 0x0;
+        int currentCycle = 0;
+        int currentScanline = 241;
+        int frameCount = 0;
+        bool oddFrame = false;
 
-		void step();
-		void reset();
-		void vBlankStart();
-		void vBlankEnd();
+        void step();
+        void reset();
+        void vBlankStart();
+        void vBlankEnd();
 
-		// Rendering Helpers
-		void renderPatternTable();
-		void renderTile(int x, int y, int tileIndex);
-		void prepareSprites();
-		void renderPixel();		
+        // Rendering Helpers
+        void renderPatternTable();
+        void renderTile(int x, int y, int tileIndex);
+        void prepareSprites();
+        void renderPixel();		
         
         uint8_t colorTable[0x40][0x3] = {
             {84, 84,  84},
@@ -146,8 +146,8 @@ namespace NES {
             {0,  60,   0},
             {0,  50,  60},
             {0,   0,   0},
-			{0,   0,   0},
-			{0,   0,   0},
+            {0,   0,   0},
+            {0,   0,   0},
             
             {152, 150, 152},
             {8,    76, 196},
@@ -163,8 +163,8 @@ namespace NES {
             {0,   118,  40},
             {0,   102, 120},
             {0,     0,   0},
-			{0,     0,   0},
-			{0,     0,   0},
+            {0,     0,   0},
+            {0,     0,   0},
             
             {236, 238, 236},
             {76,  154, 236},
@@ -180,8 +180,8 @@ namespace NES {
             {56,  204, 108},
             {56,  180, 204},
             {60,   60,  60},
-			{ 0,    0,   0},
-			{ 0,    0,   0},
+            { 0,    0,   0},
+            { 0,    0,   0},
 
             {236, 238, 236},
             {168, 204, 236},
@@ -197,8 +197,8 @@ namespace NES {
             {152, 226, 180},
             {160, 214, 228},
             {160, 162, 160},
-			{0,     0,   0},
-			{0,     0,   0}
+            {0,     0,   0},
+            {0,     0,   0}
         };
     };
 };

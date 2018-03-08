@@ -117,17 +117,17 @@ uint8_t CPU::readProgram() {
 
 unsigned int CPU::step()
 {
-	if (stallCycles > 0x0) {
-		stallCycles--;
-		return 1;
-	}
+    if (stallCycles > 0x0) {
+        stallCycles--;
+        return 1;
+    }
 
-	int currentCycles = cycles;
+    int currentCycles = cycles;
 
     uint8_t hi = 0x0;
     uint8_t lo = 0x0;
-	uint16_t loadedAddress = 0x0;
-	uint8_t loadedInstruction = readProgram();
+    uint16_t loadedAddress = 0x0;
+    uint8_t loadedInstruction = readProgram();
     
     currentAddressMode = static_cast<AddressMode>(addressTable[loadedInstruction]);
     switch (currentAddressMode) {
@@ -146,23 +146,23 @@ unsigned int CPU::step()
             // Branch instructions(e.g.BEQ, BCS) have a relative addressing mode that
             // specifies an 8 - bit signed offset relative to the current PC.
             lo = readProgram();
-			loadedAddress = reg.PC + (int8_t)lo;
+            loadedAddress = reg.PC + (int8_t)lo;
             break;
         case ZeroPage:
             // A single byte specifies an address in the first page of memory ($00xx),
             // also known as the zero page, and the byte at that address is used to perform the computation.
             lo = readProgram();
-			loadedAddress = lo;
+            loadedAddress = lo;
             break;
         case ZeroPageIndexX:
             // The value in X is added to the specified zero page address for a sum address.
             lo = readProgram();
-			loadedAddress = (lo + reg.X) % 256;
+            loadedAddress = (lo + reg.X) % 256;
             break;
         case ZeroPageIndexY:
             // The value in Y is added to the specified zero page address for a sum address.
             lo = readProgram();
-			loadedAddress = (lo + reg.Y) % 256;
+            loadedAddress = (lo + reg.Y) % 256;
             break;
         case Indirect:
             // The JMP instruction has a special indirect addressing mode that can jump to the address stored in a
@@ -171,49 +171,49 @@ unsigned int CPU::step()
             hi = readProgram();
             //address = hi << 8 | lo;
             //address = memory[(hi << 8 | lo)];
-			loadedAddress = (uint16_t)(memory.get(hi << 8 | lo) + memory.get((hi << 8 | (uint8_t)(lo + 1))) * 256);
+            loadedAddress = (uint16_t)(memory.get(hi << 8 | lo) + memory.get((hi << 8 | (uint8_t)(lo + 1))) * 256);
             break;
         case Absolute:
             // A full 16 - bit address is specified and the byte at that address is used to perform the computation.
             lo = readProgram();
             hi = readProgram();
-			loadedAddress = hi << 8 | lo;
+            loadedAddress = hi << 8 | lo;
             break;
         case AbsoluteIndexX:
             // The value in X is added to the specified address for a sum address.
             lo = readProgram();
             hi = readProgram();
-			loadedAddress = (hi << 8 | lo) + reg.X;
+            loadedAddress = (hi << 8 | lo) + reg.X;
             break;
         case AbsoluteIndexY:
             // The value in X is added to the specified address for a sum address.
             lo = readProgram();
             hi = readProgram();
-			loadedAddress = (hi << 8 | lo) + reg.Y;
+            loadedAddress = (hi << 8 | lo) + reg.Y;
             break;
         case IndexIndirectX:
             // The value in X is added to the specified zero page address for a sum address.
             // The little-endian address stored at the two-byte pair of sum address (LSB) and sum address plus one (MSB)
             // is loaded and the value at that address is used to perform the computation.
             lo = readProgram();
-			loadedAddress = (uint16_t)(memory.get((lo + reg.X) % 256) + memory.get((lo + reg.X + 1) % 256) * 256);
+            loadedAddress = (uint16_t)(memory.get((lo + reg.X) % 256) + memory.get((lo + reg.X + 1) % 256) * 256);
             break;
         case IndirectIndexY:
             // The value in Y is added to the address at the little-endian address stored at the two-byte pair of the
             // specified address (LSB) and the specified address plus one (MSB). The value at the sum address is used
             // to perform the computation. Indeed addressing mode actually repeats exactly the accumulator register's digits.
             lo = readProgram();
-			loadedAddress = (uint16_t)(memory.get(lo) + memory.get((lo + 1) % 256) * 256 + reg.Y);
+            loadedAddress = (uint16_t)(memory.get(lo) + memory.get((lo + 1) % 256) * 256 + reg.Y);
             break;
         default:
             break;
     }
-	cycles += timingTable[loadedInstruction];
-	(this->*opTable[loadedInstruction])(loadedAddress);
-	
-	checkInterrurpts();
+    cycles += timingTable[loadedInstruction];
+    (this->*opTable[loadedInstruction])(loadedAddress);
+    
+    checkInterrurpts();
 
-	return cycles - currentCycles;
+    return cycles - currentCycles;
 }
 
 void CPU::setNZStatus(uint8_t value) {
@@ -253,10 +253,10 @@ void CPU::oopsCycle(uint16_t address) {
 }
 
 void CPU::checkInterrurpts() {
-	if (requestNMI == true) {
-		NMI();
-		requestNMI = false;
-	}
+    if (requestNMI == true) {
+        NMI();
+        requestNMI = false;
+    }
 }
 
 void CPU::compareValues(uint8_t a, uint8_t b) {
@@ -289,7 +289,7 @@ void CPU::NMI() {
     // Non-Maskable Interrupt
     pushAddress(reg.PC);
     PHP(0x0);
-	reg.PC = memory.get(0xFFFB) << 8 | memory.get(0xFFFA);
+    reg.PC = memory.get(0xFFFB) << 8 | memory.get(0xFFFA);
     reg.P.status.Interrupt = true;
     cycles += 7;
 }
@@ -311,7 +311,7 @@ void CPU::BEQ(uint16_t address) {
 
 void CPU::BIT(uint16_t address) {
     //Test Bits in Memory with Accumulator
-	uint8_t value = memory.get(address);
+    uint8_t value = memory.get(address);
     reg.P.status.Overflow = (value >> 6) & 1;
     reg.P.status.Zero = (value & reg.A) == 0;
     reg.P.status.Negative = (value & 0x80) != 0;
@@ -625,14 +625,14 @@ void CPU::ASL(uint16_t address) {
     reg.P.status.Carry = (value >> 7) & 1;
     value <<= 1;
     
-	if (currentAddressMode == Accumulator) {
-		reg.A = value;
-	}
-	else {
-		memory.set(address, value);
-	}
+    if (currentAddressMode == Accumulator) {
+        reg.A = value;
+    }
+    else {
+        memory.set(address, value);
+    }
 
-	setNZStatus(value);
+    setNZStatus(value);
 }
 
 void CPU::DEC(uint16_t address) {
@@ -645,8 +645,8 @@ void CPU::DEC(uint16_t address) {
 void CPU::INC(uint16_t address) {
     //Increment Memory by One
     //Flags: N, Z
-	memory.set(address, memory.get(address) + 1);
-	setNZStatus(memory.get(address));
+    memory.set(address, memory.get(address) + 1);
+    setNZStatus(memory.get(address));
 }
 
 void CPU::LSR(uint16_t address) {
@@ -662,12 +662,12 @@ void CPU::LSR(uint16_t address) {
     reg.P.status.Carry = value & 0x1;
     value >>= 1;
 
-	if (currentAddressMode == Accumulator) {
-		reg.A = value;
-	}
-	else {
-		memory.set(address, value);
-	}
+    if (currentAddressMode == Accumulator) {
+        reg.A = value;
+    }
+    else {
+        memory.set(address, value);
+    }
 
     setNZStatus(value);
 }
@@ -686,12 +686,12 @@ void CPU::ROL(uint16_t address) {
     reg.P.status.Carry = (value >> 0x7) & 0x1;
     value = (value << 0x1) | c;
 
-	if (currentAddressMode == Accumulator) {
-		reg.A = value;
-	}
-	else {
-		memory.set(address, value);
-	}
+    if (currentAddressMode == Accumulator) {
+        reg.A = value;
+    }
+    else {
+        memory.set(address, value);
+    }
 
     setNZStatus(value);
 }
@@ -710,11 +710,11 @@ void CPU::ROR(uint16_t address) {
     reg.P.status.Carry = value & 0x1;
     value = (value >> 0x1) | (c << 0x7);
 
-	if (currentAddressMode == Accumulator) {
-		reg.A = value;
-	} else {
-		memory.set(address, value);
-	}
+    if (currentAddressMode == Accumulator) {
+        reg.A = value;
+    } else {
+        memory.set(address, value);
+    }
 
     setNZStatus(value);
 }

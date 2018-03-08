@@ -13,32 +13,32 @@
 using namespace std;
 
 NES::Console::Console() {
-	memory = new Memory(*this);
-	cpu = new CPU(*memory);
-	ppu = new PPU(*this);
-	ppuMemory = new PPUMemory(*this);
-	controllerOne = new Controller();
-	reset();
+    memory = new Memory(*this);
+    cpu = new CPU(*memory);
+    ppu = new PPU(*this);
+    ppuMemory = new PPUMemory(*this);
+    controllerOne = new Controller();
+    reset();
 }
 
 NES::Console::~Console() {}
 
 void NES::Console::emulateCycle() {
-	int cycles = cpu->step();
-	for (int i = 0; i < (cycles * 3); i++) ppu->step();
+    int cycles = cpu->step();
+    for (int i = 0; i < (cycles * 3); i++) ppu->step();
 }
 
 void NES::Console::loadProgram(const char* path) {
-	cartridge = new Cartridge(path);
-	cpu->reg.PC = memory->resetVector();
-	std::cout << "Loaded" << std::endl;
+    cartridge = new Cartridge(path);
+    cpu->reg.PC = memory->resetVector();
+    std::cout << "Loaded" << std::endl;
 }
 
 void NES::Console::reset() {
-	cpu->reg.A = 0;
-	cpu->reg.X = 0;
-	cpu->reg.Y = 0;
- 	cpu->reg.S = 0xFD;
+    cpu->reg.A = 0;
+    cpu->reg.X = 0;
+    cpu->reg.Y = 0;
+    cpu->reg.S = 0xFD;
     cpu->reg.P.status.T2 = true;
     cpu->reg.P.status.Interrupt = true;
     cpu->reg.S = 0xFD;

@@ -57,16 +57,16 @@ namespace NES {
         void(NES::CPU::*opTable[256])(uint16_t);
         
         Memory& memory;
-		
-		unsigned int cycles = 0x0;
-		unsigned int stallCycles = 0x0;
-		bool requestNMI = false;
+        
+        unsigned int cycles = 0x0;
+        unsigned int stallCycles = 0x0;
+        bool requestNMI = false;
 
-		unsigned int step();
+        unsigned int step();
 
         void setNZStatus(uint8_t value);
         void oopsCycle(uint16_t address);
-		void checkInterrurpts();
+        void checkInterrurpts();
         void branchOnCondition(bool condition, uint16_t address);
         void compareValues(uint8_t a, uint8_t b);
         void push(uint8_t byte);

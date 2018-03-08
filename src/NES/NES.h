@@ -13,31 +13,31 @@
 #include <stdint.h>
 
 namespace NES {
-	class Cartridge;
+    class Cartridge;
     class CPU;
-	class Controller;
-	class Memory;
+    class Controller;
+    class Memory;
     class PPU;
-	class PPUMemory;
+    class PPUMemory;
 
     class Console {
-	public:
-		void emulateCycle();
-		void loadProgram(const char* path);
-		void reset();
+    public:
+        void emulateCycle();
+        void loadProgram(const char* path);
+        void reset();
 
-		Cartridge *cartridge;
+        Cartridge *cartridge;
         CPU *cpu;
         Memory *memory;
         PPU *ppu;
-		PPUMemory *ppuMemory;
-		Controller *controllerOne;
+        PPUMemory *ppuMemory;
+        Controller *controllerOne;
 
-		unsigned int graphics[256 * 240] = { 0 };
-		unsigned int updateGraphics = false;
+        unsigned int graphics[256 * 240] = { 0 };
+        unsigned int updateGraphics = false;
 
-		Console();
-		~Console();
+        Console();
+        ~Console();
     };
 };
 
