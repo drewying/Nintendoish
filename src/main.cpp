@@ -245,7 +245,7 @@ int main(int argc, char** argv)
     display->initialize(argc, argv);
     if (runTests) {
         nes = new NES::Console();
-        nes->loadProgram("../roms/Megaman.nes");
+        nes->loadProgram("../roms/Zelda.nes");
         logfile = ifstream("../roms/DonkeyKong.log");
         glutIdleFunc(testNES);
     } else {
@@ -253,8 +253,8 @@ int main(int argc, char** argv)
         //nes->loadProgram("../roms/IceClimber.nes");
         //nes->loadProgram("../roms/Megaman.nes");
         //nes->loadProgram("../roms/Castlevania.nes");
-        //nes->loadProgram("../roms/Zelda.nes");
-        nes->loadProgram("../roms/Mario.nes");
+        nes->loadProgram("../roms/Zelda.nes");
+        //nes->loadProgram("../roms/Mario.nes");
         //nes->loadProgram("../roms/Excitebike.nes");
         //nes->loadProgram("../roms/DonkeyKong.nes");
         //nes->loadProgram("../roms/palette.nes");

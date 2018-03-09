@@ -7,9 +7,10 @@ namespace NES {
         public Mapper
     {
     public:
-        Mapper2(Cartridge &cartridge) : Mapper(cartridge) {}
+        Mapper2(Cartridge &cartridge);
 
-        uint8_t offset;
+        uint8_t prgOffset1 = 0x0;
+        uint8_t prgOffset2 = 0x0;
 
         uint8_t getTileData(uint16_t index);
         void  setTileData(uint16_t index, uint8_t value);

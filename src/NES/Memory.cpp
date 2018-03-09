@@ -33,7 +33,7 @@ uint8_t NES::Memory::get(uint16_t index) {
         return 0x40;
     }
 
-    if (index >= 0x8000) {
+    if (index >= 0x6000) {
         return console.cartridge->getProgramData(index);
     }
 
@@ -56,7 +56,7 @@ void NES::Memory::set(uint16_t index, uint8_t value) {
         console.controllerOne->startPoll();
     } else if (index == 0x4017) {
         //Controller 2
-    } else if (index >= 0x8000) {
+    } else if (index >= 0x6000) {
         console.cartridge->setProgramData(index, value);
     }
 }
