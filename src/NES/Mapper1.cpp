@@ -40,8 +40,7 @@ uint8_t Mapper1::getProgramData(uint16_t index) {
 
 void Mapper1::setProgramData(uint16_t index, uint8_t value) {
     if ((value & 0x80) == 0x80) {
-        // Clear load register to initial state
-        loadRegister = 0x10;
+        clearLoadRegister();
         return;
     } 
 
@@ -53,9 +52,9 @@ void Mapper1::setProgramData(uint16_t index, uint8_t value) {
     if (copyData) { 
         if (index < 0xA000) {
             //Load Control
-            chrBankMode = (value & 0x10) == 0x10;
-            prgBankMode = ((value & 0xC) >> 2);
-            switch (value & 0x3) {
+            chrBankMode = (loadRegister & 0x10) == 0x10;
+            prgBankMode = ((loadRegister & 0xC) >> 2);
+            switch (loadRegister & 0x3) {
             case 0:
             case 1:
                 cartridge.horizontalMirroring = true;
@@ -69,25 +68,28 @@ void Mapper1::setProgramData(uint16_t index, uint8_t value) {
                 cartridge.verticalMirroring = false;
             }
         } else if (index < 0xC000) {
-            chrOffset1 = value;
+            chrOffset1 = loadRegister;
             if (chrBankMode == 0x0) chrOffset1 *= 2;
         } else if (index < 0xE000) {
-            chrOffset2 = value;
+            chrOffset2 = loadRegister;
             if (chrBankMode == 0x0) chrOffset2 *= 2;
         } else if (index <= 0xFFFF) {
             if (prgBankMode == 0x0) {
-                prgOffset1 = (value & 0xE) * 0x2;
+                prgOffset1 = (loadRegister & 0xE) * 0x2;
             } else if (prgBankMode == 0x1) {
                 prgOffset1 = 0x0;
-                prgOffset2 = (value & 0xF);
+                prgOffset2 = (loadRegister & 0xF);
             } else if (prgBankMode == 0x3) {
-                prgOffset1 = (value & 0xF);
+                prgOffset1 = (loadRegister & 0xF);
                 prgOffset2 = cartridge.prgSize - 1;
             }
         }
+        clearLoadRegister();
     }
 }
 
-
+void Mapper1::clearLoadRegister() {
+    loadRegister = 0x10;
+}
 
 

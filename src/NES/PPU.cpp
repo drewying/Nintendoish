@@ -120,13 +120,11 @@ void NES::PPU::prepareSprites() {
     unsigned int spriteCount = 0;
     unsigned int oamIndex = 0;
     std::fill_n(spr, 8, nullptr);
-    if (reg.control.flags.TallSprites == true) {
-        printf("Ruh Roh. Tall Sprites not working\n");
-    }
+    uint8_t spriteHeight = reg.control.flags.TallSprites ? 16 : 8;
     while (spriteCount < 8 && oamIndex < 64) {
         if (sprite->yPosition != 0 &&
             currentScanline >= sprite->yPosition &&
-            currentScanline < sprite->yPosition + 8)
+            currentScanline < sprite->yPosition + spriteHeight)
         {
             spr[spriteCount] = sprite;
             spriteCount++;
@@ -165,11 +163,31 @@ void NES::PPU::renderPixel() {
                 x >= sprite->xPosition &&
                 x  < (sprite->xPosition + 8))
             {
+                    uint8_t spriteHeight = reg.control.flags.TallSprites ? 16 : 8;
                     uint8_t spriteX = x - sprite->xPosition;
-                    uint8_t spriteY = y - (sprite->yPosition + 1);
-                    uint16_t tileIndex = sprite->tileIndex + (reg.control.flags.SpriteTableSelect ? 0x100 : 0x0);
-                    tileIndex *= 0x10;
-                    tileIndex += sprite->attributes.verticalFlip ? 7 - spriteY : spriteY;
+                    uint8_t spriteY = y - (sprite ->yPosition + 1);
+                    uint16_t tileIndex = sprite->tileIndex;
+
+                   spriteY = sprite->attributes.verticalFlip ? spriteHeight - spriteY - 1 : spriteY;                    
+
+                    if (spriteHeight == 8) {
+                        // 8x8 Sprite
+                        tileIndex *= 0x10;
+                        tileIndex += (reg.control.flags.SpriteTableSelect ? 0x1000 : 0x0);
+                    } else {
+                        // 8x16 Sprite
+                        bool tileBank = tileIndex & 0x1;
+                        tileIndex &= 0xFE;
+                        tileIndex *= 0x10;
+                        tileIndex += (tileBank ? 0x1000 : 0x0);
+                        if (spriteY >= 8) {
+                            //Process bottom half of 8x16 Sprite
+                            tileIndex += 0x10;
+                            spriteY -= 8;
+                        }
+                    }
+                    
+                    tileIndex += spriteY;
     
                     uint8_t tileSliceA = console.ppuMemory->get(tileIndex);
                     uint8_t tileSliceB = console.ppuMemory->get(tileIndex + 8);
@@ -184,7 +202,7 @@ void NES::PPU::renderPixel() {
                     backgroundPriority = sprite->attributes.priority == 1;
 
                     //Check for sprite 0 hit.
-                    reg.status.flags.Sprite0Hit = reg.status.flags.Sprite0Hit || (sprite == (Sprite*)oam && spriteColor != 0x0 && backgoundColor != 0x0 && currentCycle != 255);
+                    reg.status.flags.Sprite0Hit |= (sprite == (Sprite*)oam && spriteColor != 0x0 && backgoundColor != 0x0 && currentCycle != 255);
                     if (spriteColor != 0x0) break;
             }
         }

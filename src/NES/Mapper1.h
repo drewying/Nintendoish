@@ -23,6 +23,7 @@ namespace NES {
 
         uint8_t getProgramData(uint16_t index);
         void  setProgramData(uint16_t index, uint8_t value);
+        void clearLoadRegister();
     };
 
 }

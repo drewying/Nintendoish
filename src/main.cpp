@@ -252,8 +252,8 @@ int main(int argc, char** argv)
         nes = new NES::Console();
         //nes->loadProgram("../roms/IceClimber.nes");
         //nes->loadProgram("../roms/Megaman.nes");
-        //nes->loadProgram("../roms/Castlevania.nes");
-        nes->loadProgram("../roms/Zelda.nes");
+        nes->loadProgram("../roms/Castlevania.nes");
+        //nes->loadProgram("../roms/Zelda.nes");
         //nes->loadProgram("../roms/Mario.nes");
         //nes->loadProgram("../roms/Excitebike.nes");
         //nes->loadProgram("../roms/DonkeyKong.nes");
