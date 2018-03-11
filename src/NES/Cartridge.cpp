@@ -56,6 +56,10 @@ Cartridge::Cartridge(const char* path) {
             exit(0);
         }
     }
+    else {
+        printf("File not found");
+        exit(0);
+    }
 }
 
 uint8_t Cartridge::getTileData(uint16_t index) { return mapper->getTileData(index); }

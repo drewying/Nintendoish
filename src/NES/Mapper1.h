@@ -9,6 +9,8 @@ namespace NES {
     public:
         Mapper1(Cartridge &cartridge);
 
+        uint8_t prgRAM[0x2000];
+
         uint8_t loadRegister = 0x10;
         uint8_t prgOffset1 = 0x0;
         uint8_t prgOffset2 = 0x0;
