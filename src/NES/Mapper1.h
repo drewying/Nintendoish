@@ -12,10 +12,12 @@ namespace NES {
         uint8_t prgRAM[0x2000];
 
         uint8_t loadRegister = 0x10;
+        uint8_t controlRegister = 0x0;
+
         uint8_t prgOffset1 = 0x0;
         uint8_t prgOffset2 = 0x0;
         uint8_t chrOffset1 = 0x0;
-        uint8_t chrOffset2 = 0x0;
+        uint8_t chrOffset2 = 0x0;     
 
         uint8_t prgBankMode = 0x0;
         uint8_t chrBankMode = 0x0;
@@ -25,6 +27,7 @@ namespace NES {
 
         uint8_t getProgramData(uint16_t index);
         void  setProgramData(uint16_t index, uint8_t value);
+        void loadControlRegister();
         void clearLoadRegister();
     };
 

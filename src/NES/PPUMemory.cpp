@@ -11,7 +11,7 @@ uint8_t PPUMemory::get(uint16_t index) {
         return vram[mirrorIndex(index)];
     } else if (index < 0x3F00) { 
         // Name Table Mirroring
-        return vram[index - 0x3000];
+        return vram[mirrorIndex(index - 0x1000)];
     } else  if (index < 0x4000) {
         // Palette Access
         if (index >= 0x3F10 && (index - 0x3F10) % 4 == 0) index -= 0x10; // Palette Mirroring
@@ -29,7 +29,7 @@ void PPUMemory::set(uint16_t index, uint8_t value) {
         vram[mirrorIndex(index)] = value;
     } else if (index < 0x3F00) {
         // Name Table Mirroring
-        vram[index - 0x3000] = value;
+        vram[mirrorIndex(index - 0x1000)] = value;
     } else if (index < 0x4000) {
         // Palette Access
         if (index >= 0x3F10 && (index - 0x3F10) % 0x4 == 0) index -= 0x10; // Pallette Mirroring
@@ -40,22 +40,22 @@ void PPUMemory::set(uint16_t index, uint8_t value) {
 uint16_t PPUMemory::mirrorIndex(uint16_t index) {
     bool h = console.cartridge->horizontalMirroring;
     bool v = console.cartridge->verticalMirroring;
-
+    uint16_t orig = index;
+    index -= 0x2000;
     if (h && !v) {
         // Horizontal Mirroring
-        index -= 0x2000;
-        if (index % 0x800 >= 0x400) index -= 0x400;
+        if (index >= 0x400) index -= 0x400;
+        if (index >= 0x800) index -= 0x400;
         return index;
     } else if (!h && v) {
         // Vertical Mirroring
-        index -= 0x2000;
         if (index >= 0x800) index -= 0x800;
         return index;
     } else if (!h && !v) {
-        // No Mirroring
+        // No Mirroring. //TODO, this will crash unless redirected to Mapper memory.
         return index;
     } else if (h && v) {
-        // Single Screen Mirroring
-        return index & 0x800;
+        // Single Screen Mirroring. // TODO Support Lower Bank/ Upper Bank modes.
+        return index & 0x400;
     }
 }

@@ -14,7 +14,7 @@ namespace NES {
         void set(uint16_t index, uint8_t value);
         
     private:
-        uint8_t vram[0x2000] = { 0 };    // Video Memory/Name Tables
+        uint8_t  vram[0x800] = { 0 };    // Video Memory/Name Tables
         uint8_t    pal[0x20] = { 0x3F }; // Palette Memory. Initialized to black.
     
         uint16_t mirrorIndex(uint16_t index);

@@ -21,7 +21,6 @@ uint8_t Mapper1::getTileData(uint16_t index) {
 }
 
 void Mapper1::setTileData(uint16_t index, uint8_t value) {
-    if (chrBankMode == 0x0) cartridge.chr[index] = value;
     if (index < 0x1000) {
         cartridge.chr[index + (chrOffset1 * 0x1000)] = value;
     } else {
@@ -41,7 +40,6 @@ uint8_t Mapper1::getProgramData(uint16_t index) {
 }
 
 void Mapper1::setProgramData(uint16_t index, uint8_t value) {
-
     if (index < 0x8000) {
         prgRAM[index - 0x6000] = value;
         return;
@@ -49,6 +47,8 @@ void Mapper1::setProgramData(uint16_t index, uint8_t value) {
 
     if ((value & 0x80) == 0x80) {
         clearLoadRegister();
+        controlRegister |= 0xC;
+        loadControlRegister();
         return;
     } 
 
@@ -59,24 +59,8 @@ void Mapper1::setProgramData(uint16_t index, uint8_t value) {
     loadRegister |= ((value & 0x1) << 4);
     if (copyData) { 
         if (index < 0xA000) {
-            //Load Control
-            chrBankMode = (loadRegister & 0x10) == 0x10; // 0: switch 8 KB at a time; 1: switch two separate 4 KB banks
-            prgBankMode = ((loadRegister & 0xC) >> 2);
-            switch (loadRegister & 0x3) {
-            case 0:
-            case 1:
-                cartridge.horizontalMirroring = true;
-                cartridge.verticalMirroring = true;
-                break;
-            case 2:
-                cartridge.horizontalMirroring = false;
-                cartridge.verticalMirroring = true;
-                break;
-            case 3:
-                cartridge.horizontalMirroring = true;
-                cartridge.verticalMirroring = false;
-                break;
-            }
+            controlRegister = loadRegister;
+            loadControlRegister();
         } else if (index < 0xC000) {
             //  Select 4 KB or 8 KB CHR bank at PPU $0000 (low bit ignored in 8 KB mode)
             if (chrBankMode == 0x0) {
@@ -94,7 +78,7 @@ void Mapper1::setProgramData(uint16_t index, uint8_t value) {
             if (prgBankMode == 0x0 || prgBankMode == 0x1) {
                 // 0, 1: switch 32 KB at $8000, ignoring low bit of bank number;
                 prgOffset1 = loadRegister & 0xE;
-                prgOffset2 = prgOffset1 + 0x1;
+                prgOffset2 = loadRegister | 0x1;
             } else if (prgBankMode == 0x2) {
                 // 2: fix first bank at $8000 and switch 16 KB bank at $C000;
                 prgOffset1 = 0x0;
@@ -106,6 +90,27 @@ void Mapper1::setProgramData(uint16_t index, uint8_t value) {
             }
         }
         clearLoadRegister();
+    }
+}
+
+void Mapper1::loadControlRegister() {
+    //Load Control
+    chrBankMode = (controlRegister & 0x10) == 0x10; // 0: switch 8 KB at a time; 1: switch two separate 4 KB banks
+    prgBankMode = (controlRegister & 0xC) >> 2;
+    switch (controlRegister & 0x3) {
+    case 0: // Lower Bank Single Screen
+    case 1: // Upper Bank Single Screen
+        cartridge.horizontalMirroring = true;
+        cartridge.verticalMirroring = true;
+        break;
+    case 2:
+        cartridge.horizontalMirroring = false;
+        cartridge.verticalMirroring = true;
+        break;
+    case 3:
+        cartridge.horizontalMirroring = true;
+        cartridge.verticalMirroring = false;
+        break;
     }
 }
 
