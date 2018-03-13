@@ -8,6 +8,14 @@ namespace NES {
     class Mapper;
     class Cartridge {
     public:
+        typedef enum {
+            HorizontalMirror,
+            VerticalMirror,
+            SingleScreenA,
+            SingleScreenB,
+            FourScreen,
+        } BackgroundMirroring;
+
         Mapper* mapper;
         uint8_t* prg;
         uint8_t* chr;
@@ -15,9 +23,9 @@ namespace NES {
         uint8_t chrSize;
         uint8_t mapperNumber;
         bool batteryBackup = false;
-        bool verticalMirroring = false;
-        bool horizontalMirroring = false;
-        
+
+        BackgroundMirroring currentMirroring;
+
         uint8_t getTileData(uint16_t index);
         void setTileData(uint16_t index, uint8_t value);
 

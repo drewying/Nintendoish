@@ -1,4 +1,5 @@
 #include "PPUMemory.h"
+#include "Cartridge.h"
 
 using namespace NES;
 
@@ -38,24 +39,23 @@ void PPUMemory::set(uint16_t index, uint8_t value) {
 }
 
 uint16_t PPUMemory::mirrorIndex(uint16_t index) {
-    bool h = console.cartridge->horizontalMirroring;
-    bool v = console.cartridge->verticalMirroring;
-    uint16_t orig = index;
     index -= 0x2000;
-    if (h && !v) {
-        // Horizontal Mirroring
+    
+    switch (console.cartridge->currentMirroring) {
+    case Cartridge::HorizontalMirror:
         if (index >= 0x400) index -= 0x400;
         if (index >= 0x800) index -= 0x400;
         return index;
-    } else if (!h && v) {
-        // Vertical Mirroring
+        break;
+    case Cartridge::VerticalMirror:
         if (index >= 0x800) index -= 0x800;
         return index;
-    } else if (!h && !v) {
-        // No Mirroring. //TODO, this will crash unless redirected to Mapper memory.
-        return index;
-    } else if (h && v) {
-        // Single Screen Mirroring. // TODO Support Lower Bank/ Upper Bank modes.
-        return index & 0x400;
+        break;
+    case Cartridge::SingleScreenA:
+        return index % 0x400;
+        break;
+    case Cartridge::SingleScreenB:
+        return (index % 0x400) + 0x400;
+        break;
     }
 }

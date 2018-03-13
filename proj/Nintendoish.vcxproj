@@ -30,6 +30,7 @@
     <ClCompile Include="..\src\NES\Mapper1.cpp" />
     <ClCompile Include="..\src\NES\Mapper2.cpp" />
     <ClCompile Include="..\src\NES\Mapper3.cpp" />
+    <ClCompile Include="..\src\NES\Mapper7.cpp" />
     <ClCompile Include="..\src\NES\Memory.cpp" />
     <ClCompile Include="..\src\NES\NES.cpp" />
     <ClCompile Include="..\src\NES\PPU.cpp" />
@@ -46,6 +47,7 @@
     <ClInclude Include="..\src\NES\Mapper1.h" />
     <ClInclude Include="..\src\NES\Mapper2.h" />
     <ClInclude Include="..\src\NES\Mapper3.h" />
+    <ClInclude Include="..\src\NES\Mapper7.h" />
     <ClInclude Include="..\src\NES\Memory.h" />
     <ClInclude Include="..\src\NES\NES.h" />
     <ClInclude Include="..\src\NES\PPU.h" />

@@ -6,6 +6,7 @@
 #include "Mapper1.h"
 #include "Mapper2.h"
 #include "Mapper3.h"
+#include "Mapper7.h"
 
 using namespace NES;
 
@@ -25,9 +26,16 @@ Cartridge::Cartridge(const char* path) {
         prgSize = header[4];
         chrSize = header[5];
         if (chrSize == 0) chrSize = (header[8] == 0 ? 0x1 : header[8]);  //No ROM present, allocate RAM instead.
-        verticalMirroring = (header[6] & 0x1) == 0x1;
-        horizontalMirroring = (header[6] & 0x1) == 0x0;
-        if ((header[6] & 0x4) == 0x4) verticalMirroring = horizontalMirroring = true;
+        if ((header[6] & 0x1) == 0x1) {
+            currentMirroring = VerticalMirror;
+        } else if ((header[6] & 0x1) == 0x0) {
+            currentMirroring = HorizontalMirror;
+        }
+
+        if ((header[6] & 0x4) == 0x4) {
+            currentMirroring = SingleScreenA;
+        }
+
         batteryBackup = header[6] & 0x2 == 0x2;
         mapperNumber = (header[7] & 0xF) | (header[6] >> 4);
 
@@ -54,6 +62,9 @@ Cartridge::Cartridge(const char* path) {
             break;
         case 3:
             mapper = new Mapper3(*this);
+            break;
+        case 7:
+            mapper = new Mapper7(*this);
             break;
         default:
             printf("Unsupported Mapper");

@@ -99,17 +99,15 @@ void Mapper1::loadControlRegister() {
     prgBankMode = (controlRegister & 0xC) >> 2;
     switch (controlRegister & 0x3) {
     case 0: // Lower Bank Single Screen
+        cartridge.currentMirroring = Cartridge::SingleScreenA;
     case 1: // Upper Bank Single Screen
-        cartridge.horizontalMirroring = true;
-        cartridge.verticalMirroring = true;
+        cartridge.currentMirroring = Cartridge::SingleScreenB;
         break;
-    case 2:
-        cartridge.horizontalMirroring = false;
-        cartridge.verticalMirroring = true;
+    case 2: // Vertical Mirroring
+        cartridge.currentMirroring = Cartridge::VerticalMirror;
         break;
-    case 3:
-        cartridge.horizontalMirroring = true;
-        cartridge.verticalMirroring = false;
+    case 3: // Horizontal Mirroring
+        cartridge.currentMirroring = Cartridge::HorizontalMirror;
         break;
     }
 }
