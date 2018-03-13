@@ -5,6 +5,7 @@
 #include "Mapper0.h"
 #include "Mapper1.h"
 #include "Mapper2.h"
+#include "Mapper3.h"
 
 using namespace NES;
 
@@ -50,6 +51,9 @@ Cartridge::Cartridge(const char* path) {
             break;
         case 2:
             mapper = new Mapper2(*this);
+            break;
+        case 3:
+            mapper = new Mapper3(*this);
             break;
         default:
             printf("Unsupported Mapper");

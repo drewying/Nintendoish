@@ -250,7 +250,10 @@ int main(int argc, char** argv)
         glutIdleFunc(testNES);
     } else {
         nes = new NES::Console();
-        nes->loadProgram("../roms/Metroid.nes");
+        nes->loadProgram("../roms/Gradius.nes");
+        //nes->loadProgram("../roms/KidIcarus.nes");
+        //nes->loadProgram("../roms/Contra.nes");
+        //nes->loadProgram("../roms/Metroid.nes");
         //nes->loadProgram("../roms/IceClimber.nes");
         //nes->loadProgram("../roms/Megaman.nes");
         //nes->loadProgram("../roms/Castlevania.nes");
