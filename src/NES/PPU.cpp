@@ -96,7 +96,7 @@ void NES::PPU::setPPURegister(uint16_t index, uint8_t value) {
 }
 
 void NES::PPU::copyDMAMemory(uint8_t index) {
-    console.cpu->stallCycles = (console.cpu->cycles) % 2 == 1 ? 513 : 514;
+    console.cpu->stallCycles = (console.cpu->totalCycles) % 2 == 1 ? 513 : 514;
     for (int i = 0x0; i < 0x100; i++) {
         oam[i] = console.memory->get((index * 0x100) + i);
     }
@@ -258,14 +258,14 @@ void NES::PPU::renderTile(int x, int y, int tileIndex) {
 
 void NES::PPU::step() {
 
-    cycles += 1;
+    totalCycles += 1;
     currentCycle += 1;
 
     if (currentCycle == 341) { // Next Scanline
         currentCycle = 0;
         currentScanline++;
         if (currentScanline == 261) { // Next Frame
-            frameCount++;
+            totalFrames++;
             currentScanline = -1;
             oddFrame ^= 1;
             console.updateGraphics = true;

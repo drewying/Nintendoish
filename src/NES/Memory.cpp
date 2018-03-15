@@ -1,5 +1,6 @@
 #include "Memory.h"
 #include "PPU.h"
+#include "APU.h"
 
 #include <iostream>
 
@@ -21,6 +22,13 @@ uint8_t NES::Memory::get(uint16_t index) {
         //OAM DMA Access
         return console.ppu->getPPURegister(index);
     }
+
+
+    if (index == 0x4015) {
+        //APU Access
+        return console.apu->getAPURegister(index);
+    }
+
 
     if (index == 0x4016) {
         //Controller 1
@@ -51,6 +59,9 @@ void NES::Memory::set(uint16_t index, uint8_t value) {
     } else if (index == 0x4014) {
         //OAM DMA Access
         console.ppu->setPPURegister(index, value);
+    } else if (index == 0x4015) {
+        //APU Access
+        console.apu->setAPURegister(index, value);
     } else if (index == 0x4016) {
         //Controller 1
         console.controllerOne->startPoll();

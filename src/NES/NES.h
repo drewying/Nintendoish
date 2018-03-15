@@ -13,6 +13,7 @@
 #include <stdint.h>
 
 namespace NES {
+    class APU;
     class Cartridge;
     class CPU;
     class Controller;
@@ -26,6 +27,7 @@ namespace NES {
         void loadProgram(const char* path);
         void reset();
 
+        APU *apu;
         Cartridge *cartridge;
         CPU *cpu;
         Memory *memory;

@@ -52,14 +52,14 @@ namespace NES {
         AddressMode currentAddressMode;
         
         string debugTable[256];
-        unsigned int addressTable[256];
-        unsigned int timingTable[256];
+        uint32_t addressTable[256];
+        uint32_t timingTable[256];
         void(NES::CPU::*opTable[256])(uint16_t);
         
         Memory& memory;
         
-        unsigned int cycles = 0x0;
-        unsigned int stallCycles = 0x0;
+        uint32_t totalCycles = 0;
+        uint32_t stallCycles = 0;
         bool requestNMI = false;
 
         unsigned int step();

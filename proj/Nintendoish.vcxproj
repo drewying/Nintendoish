@@ -22,6 +22,7 @@
     <ClCompile Include="..\src\CHIP8\Chip8.cpp" />
     <ClCompile Include="..\src\Display.cpp" />
     <ClCompile Include="..\src\main.cpp" />
+    <ClCompile Include="..\src\NES\APU.cpp" />
     <ClCompile Include="..\src\NES\Cartridge.cpp" />
     <ClCompile Include="..\src\NES\Controller.cpp" />
     <ClCompile Include="..\src\NES\CPU.cpp" />
@@ -39,6 +40,7 @@
   <ItemGroup>
     <ClInclude Include="..\src\CHIP8\Chip8.h" />
     <ClInclude Include="..\src\Display.h" />
+    <ClInclude Include="..\src\NES\APU.h" />
     <ClInclude Include="..\src\NES\Cartridge.h" />
     <ClInclude Include="..\src\NES\Controller.h" />
     <ClInclude Include="..\src\NES\CPU.h" />

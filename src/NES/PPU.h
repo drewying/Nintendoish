@@ -104,7 +104,7 @@ namespace NES {
             uint8_t xPosition;
         };
 
-        Sprite*        spr[8]      = { 0 };    // Active Sprites
+        Sprite* spr[8]       = { 0 };    // Active Sprites
         uint8_t oam[0x100]   = { 0 };    // Object Attribute Memory
         
         //PPU Access Methods
@@ -114,10 +114,10 @@ namespace NES {
 
   
         // Emulation
-        int cycles = 0x0;
-        int currentCycle = 0;
-        int currentScanline = 241;
-        int frameCount = 0;
+        uint32_t totalCycles     = 0;
+        uint32_t totalFrames     = 0;
+        uint32_t currentCycle    = 0;
+        uint32_t currentScanline = 241;
         bool oddFrame = false;
 
         void step();

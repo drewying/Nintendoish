@@ -122,7 +122,7 @@ unsigned int CPU::step()
         return 1;
     }
 
-    int currentCycles = cycles;
+    int currentCycles = totalCycles;
 
     uint8_t hi = 0x0;
     uint8_t lo = 0x0;
@@ -208,12 +208,12 @@ unsigned int CPU::step()
         default:
             break;
     }
-    cycles += timingTable[loadedInstruction];
+    totalCycles += timingTable[loadedInstruction];
     (this->*opTable[loadedInstruction])(loadedAddress);
     
     checkInterrurpts();
 
-    return cycles - currentCycles;
+    return totalCycles - currentCycles;
 }
 
 void CPU::setNZStatus(uint8_t value) {
@@ -223,7 +223,7 @@ void CPU::setNZStatus(uint8_t value) {
 
 void CPU::branchOnCondition(bool condition, uint16_t address) {
     if (condition) {
-        cycles++;
+        totalCycles++;
         oopsCycle(address);
         reg.PC = address;
     }
@@ -248,7 +248,7 @@ void CPU::oopsCycle(uint16_t address) {
     }
     
     if (indexAddress != 0x0 && ((address & 0xFF00) != (indexAddress & 0xFF00))){
-        cycles++;
+        totalCycles++;
     }
 }
 
@@ -291,7 +291,7 @@ void CPU::NMI() {
     PHP(0x0);
     reg.PC = memory.get(0xFFFB) << 8 | memory.get(0xFFFA);
     reg.P.status.Interrupt = true;
-    cycles += 7;
+    totalCycles += 7;
 }
 
 void CPU::BCC(uint16_t address) {

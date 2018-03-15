@@ -2,7 +2,7 @@
 #include "CPU.h"
 #include "Memory.h"
 #include "PPU.h"
-#include "Mapper0.h"
+#include "APU.h"
 
 #include <iostream>
 #include <sstream>
@@ -13,6 +13,7 @@
 using namespace std;
 
 NES::Console::Console() {
+    apu = new APU(*this);
     memory = new Memory(*this);
     cpu = new CPU(*memory);
     ppu = new PPU(*this);
@@ -26,6 +27,7 @@ NES::Console::~Console() {}
 void NES::Console::emulateCycle() {
     int cycles = cpu->step();
     for (int i = 0; i < (cycles * 3); i++) ppu->step();
+    while (apu->totalCycles < (cpu->totalCycles / 2)) apu->step();
 }
 
 void NES::Console::loadProgram(const char* path) {

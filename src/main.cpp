@@ -250,7 +250,8 @@ int main(int argc, char** argv)
         glutIdleFunc(testNES);
     } else {
         nes = new NES::Console();
-        nes->loadProgram("../roms/Battletoads.nes");
+        nes->loadProgram("../roms/test/scanline.nes");
+        //nes->loadProgram("../roms/Battletoads.nes");
         //nes->loadProgram("../roms/Gradius.nes");
         //nes->loadProgram("../roms/KidIcarus.nes");
         //nes->loadProgram("../roms/Contra.nes");
