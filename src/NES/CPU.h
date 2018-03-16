@@ -66,6 +66,7 @@ namespace NES {
         bool requestNMI = false;
 
         void loadInstruction();
+        void executeLoadedInstruction();
 
         void step();
 
@@ -79,8 +80,6 @@ namespace NES {
         uint8_t pull();
         uint16_t pullAddress();
         uint8_t readProgram();
-
-        void executeInstruction();
         
         typedef void (CPU::*Op)(uint16_t);
         

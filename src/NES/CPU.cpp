@@ -107,15 +107,14 @@ CPU::CPU(NES::Memory &memory):
         reg.P.byte = 0x24;
     }
 
-CPU::~CPU()
-{
+CPU::~CPU() {
 }
 
 uint8_t CPU::readProgram() {
     return memory.get(reg.PC++);
 }
 
-void CPU::executeInstruction() {
+void CPU::executeLoadedInstruction() {
     (this->*opTable[loadedInstruction])(loadedAddress);
 }
 
@@ -210,7 +209,7 @@ void CPU::loadInstruction() {
 void CPU::step() {
     
     if (stallCycles == 0x0) {
-        if (totalCycles > 0x0) executeInstruction();
+        executeLoadedInstruction();
         checkInterrurpts();
         loadInstruction();
     }
