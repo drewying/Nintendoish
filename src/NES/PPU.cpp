@@ -43,7 +43,7 @@ void NES::PPU::setPPURegister(uint16_t index, uint8_t value) {
         vramRegister.t.scroll.nameTableY = ((value & 0x2) >> 1);
 
         if (reg.control.flags.NMI == true && reg.status.flags.VBlankEnabled == true) {
-            console.cpu->requestNMI = true;
+            //console.cpu->requestNMI = true;
         }
         break;
     case 0x2001: //PPU Render Flags
@@ -264,6 +264,11 @@ void NES::PPU::step() {
     if (currentCycle == 341) { // Next Scanline
         currentCycle = 0;
         currentScanline++;
+        if (currentScanline == 0 && oddFrame && reg.mask.flags.RenderBackground) {
+            // Skip 0,0 on odd frames.
+            currentCycle++;
+        }
+
         if (currentScanline == 261) { // Next Frame
             totalFrames++;
             currentScanline = -1;
@@ -278,11 +283,6 @@ void NES::PPU::step() {
     bool renderScanline = visibleScanline || preRenderScanline;
     bool visibleCycle = currentCycle >= 1 && currentCycle <= 256;
     bool preRenderCycle = (currentCycle >= 321 && currentCycle <= 336);
-
-    // Skip 0,0 on odd frames
-    if (oddFrame && reg.mask.flags.RenderBackground && currentCycle == 0 && currentScanline == 0) {
-        return;
-    }
 
     // Prepare Sprites
     if (visibleScanline && currentCycle == 257) prepareSprites();
