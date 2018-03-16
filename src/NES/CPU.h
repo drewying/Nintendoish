@@ -60,9 +60,14 @@ namespace NES {
         
         uint32_t totalCycles = 0;
         uint32_t stallCycles = 0;
+        uint16_t loadedAddress;
+        uint8_t loadedInstruction;
+        
         bool requestNMI = false;
 
-        unsigned int step();
+        void loadInstruction();
+
+        void step();
 
         void setNZStatus(uint8_t value);
         void oopsCycle(uint16_t address);
@@ -74,6 +79,8 @@ namespace NES {
         uint8_t pull();
         uint16_t pullAddress();
         uint8_t readProgram();
+
+        void executeInstruction();
         
         typedef void (CPU::*Op)(uint16_t);
         
