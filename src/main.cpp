@@ -26,8 +26,6 @@ bool fullLog = false;
 int debugStartLineNumber = 0000;
 int lineNumber = 0x0;
 
-//const int frequency = 540; //540 hertz
-
 void updateDisplay(void)
 {
     glClear(GL_COLOR_BUFFER_BIT);
@@ -132,14 +130,20 @@ void keyUp(uint8_t key, int x, int y) {
 
 
 void updateNES(void) {
-    //high_resolution_clock::time_point t1 = high_resolution_clock::now();
+    const int frequency = 1700;
+    high_resolution_clock::time_point t1 = high_resolution_clock::now();
     if (pause) return;
-    nes->emulateCycle();
-    if (nes->updateGraphics) glutPostRedisplay();
-    //high_resolution_clock::time_point t2 = high_resolution_clock::now();
-    //duration<double, std::micro> time_span = t2 - t1;
-    //int microsToSleep = int(1000000 / frequency) - time_span.count();
-    //std::this_thread::sleep_for(std::chrono::microseconds(microsToSleep));
+    int cycles = 0;
+    while (cycles < frequency) {
+        cycles += nes->emulateCycle();
+        if (nes->updateGraphics) glutPostRedisplay();
+    }
+    
+    high_resolution_clock::time_point t2 = high_resolution_clock::now();
+    duration<double, std::micro> time_span = t2 - t1;
+    
+    int microsToSleep = int(1000000 / frequency) - time_span.count();
+    std::this_thread::sleep_for(std::chrono::microseconds(microsToSleep));
 }
 
 void testNES(void) {

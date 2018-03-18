@@ -24,10 +24,11 @@ NES::Console::Console() {
 
 NES::Console::~Console() {}
 
-void NES::Console::emulateCycle() {
+int NES::Console::emulateCycle() {
     int cycles = cpu->step();
     for (int i = 0; i < (cycles * 3); i++) ppu->step();
     while (apu->totalCycles < (cpu->totalCycles / 2)) apu->step();
+    return cycles;
 }
 
 void NES::Console::loadProgram(const char* path) {

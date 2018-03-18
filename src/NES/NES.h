@@ -23,7 +23,7 @@ namespace NES {
 
     class Console {
     public:
-        void emulateCycle();
+        int emulateCycle();
         void loadProgram(const char* path);
         void reset();
 
