@@ -1,5 +1,6 @@
 #include "Display.h"
-#include <GL/GLUT.h>
+//#include <GL/GLUT.h>
+#include <GLUT/GLUT.h>
 
 Display::Display(float scale, int width, int  height) {
     this->scale = scale;

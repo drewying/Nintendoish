@@ -31,6 +31,7 @@ uint8_t NES::PPU::getPPURegister(uint16_t index) {
         }
         break;
     default:
+        return 0x0;
         break;
     }
 }
@@ -229,7 +230,6 @@ void NES::PPU::renderPatternTable() {
     for (int y = 0; y < 128; y += 8) {
         for (int x = 128; x < 256; x += 8) {
             renderTile(x, y, tileIndex);
-            tileIndex;
         }
     }
 }
@@ -278,7 +278,7 @@ void NES::PPU::step() {
     }
 
     bool renderingEnabled = reg.mask.flags.RenderSprites || reg.mask.flags.RenderBackground;
-    bool visibleScanline = currentScanline >= 0 && currentScanline < 240;
+    bool visibleScanline = (currentScanline >= 0) && (currentScanline < 240);
     bool preRenderScanline = currentScanline == -1;
     bool renderScanline = visibleScanline || preRenderScanline;
     bool visibleCycle = currentCycle >= 1 && currentCycle <= 256;

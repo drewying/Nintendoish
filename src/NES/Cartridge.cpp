@@ -36,7 +36,7 @@ Cartridge::Cartridge(const char* path) {
             currentMirroring = SingleScreenA;
         }
 
-        batteryBackup = header[6] & 0x2 == 0x2;
+        batteryBackup = (header[6] & 0x2) == 0x2;
         mapperNumber = (header[7] & 0xF) | (header[6] >> 4);
 
         bool hasTrainer = (header[6] & 0x4) == 0x4;

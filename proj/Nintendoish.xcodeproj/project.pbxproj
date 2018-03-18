@@ -7,17 +7,25 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1060B11D1F4373DC00C9EFF5 /* Chip8.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1060B1141F4373DC00C9EFF5 /* Chip8.cpp */; };
-		1060B11E1F4373DC00C9EFF5 /* Display.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1060B1161F4373DC00C9EFF5 /* Display.cpp */; };
-		1060B11F1F4373DC00C9EFF5 /* GBCPU.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1060B1181F4373DC00C9EFF5 /* GBCPU.cpp */; };
-		1060B1201F4373DC00C9EFF5 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1060B11A1F4373DC00C9EFF5 /* main.cpp */; };
 		1060B1241F4373F200C9EFF5 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1060B1231F4373F200C9EFF5 /* OpenGL.framework */; };
 		1060B1261F4373F700C9EFF5 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1060B1251F4373F700C9EFF5 /* GLUT.framework */; };
-		1060B1281F43747000C9EFF5 /* roms in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1060B1271F43745700C9EFF5 /* roms */; };
-		108226CB1F6250A1006A63BC /* NES.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 108226C91F625090006A63BC /* NES.cpp */; };
-		108226CE1F625209006A63BC /* CPU.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 108226CC1F625209006A63BC /* CPU.cpp */; };
-		108226D11F62569D006A63BC /* Memory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 108226CF1F62569D006A63BC /* Memory.cpp */; };
-		108226D41F625731006A63BC /* PPU.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 108226D21F625731006A63BC /* PPU.cpp */; };
+		10E27C00205E434000CE246E /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10E27BDD205E434000CE246E /* main.cpp */; };
+		10E27C01205E434000CE246E /* Chip8.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10E27BE0205E434000CE246E /* Chip8.cpp */; };
+		10E27C02205E434000CE246E /* APU.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10E27BE3205E434000CE246E /* APU.cpp */; };
+		10E27C03205E434000CE246E /* Cartridge.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10E27BE5205E434000CE246E /* Cartridge.cpp */; };
+		10E27C04205E434000CE246E /* Controller.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10E27BE7205E434000CE246E /* Controller.cpp */; };
+		10E27C05205E434000CE246E /* CPU.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10E27BE9205E434000CE246E /* CPU.cpp */; };
+		10E27C06205E434000CE246E /* Mapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10E27BEB205E434000CE246E /* Mapper.cpp */; };
+		10E27C07205E434000CE246E /* Mapper0.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10E27BED205E434000CE246E /* Mapper0.cpp */; };
+		10E27C08205E434000CE246E /* Mapper1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10E27BEF205E434000CE246E /* Mapper1.cpp */; };
+		10E27C09205E434000CE246E /* Mapper2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10E27BF1205E434000CE246E /* Mapper2.cpp */; };
+		10E27C0A205E434000CE246E /* Mapper3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10E27BF3205E434000CE246E /* Mapper3.cpp */; };
+		10E27C0B205E434000CE246E /* Mapper7.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10E27BF5205E434000CE246E /* Mapper7.cpp */; };
+		10E27C0C205E434000CE246E /* Memory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10E27BF7205E434000CE246E /* Memory.cpp */; };
+		10E27C0D205E434000CE246E /* NES.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10E27BF9205E434000CE246E /* NES.cpp */; };
+		10E27C0E205E434000CE246E /* PPU.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10E27BFB205E434000CE246E /* PPU.cpp */; };
+		10E27C0F205E434000CE246E /* PPUMemory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10E27BFD205E434000CE246E /* PPUMemory.cpp */; };
+		10E27C10205E434000CE246E /* Display.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10E27BFF205E434000CE246E /* Display.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -27,7 +35,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 6;
 			files = (
-				1060B1281F43747000C9EFF5 /* roms in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -35,24 +42,41 @@
 
 /* Begin PBXFileReference section */
 		1060B10A1F43737D00C9EFF5 /* Nintendoish */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Nintendoish; sourceTree = BUILT_PRODUCTS_DIR; };
-		1060B1141F4373DC00C9EFF5 /* Chip8.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Chip8.cpp; sourceTree = SOURCE_ROOT; };
-		1060B1151F4373DC00C9EFF5 /* Chip8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Chip8.h; sourceTree = SOURCE_ROOT; };
-		1060B1161F4373DC00C9EFF5 /* Display.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Display.cpp; sourceTree = SOURCE_ROOT; };
-		1060B1171F4373DC00C9EFF5 /* Display.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Display.h; sourceTree = SOURCE_ROOT; };
-		1060B1181F4373DC00C9EFF5 /* GBCPU.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GBCPU.cpp; sourceTree = SOURCE_ROOT; };
-		1060B1191F4373DC00C9EFF5 /* GBCPU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GBCPU.h; sourceTree = SOURCE_ROOT; };
-		1060B11A1F4373DC00C9EFF5 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = SOURCE_ROOT; };
 		1060B1231F4373F200C9EFF5 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		1060B1251F4373F700C9EFF5 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
-		1060B1271F43745700C9EFF5 /* roms */ = {isa = PBXFileReference; lastKnownFileType = folder; path = roms; sourceTree = SOURCE_ROOT; };
-		108226C91F625090006A63BC /* NES.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = NES.cpp; sourceTree = "<group>"; };
-		108226CA1F625090006A63BC /* NES.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NES.h; sourceTree = "<group>"; };
-		108226CC1F625209006A63BC /* CPU.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CPU.cpp; sourceTree = "<group>"; };
-		108226CD1F625209006A63BC /* CPU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CPU.h; sourceTree = "<group>"; };
-		108226CF1F62569D006A63BC /* Memory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Memory.cpp; sourceTree = "<group>"; };
-		108226D01F62569D006A63BC /* Memory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Memory.h; sourceTree = "<group>"; };
-		108226D21F625731006A63BC /* PPU.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PPU.cpp; sourceTree = "<group>"; };
-		108226D31F625731006A63BC /* PPU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PPU.h; sourceTree = "<group>"; };
+		10E27BDD205E434000CE246E /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../../src/main.cpp; sourceTree = "<group>"; };
+		10E27BDE205E434000CE246E /* Display.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Display.h; path = ../../src/Display.h; sourceTree = "<group>"; };
+		10E27BE0205E434000CE246E /* Chip8.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Chip8.cpp; sourceTree = "<group>"; };
+		10E27BE1205E434000CE246E /* Chip8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Chip8.h; sourceTree = "<group>"; };
+		10E27BE3205E434000CE246E /* APU.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = APU.cpp; sourceTree = "<group>"; };
+		10E27BE4205E434000CE246E /* APU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = APU.h; sourceTree = "<group>"; };
+		10E27BE5205E434000CE246E /* Cartridge.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Cartridge.cpp; sourceTree = "<group>"; };
+		10E27BE6205E434000CE246E /* Cartridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cartridge.h; sourceTree = "<group>"; };
+		10E27BE7205E434000CE246E /* Controller.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Controller.cpp; sourceTree = "<group>"; };
+		10E27BE8205E434000CE246E /* Controller.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Controller.h; sourceTree = "<group>"; };
+		10E27BE9205E434000CE246E /* CPU.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CPU.cpp; sourceTree = "<group>"; };
+		10E27BEA205E434000CE246E /* CPU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CPU.h; sourceTree = "<group>"; };
+		10E27BEB205E434000CE246E /* Mapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mapper.cpp; sourceTree = "<group>"; };
+		10E27BEC205E434000CE246E /* Mapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mapper.h; sourceTree = "<group>"; };
+		10E27BED205E434000CE246E /* Mapper0.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mapper0.cpp; sourceTree = "<group>"; };
+		10E27BEE205E434000CE246E /* Mapper0.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mapper0.h; sourceTree = "<group>"; };
+		10E27BEF205E434000CE246E /* Mapper1.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mapper1.cpp; sourceTree = "<group>"; };
+		10E27BF0205E434000CE246E /* Mapper1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mapper1.h; sourceTree = "<group>"; };
+		10E27BF1205E434000CE246E /* Mapper2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mapper2.cpp; sourceTree = "<group>"; };
+		10E27BF2205E434000CE246E /* Mapper2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mapper2.h; sourceTree = "<group>"; };
+		10E27BF3205E434000CE246E /* Mapper3.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mapper3.cpp; sourceTree = "<group>"; };
+		10E27BF4205E434000CE246E /* Mapper3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mapper3.h; sourceTree = "<group>"; };
+		10E27BF5205E434000CE246E /* Mapper7.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mapper7.cpp; sourceTree = "<group>"; };
+		10E27BF6205E434000CE246E /* Mapper7.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mapper7.h; sourceTree = "<group>"; };
+		10E27BF7205E434000CE246E /* Memory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Memory.cpp; sourceTree = "<group>"; };
+		10E27BF8205E434000CE246E /* Memory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Memory.h; sourceTree = "<group>"; };
+		10E27BF9205E434000CE246E /* NES.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NES.cpp; sourceTree = "<group>"; };
+		10E27BFA205E434000CE246E /* NES.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NES.h; sourceTree = "<group>"; };
+		10E27BFB205E434000CE246E /* PPU.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PPU.cpp; sourceTree = "<group>"; };
+		10E27BFC205E434000CE246E /* PPU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PPU.h; sourceTree = "<group>"; };
+		10E27BFD205E434000CE246E /* PPUMemory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PPUMemory.cpp; sourceTree = "<group>"; };
+		10E27BFE205E434000CE246E /* PPUMemory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PPUMemory.h; sourceTree = "<group>"; };
+		10E27BFF205E434000CE246E /* Display.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Display.cpp; path = ../../src/Display.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,7 +95,7 @@
 		1060B1011F43737D00C9EFF5 = {
 			isa = PBXGroup;
 			children = (
-				1060B10C1F43737D00C9EFF5 /* Nintendoish */,
+				10E27BD5205E42FD00CE246E /* Nintendoish */,
 				1060B10B1F43737D00C9EFF5 /* Products */,
 				1060B1221F4373F200C9EFF5 /* Frameworks */,
 			);
@@ -85,23 +109,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		1060B10C1F43737D00C9EFF5 /* Nintendoish */ = {
-			isa = PBXGroup;
-			children = (
-				1060B1271F43745700C9EFF5 /* roms */,
-				108226C81F625090006A63BC /* NES */,
-				1060B1151F4373DC00C9EFF5 /* Chip8.h */,
-				1060B1141F4373DC00C9EFF5 /* Chip8.cpp */,
-				1060B1171F4373DC00C9EFF5 /* Display.h */,
-				1060B1161F4373DC00C9EFF5 /* Display.cpp */,
-				1060B1191F4373DC00C9EFF5 /* GBCPU.h */,
-				1060B1181F4373DC00C9EFF5 /* GBCPU.cpp */,
-				1060B11A1F4373DC00C9EFF5 /* main.cpp */,
-			);
-			name = Nintendoish;
-			path = Gameboyish;
-			sourceTree = "<group>";
-		};
 		1060B1221F4373F200C9EFF5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -111,20 +118,63 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		108226C81F625090006A63BC /* NES */ = {
+		10E27BD5205E42FD00CE246E /* Nintendoish */ = {
 			isa = PBXGroup;
 			children = (
-				108226CA1F625090006A63BC /* NES.h */,
-				108226C91F625090006A63BC /* NES.cpp */,
-				108226CD1F625209006A63BC /* CPU.h */,
-				108226CC1F625209006A63BC /* CPU.cpp */,
-				108226D01F62569D006A63BC /* Memory.h */,
-				108226CF1F62569D006A63BC /* Memory.cpp */,
-				108226D31F625731006A63BC /* PPU.h */,
-				108226D21F625731006A63BC /* PPU.cpp */,
+				10E27BDF205E434000CE246E /* CHIP8 */,
+				10E27BE2205E434000CE246E /* NES */,
+				10E27BFF205E434000CE246E /* Display.cpp */,
+				10E27BDE205E434000CE246E /* Display.h */,
+				10E27BDD205E434000CE246E /* main.cpp */,
 			);
-			path = NES;
-			sourceTree = SOURCE_ROOT;
+			path = Nintendoish;
+			sourceTree = "<group>";
+		};
+		10E27BDF205E434000CE246E /* CHIP8 */ = {
+			isa = PBXGroup;
+			children = (
+				10E27BE0205E434000CE246E /* Chip8.cpp */,
+				10E27BE1205E434000CE246E /* Chip8.h */,
+			);
+			name = CHIP8;
+			path = ../../src/CHIP8;
+			sourceTree = "<group>";
+		};
+		10E27BE2205E434000CE246E /* NES */ = {
+			isa = PBXGroup;
+			children = (
+				10E27BE3205E434000CE246E /* APU.cpp */,
+				10E27BE4205E434000CE246E /* APU.h */,
+				10E27BE5205E434000CE246E /* Cartridge.cpp */,
+				10E27BE6205E434000CE246E /* Cartridge.h */,
+				10E27BE7205E434000CE246E /* Controller.cpp */,
+				10E27BE8205E434000CE246E /* Controller.h */,
+				10E27BE9205E434000CE246E /* CPU.cpp */,
+				10E27BEA205E434000CE246E /* CPU.h */,
+				10E27BEB205E434000CE246E /* Mapper.cpp */,
+				10E27BEC205E434000CE246E /* Mapper.h */,
+				10E27BED205E434000CE246E /* Mapper0.cpp */,
+				10E27BEE205E434000CE246E /* Mapper0.h */,
+				10E27BEF205E434000CE246E /* Mapper1.cpp */,
+				10E27BF0205E434000CE246E /* Mapper1.h */,
+				10E27BF1205E434000CE246E /* Mapper2.cpp */,
+				10E27BF2205E434000CE246E /* Mapper2.h */,
+				10E27BF3205E434000CE246E /* Mapper3.cpp */,
+				10E27BF4205E434000CE246E /* Mapper3.h */,
+				10E27BF5205E434000CE246E /* Mapper7.cpp */,
+				10E27BF6205E434000CE246E /* Mapper7.h */,
+				10E27BF7205E434000CE246E /* Memory.cpp */,
+				10E27BF8205E434000CE246E /* Memory.h */,
+				10E27BF9205E434000CE246E /* NES.cpp */,
+				10E27BFA205E434000CE246E /* NES.h */,
+				10E27BFB205E434000CE246E /* PPU.cpp */,
+				10E27BFC205E434000CE246E /* PPU.h */,
+				10E27BFD205E434000CE246E /* PPUMemory.cpp */,
+				10E27BFE205E434000CE246E /* PPUMemory.h */,
+			);
+			name = NES;
+			path = ../../src/NES;
+			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
@@ -152,7 +202,7 @@
 		1060B1021F43737D00C9EFF5 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0830;
+				LastUpgradeCheck = 0920;
 				ORGANIZATIONNAME = "Ingebretsen, Andrew (HBO)";
 				TargetAttributes = {
 					1060B1091F43737D00C9EFF5 = {
@@ -184,14 +234,23 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				108226CE1F625209006A63BC /* CPU.cpp in Sources */,
-				108226CB1F6250A1006A63BC /* NES.cpp in Sources */,
-				108226D11F62569D006A63BC /* Memory.cpp in Sources */,
-				1060B11F1F4373DC00C9EFF5 /* GBCPU.cpp in Sources */,
-				1060B11E1F4373DC00C9EFF5 /* Display.cpp in Sources */,
-				108226D41F625731006A63BC /* PPU.cpp in Sources */,
-				1060B1201F4373DC00C9EFF5 /* main.cpp in Sources */,
-				1060B11D1F4373DC00C9EFF5 /* Chip8.cpp in Sources */,
+				10E27C0E205E434000CE246E /* PPU.cpp in Sources */,
+				10E27C0B205E434000CE246E /* Mapper7.cpp in Sources */,
+				10E27C05205E434000CE246E /* CPU.cpp in Sources */,
+				10E27C0D205E434000CE246E /* NES.cpp in Sources */,
+				10E27C09205E434000CE246E /* Mapper2.cpp in Sources */,
+				10E27C07205E434000CE246E /* Mapper0.cpp in Sources */,
+				10E27C06205E434000CE246E /* Mapper.cpp in Sources */,
+				10E27C08205E434000CE246E /* Mapper1.cpp in Sources */,
+				10E27C0C205E434000CE246E /* Memory.cpp in Sources */,
+				10E27C02205E434000CE246E /* APU.cpp in Sources */,
+				10E27C0A205E434000CE246E /* Mapper3.cpp in Sources */,
+				10E27C01205E434000CE246E /* Chip8.cpp in Sources */,
+				10E27C0F205E434000CE246E /* PPUMemory.cpp in Sources */,
+				10E27C04205E434000CE246E /* Controller.cpp in Sources */,
+				10E27C00205E434000CE246E /* main.cpp in Sources */,
+				10E27C03205E434000CE246E /* Cartridge.cpp in Sources */,
+				10E27C10205E434000CE246E /* Display.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -208,7 +267,9 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
@@ -216,7 +277,11 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -256,7 +321,9 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
@@ -264,7 +331,11 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;

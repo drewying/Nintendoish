@@ -66,7 +66,7 @@ void NES::APU::step() {
         }
         if (currentCycle == 14914) {
             //IRQ
-            printf("Ruh Roh. IRQ Not Yet Implemented");
+            //printf("Ruh Roh. IRQ Not Yet Implemented");
         }
         
         if (currentCycle == 14915) {

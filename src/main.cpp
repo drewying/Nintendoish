@@ -1,4 +1,4 @@
-#include <GL/GLUT.h>
+#include <GLUT/GLUT.h>
 #include "Display.h"
 #include "CHIP8/Chip8.h"
 #include <iostream>
@@ -16,7 +16,6 @@ using namespace std::chrono;
 using namespace std;
 
 static Display *display;
-static Chip8 *chip8;
 static NES::Console *nes;
 
 ifstream logfile;
@@ -28,7 +27,6 @@ int debugStartLineNumber = 0000;
 int lineNumber = 0x0;
 
 //const int frequency = 540; //540 hertz
-const int frequency = 10;
 
 void updateDisplay(void)
 {
@@ -144,10 +142,7 @@ void updateNES(void) {
     //std::this_thread::sleep_for(std::chrono::microseconds(microsToSleep));
 }
 
-void testNES(void)
-{
-    high_resolution_clock::time_point t1 = high_resolution_clock::now();
-    
+void testNES(void) {
     if (nes->cpu->stallCycles == 0x0) {
 
         std::stringstream ss;
@@ -233,8 +228,8 @@ void testNES(void)
     nes->emulateCycle();
 
     //if (cpu->drawFlag) glutPostRedisplay();
-    high_resolution_clock::time_point t2 = high_resolution_clock::now();
-    duration<double, std::micro> time_span = t2 - t1;
+    //high_resolution_clock::time_point t2 = high_resolution_clock::now();
+    //duration<double, std::micro> time_span = t2 - t1;
     //int microsToSleep = int(1000000 / frequency) - time_span.count();
     //std::this_thread::sleep_for(std::chrono::microseconds(microsToSleep));
 }
@@ -250,8 +245,8 @@ int main(int argc, char** argv)
         glutIdleFunc(testNES);
     } else {
         nes = new NES::Console();
-        nes->loadProgram("../roms/test/scanline.nes");
-        //nes->loadProgram("../roms/Battletoads.nes");
+        //nes->loadProgram("../roms/test/scanline.nes");
+        nes->loadProgram("../roms/Battletoads.nes");
         //nes->loadProgram("../roms/Gradius.nes");
         //nes->loadProgram("../roms/KidIcarus.nes");
         //nes->loadProgram("../roms/Contra.nes");

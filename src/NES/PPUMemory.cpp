@@ -57,5 +57,8 @@ uint16_t PPUMemory::mirrorIndex(uint16_t index) {
     case Cartridge::SingleScreenB:
         return (index % 0x400) + 0x400;
         break;
+    case Cartridge::FourScreen:
+        break;
     }
+    return 0x0;
 }
