@@ -78,7 +78,7 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
             nes->controllerOne->start = isKeyDown;
             break;
         case GLFW_KEY_P:
-            pause = isKeyDown;
+            if (isKeyDown) pause = !pause;
             break;
         default:
             break;
@@ -192,32 +192,33 @@ void gameLoop() {
         bool skipFrame = false;
         bool sleepFrame = false;
         
-        double realTime = (glfwGetTime() * 1000) - startTime; //How much time we've taken
-        double gameTime = (frameCount * targetFrameLength);   //How much time in the game
+        long realTime = (glfwGetTime() * 1000) - startTime; //How much time we've taken
+        long gameTime = (frameCount * targetFrameLength);   //How much time in the game
         
-        if (gameTime - realTime > targetFrameLength) skipFrame = true; //We are behind. Skip rendeirng.
-        if (realTime - gameTime > targetFrameLength) sleepFrame = true; //We are ahead. Sleep a frame.
+        if (gameTime - realTime > targetFrameLength) sleepFrame = true; //We are behind. Sleep a frame.
+        if (realTime - gameTime > targetFrameLength) skipFrame = true; //We are ahead. Skip rendeirng.
         
         if (!pause) {
             if (sleepFrame) {
-                std::this_thread::sleep_for(std::chrono::milliseconds((long)targetFrameLength));
-            } else {
+                printf("Sleeping\n");
+                std::this_thread::sleep_for(std::chrono::milliseconds(realTime - gameTime));
                 sleptFrames++;
             }
-            
-            frameCount++;
             updateNES();
             
-            if (skipFrame){
+            if (!skipFrame){
                 updateDisplay();
             } else {
+                printf("Skipping frame\n");
                 droppedFrames++;
             }
+            frameCount++;
         } else {
             startTime = glfwGetTime() * 1000;
             frameCount = 0;
         }
         glfwPollEvents();
+        
     }
     glfwTerminate();
 }
@@ -229,14 +230,14 @@ int main(int argc, char** argv) {
     glfwSetKeyCallback(display->window, keyCallback);
     nes = new NES::Console();
     //nes->loadProgram("../roms/test/scanline.nes");
-    //nes->loadProgram("../roms/Battletoads.nes");
+    nes->loadProgram("../roms/Battletoads.nes");
     //nes->loadProgram("../roms/Gradius.nes);"
     //nes->loadProgram("../roms/Contra.nes");
     //nes->loadProgram("../roms/Metroid.nes");
     //nes->loadProgram("../roms/IceClimber.nes");
     //nes->loadProgram("../roms/Megaman.nes");
     //nes->loadProgram("../roms/Castlevania.nes");
-    nes->loadProgram("../roms/Zelda.nes");
+    //nes->loadProgram("../roms/Zelda.nes");
     //nes->loadProgram("../roms/Mario.nes");
     //nes->loadProgram("../roms/Excitebike.nes");
     //nes->loadProgram("../roms/DonkeyKong.nes");
