@@ -1,6 +1,5 @@
 #include "Display.h"
-//#include <GL/GLUT.h>
-#include <GLUT/GLUT.h>
+#include "glfw3.h"
 
 Display::Display(float scale, int width, int  height) {
     this->scale = scale;
@@ -28,11 +27,12 @@ void Display::plotPixel(int x, int y, float r, float g, float b) {
     
 }
 
+
 void Display::initialize(int argc, char **argv) {
-    glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_SINGLE);
-    glutInitWindowSize(this->width * this->scale, this->height * this->scale);
-    glutCreateWindow("Nintendoish");
+    if (!glfwInit()) return;
+    window = glfwCreateWindow(width * scale, height * scale, "Nintendoish", NULL, NULL);
+    if (!window) glfwTerminate();
+    glfwMakeContextCurrent(window);
 }
 
 Display::~Display() {

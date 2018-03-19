@@ -1,4 +1,4 @@
-#include <GLUT/GLUT.h>
+#include "glfw3.h"
 #include "Display.h"
 #include "CHIP8/Chip8.h"
 #include <iostream>
@@ -19,15 +19,18 @@ static Display *display;
 static NES::Console *nes;
 
 ifstream logfile;
-bool pause = false;
+bool pause = true;
 bool passedTest = false;
 bool runTests = false;
 bool fullLog = false;
 int debugStartLineNumber = 0000;
 int lineNumber = 0x0;
 
-void updateDisplay(void)
-{
+const double cyclesPerSecond = 1789773;
+const double targetFps = 60.0988;
+
+void updateDisplay(void) {
+    
     glClear(GL_COLOR_BUFFER_BIT);
     for (int x = 0; x < 256; x++) {
         for (int y = 0; y < 240; y++) {
@@ -42,108 +45,51 @@ void updateDisplay(void)
     }
 
     glEnd();
-    glutSwapBuffers();
-    nes->updateGraphics = false;
+    glfwSwapBuffers(display->window);
 }
 
-void specialKeyDown(int key, int x, int y) {
+void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    bool isKeyDown = action == GLFW_PRESS;
+    bool isKeyUp = action == GLFW_RELEASE;
+    if (!isKeyUp && !isKeyDown) return;
     switch (key) {
-    case GLUT_KEY_UP:
-        nes->controllerOne->up = true;
-        break;
-    case GLUT_KEY_DOWN:
-        nes->controllerOne->down = true;
-        break;
-    case GLUT_KEY_LEFT:
-        nes->controllerOne->left = true;
-        break;
-    case GLUT_KEY_RIGHT:
-        nes->controllerOne->right = true;
-        break;
-    default:
-        break;
-    }
-}
-
-void specialKeyUp(int key, int x, int y) {
-    switch (key) {
-    case GLUT_KEY_UP:
-        nes->controllerOne->up = false;
-        break;
-    case GLUT_KEY_DOWN:
-        nes->controllerOne->down = false;
-        break;
-    case GLUT_KEY_LEFT:
-        nes->controllerOne->left = false;
-        break;
-    case GLUT_KEY_RIGHT:
-        nes->controllerOne->right = false;
-        break;
-    default:
-        break;
+        case GLFW_KEY_A:
+            nes->controllerOne->b = isKeyDown;
+            break;
+        case GLFW_KEY_S:
+            nes->controllerOne->a = isKeyDown;
+            break;
+        case GLFW_KEY_UP:
+            nes->controllerOne->up = isKeyDown;
+            break;
+        case GLFW_KEY_DOWN:
+            nes->controllerOne->down = isKeyDown;
+            break;
+        case GLFW_KEY_LEFT:
+            nes->controllerOne->left = isKeyDown;
+            break;
+        case GLFW_KEY_RIGHT:
+            nes->controllerOne->right = isKeyDown;
+            break;
+        case GLFW_KEY_RIGHT_SHIFT:
+            nes->controllerOne->select = isKeyDown;
+            break;
+        case GLFW_KEY_ENTER:
+            nes->controllerOne->start = isKeyDown;
+            break;
+        case GLFW_KEY_P:
+            pause = isKeyDown;
+            break;
+        default:
+            break;
     }
 }
 
 
-void keyDown(uint8_t key, int x, int y) {
-    switch (key) {
-    case 'a':
-        nes->controllerOne->b = true;
-        break;
-    case 's':
-        nes->controllerOne->a = true;
-        break;
-    case '\\':
-        nes->controllerOne->select = true;
-        break;
-    case '\r':
-        nes->controllerOne->start = true;
-        break;
-    case 'p':
-        pause = !pause;
-        break;
-    default:
-        break;
-    }
-}
-
-
-void keyUp(uint8_t key, int x, int y) {
-    switch (key) {
-    case 'a':
-        nes->controllerOne->b = false;
-        break;
-    case 's':
-        nes->controllerOne->a = false;
-        break;
-    case '\\':
-        nes->controllerOne->select = false;
-        break;
-    case '\r':
-        nes->controllerOne->start = false;
-        break;
-    default:
-        break;
-    }
-}
-
-
-
-void updateNES(void) {
-    const int frequency = 1700;
-    high_resolution_clock::time_point t1 = high_resolution_clock::now();
-    if (pause) return;
-    int cycles = 0;
-    while (cycles < frequency) {
-        cycles += nes->emulateCycle();
-        if (nes->updateGraphics) glutPostRedisplay();
-    }
-    
-    high_resolution_clock::time_point t2 = high_resolution_clock::now();
-    duration<double, std::micro> time_span = t2 - t1;
-    
-    int microsToSleep = int(1000000 / frequency) - time_span.count();
-    std::this_thread::sleep_for(std::chrono::microseconds(microsToSleep));
+void updateNES() {
+    //Update one frame
+    int currentFrame = nes->ppu->totalFrames;
+    while (nes->ppu->totalFrames == currentFrame) nes->emulateCycle();
 }
 
 void testNES(void) {
@@ -229,84 +175,74 @@ void testNES(void) {
         }
     }
 
-    nes->emulateCycle();
-
-    //if (cpu->drawFlag) glutPostRedisplay();
-    //high_resolution_clock::time_point t2 = high_resolution_clock::now();
-    //duration<double, std::micro> time_span = t2 - t1;
-    //int microsToSleep = int(1000000 / frequency) - time_span.count();
-    //std::this_thread::sleep_for(std::chrono::microseconds(microsToSleep));
+    nes->emulateCycle();;
 }
 
-int main(int argc, char** argv)
-{
+void gameLoop() {
+    
+    double targetFPS = 60.0988; //NTSC Vertical Scan Rate
+    double targetFrameLength = 1000.0/targetFPS;
+    double startTime = glfwGetTime() * 1000;
+    
+    int frameCount = 0;
+    int droppedFrames = 0;
+    int sleptFrames = 0;
+    
+    while (!glfwWindowShouldClose(display->window)) {
+        bool skipFrame = false;
+        bool sleepFrame = false;
+        
+        double realTime = (glfwGetTime() * 1000) - startTime; //How much time we've taken
+        double gameTime = (frameCount * targetFrameLength);   //How much time in the game
+        
+        if (gameTime - realTime > targetFrameLength) skipFrame = true; //We are behind. Skip rendeirng.
+        if (realTime - gameTime > targetFrameLength) sleepFrame = true; //We are ahead. Sleep a frame.
+        
+        if (!pause) {
+            if (sleepFrame) {
+                std::this_thread::sleep_for(std::chrono::milliseconds((long)targetFrameLength));
+            } else {
+                sleptFrames++;
+            }
+            
+            frameCount++;
+            updateNES();
+            
+            if (skipFrame){
+                updateDisplay();
+            } else {
+                droppedFrames++;
+            }
+        } else {
+            startTime = glfwGetTime() * 1000;
+            frameCount = 0;
+        }
+        glfwPollEvents();
+    }
+    glfwTerminate();
+}
+
+int main(int argc, char** argv) {
     display = new Display(4, 256, 240);
     display->initialize(argc, argv);
-    if (runTests) {
-        nes = new NES::Console();
-        nes->loadProgram("../roms/Zelda.nes");
-        logfile = ifstream("../roms/DonkeyKong.log");
-        glutIdleFunc(testNES);
-    } else {
-        nes = new NES::Console();
-        //nes->loadProgram("../roms/test/scanline.nes");
-        nes->loadProgram("../roms/Battletoads.nes");
-        //nes->loadProgram("../roms/Gradius.nes");
-        //nes->loadProgram("../roms/KidIcarus.nes");
-        //nes->loadProgram("../roms/Contra.nes");
-        //nes->loadProgram("../roms/Metroid.nes");
-        //nes->loadProgram("../roms/IceClimber.nes");
-        //nes->loadProgram("../roms/Megaman.nes");
-        //nes->loadProgram("../roms/Castlevania.nes");
-        //nes->loadProgram("../roms/Zelda.nes");
-        //nes->loadProgram("../roms/Mario.nes");
-        //nes->loadProgram("../roms/Excitebike.nes");
-        //nes->loadProgram("../roms/DonkeyKong.nes");
-        //nes->loadProgram("../roms/sprite_ram.nes");
-        glutIdleFunc(updateNES);
-    }
+    //glfwSetInputMode(display->window, GLFW_STICKY_KEYS, 1);
+    glfwSetKeyCallback(display->window, keyCallback);
+    nes = new NES::Console();
+    //nes->loadProgram("../roms/test/scanline.nes");
+    //nes->loadProgram("../roms/Battletoads.nes");
+    //nes->loadProgram("../roms/Gradius.nes);"
+    //nes->loadProgram("../roms/Contra.nes");
+    //nes->loadProgram("../roms/Metroid.nes");
+    //nes->loadProgram("../roms/IceClimber.nes");
+    //nes->loadProgram("../roms/Megaman.nes");
+    //nes->loadProgram("../roms/Castlevania.nes");
+    nes->loadProgram("../roms/Zelda.nes");
+    //nes->loadProgram("../roms/Mario.nes");
+    //nes->loadProgram("../roms/Excitebike.nes");
+    //nes->loadProgram("../roms/DonkeyKong.nes");
+    //nes->loadProgram("../roms/sprite_ram.nes");
 
-    glutKeyboardFunc(keyDown);
-    glutKeyboardUpFunc(keyUp);
-    glutSpecialFunc(specialKeyDown);
-    glutSpecialUpFunc(specialKeyUp);
-    glutDisplayFunc(updateDisplay);
-    glutMainLoop();
-
+    
+    gameLoop();
     return 0;
 }
-
-/*
-void updateCHIP8Display(void)
-{
-glClear(GL_COLOR_BUFFER_BIT);
-for (int x = 0; x < 64; x++) {
-for (int y = 0; y < 32; y++) {
-if (chip8->graphics[x + (y * 64)]) {
-display->plotPixel(x, y, 1.0, 1.0, 1.0);
-}
-}
-}
-
-glEnd();
-glutSwapBuffers();
-}
-
-void CHIP8KeyDown(uint8_t key, int x, int y) {
-chip8->handleKeyPress(key, true);
-}
-
-void CHIP8KeyUp(uint8_t key, int x, int y) {
-chip8->handleKeyPress(key, false);
-}
-
-void updateCHIP8(void)
-{
-high_resolution_clock::time_point t1 = high_resolution_clock::now();
-chip8->emulateCycle();
-if (chip8->drawFlag) glutPostRedisplay();
-high_resolution_clock::time_point t2 = high_resolution_clock::now();
-duration<double, std::micro> time_span = t2 - t1;
-int microsToSleep = int(1000000 / frequency) - time_span.count();
-std::this_thread::sleep_for(std::chrono::microseconds(microsToSleep));
-}*/

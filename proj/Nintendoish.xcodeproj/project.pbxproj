@@ -7,25 +7,28 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		102EDAFC205EF187005F0475 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 102EDAD9205EF187005F0475 /* main.cpp */; };
+		102EDAFD205EF187005F0475 /* Chip8.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 102EDADC205EF187005F0475 /* Chip8.cpp */; };
+		102EDAFE205EF187005F0475 /* APU.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 102EDADF205EF187005F0475 /* APU.cpp */; };
+		102EDAFF205EF187005F0475 /* Cartridge.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 102EDAE1205EF187005F0475 /* Cartridge.cpp */; };
+		102EDB00205EF187005F0475 /* Controller.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 102EDAE3205EF187005F0475 /* Controller.cpp */; };
+		102EDB01205EF187005F0475 /* CPU.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 102EDAE5205EF187005F0475 /* CPU.cpp */; };
+		102EDB02205EF187005F0475 /* Mapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 102EDAE7205EF187005F0475 /* Mapper.cpp */; };
+		102EDB03205EF187005F0475 /* Mapper0.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 102EDAE9205EF187005F0475 /* Mapper0.cpp */; };
+		102EDB04205EF187005F0475 /* Mapper1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 102EDAEB205EF187005F0475 /* Mapper1.cpp */; };
+		102EDB05205EF187005F0475 /* Mapper2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 102EDAED205EF187005F0475 /* Mapper2.cpp */; };
+		102EDB06205EF187005F0475 /* Mapper3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 102EDAEF205EF187005F0475 /* Mapper3.cpp */; };
+		102EDB07205EF187005F0475 /* Mapper7.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 102EDAF1205EF187005F0475 /* Mapper7.cpp */; };
+		102EDB08205EF187005F0475 /* Memory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 102EDAF3205EF187005F0475 /* Memory.cpp */; };
+		102EDB09205EF187005F0475 /* NES.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 102EDAF5205EF187005F0475 /* NES.cpp */; };
+		102EDB0A205EF187005F0475 /* PPU.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 102EDAF7205EF187005F0475 /* PPU.cpp */; };
+		102EDB0B205EF187005F0475 /* PPUMemory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 102EDAF9205EF187005F0475 /* PPUMemory.cpp */; };
+		102EDB0C205EF187005F0475 /* Display.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 102EDAFB205EF187005F0475 /* Display.cpp */; };
 		1060B1241F4373F200C9EFF5 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1060B1231F4373F200C9EFF5 /* OpenGL.framework */; };
-		1060B1261F4373F700C9EFF5 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1060B1251F4373F700C9EFF5 /* GLUT.framework */; };
-		10E27C00205E434000CE246E /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10E27BDD205E434000CE246E /* main.cpp */; };
-		10E27C01205E434000CE246E /* Chip8.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10E27BE0205E434000CE246E /* Chip8.cpp */; };
-		10E27C02205E434000CE246E /* APU.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10E27BE3205E434000CE246E /* APU.cpp */; };
-		10E27C03205E434000CE246E /* Cartridge.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10E27BE5205E434000CE246E /* Cartridge.cpp */; };
-		10E27C04205E434000CE246E /* Controller.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10E27BE7205E434000CE246E /* Controller.cpp */; };
-		10E27C05205E434000CE246E /* CPU.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10E27BE9205E434000CE246E /* CPU.cpp */; };
-		10E27C06205E434000CE246E /* Mapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10E27BEB205E434000CE246E /* Mapper.cpp */; };
-		10E27C07205E434000CE246E /* Mapper0.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10E27BED205E434000CE246E /* Mapper0.cpp */; };
-		10E27C08205E434000CE246E /* Mapper1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10E27BEF205E434000CE246E /* Mapper1.cpp */; };
-		10E27C09205E434000CE246E /* Mapper2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10E27BF1205E434000CE246E /* Mapper2.cpp */; };
-		10E27C0A205E434000CE246E /* Mapper3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10E27BF3205E434000CE246E /* Mapper3.cpp */; };
-		10E27C0B205E434000CE246E /* Mapper7.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10E27BF5205E434000CE246E /* Mapper7.cpp */; };
-		10E27C0C205E434000CE246E /* Memory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10E27BF7205E434000CE246E /* Memory.cpp */; };
-		10E27C0D205E434000CE246E /* NES.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10E27BF9205E434000CE246E /* NES.cpp */; };
-		10E27C0E205E434000CE246E /* PPU.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10E27BFB205E434000CE246E /* PPU.cpp */; };
-		10E27C0F205E434000CE246E /* PPUMemory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10E27BFD205E434000CE246E /* PPUMemory.cpp */; };
-		10E27C10205E434000CE246E /* Display.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10E27BFF205E434000CE246E /* Display.cpp */; };
+		10E2D58E205F2DE2009AC3C2 /* libglfw3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 10E2D58D205F2DE2009AC3C2 /* libglfw3.a */; };
+		10E2D590205F2E39009AC3C2 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10E2D58F205F2E39009AC3C2 /* IOKit.framework */; };
+		10E2D592205F2E45009AC3C2 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10E2D591205F2E45009AC3C2 /* Cocoa.framework */; };
+		10E2D594205F2E4D009AC3C2 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10E2D593205F2E4D009AC3C2 /* CoreVideo.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -41,42 +44,46 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		102EDAD9205EF187005F0475 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../src/main.cpp; sourceTree = "<group>"; };
+		102EDADA205EF187005F0475 /* Display.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Display.h; path = ../src/Display.h; sourceTree = "<group>"; };
+		102EDADC205EF187005F0475 /* Chip8.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Chip8.cpp; sourceTree = "<group>"; };
+		102EDADD205EF187005F0475 /* Chip8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Chip8.h; sourceTree = "<group>"; };
+		102EDADF205EF187005F0475 /* APU.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = APU.cpp; sourceTree = "<group>"; };
+		102EDAE0205EF187005F0475 /* APU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = APU.h; sourceTree = "<group>"; };
+		102EDAE1205EF187005F0475 /* Cartridge.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Cartridge.cpp; sourceTree = "<group>"; };
+		102EDAE2205EF187005F0475 /* Cartridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cartridge.h; sourceTree = "<group>"; };
+		102EDAE3205EF187005F0475 /* Controller.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Controller.cpp; sourceTree = "<group>"; };
+		102EDAE4205EF187005F0475 /* Controller.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Controller.h; sourceTree = "<group>"; };
+		102EDAE5205EF187005F0475 /* CPU.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CPU.cpp; sourceTree = "<group>"; };
+		102EDAE6205EF187005F0475 /* CPU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CPU.h; sourceTree = "<group>"; };
+		102EDAE7205EF187005F0475 /* Mapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mapper.cpp; sourceTree = "<group>"; };
+		102EDAE8205EF187005F0475 /* Mapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mapper.h; sourceTree = "<group>"; };
+		102EDAE9205EF187005F0475 /* Mapper0.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mapper0.cpp; sourceTree = "<group>"; };
+		102EDAEA205EF187005F0475 /* Mapper0.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mapper0.h; sourceTree = "<group>"; };
+		102EDAEB205EF187005F0475 /* Mapper1.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mapper1.cpp; sourceTree = "<group>"; };
+		102EDAEC205EF187005F0475 /* Mapper1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mapper1.h; sourceTree = "<group>"; };
+		102EDAED205EF187005F0475 /* Mapper2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mapper2.cpp; sourceTree = "<group>"; };
+		102EDAEE205EF187005F0475 /* Mapper2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mapper2.h; sourceTree = "<group>"; };
+		102EDAEF205EF187005F0475 /* Mapper3.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mapper3.cpp; sourceTree = "<group>"; };
+		102EDAF0205EF187005F0475 /* Mapper3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mapper3.h; sourceTree = "<group>"; };
+		102EDAF1205EF187005F0475 /* Mapper7.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mapper7.cpp; sourceTree = "<group>"; };
+		102EDAF2205EF187005F0475 /* Mapper7.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mapper7.h; sourceTree = "<group>"; };
+		102EDAF3205EF187005F0475 /* Memory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Memory.cpp; sourceTree = "<group>"; };
+		102EDAF4205EF187005F0475 /* Memory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Memory.h; sourceTree = "<group>"; };
+		102EDAF5205EF187005F0475 /* NES.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NES.cpp; sourceTree = "<group>"; };
+		102EDAF6205EF187005F0475 /* NES.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NES.h; sourceTree = "<group>"; };
+		102EDAF7205EF187005F0475 /* PPU.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PPU.cpp; sourceTree = "<group>"; };
+		102EDAF8205EF187005F0475 /* PPU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PPU.h; sourceTree = "<group>"; };
+		102EDAF9205EF187005F0475 /* PPUMemory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PPUMemory.cpp; sourceTree = "<group>"; };
+		102EDAFA205EF187005F0475 /* PPUMemory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PPUMemory.h; sourceTree = "<group>"; };
+		102EDAFB205EF187005F0475 /* Display.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Display.cpp; path = ../src/Display.cpp; sourceTree = "<group>"; };
 		1060B10A1F43737D00C9EFF5 /* Nintendoish */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Nintendoish; sourceTree = BUILT_PRODUCTS_DIR; };
 		1060B1231F4373F200C9EFF5 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
-		1060B1251F4373F700C9EFF5 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
-		10E27BDD205E434000CE246E /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../../src/main.cpp; sourceTree = "<group>"; };
-		10E27BDE205E434000CE246E /* Display.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Display.h; path = ../../src/Display.h; sourceTree = "<group>"; };
-		10E27BE0205E434000CE246E /* Chip8.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Chip8.cpp; sourceTree = "<group>"; };
-		10E27BE1205E434000CE246E /* Chip8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Chip8.h; sourceTree = "<group>"; };
-		10E27BE3205E434000CE246E /* APU.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = APU.cpp; sourceTree = "<group>"; };
-		10E27BE4205E434000CE246E /* APU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = APU.h; sourceTree = "<group>"; };
-		10E27BE5205E434000CE246E /* Cartridge.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Cartridge.cpp; sourceTree = "<group>"; };
-		10E27BE6205E434000CE246E /* Cartridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cartridge.h; sourceTree = "<group>"; };
-		10E27BE7205E434000CE246E /* Controller.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Controller.cpp; sourceTree = "<group>"; };
-		10E27BE8205E434000CE246E /* Controller.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Controller.h; sourceTree = "<group>"; };
-		10E27BE9205E434000CE246E /* CPU.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CPU.cpp; sourceTree = "<group>"; };
-		10E27BEA205E434000CE246E /* CPU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CPU.h; sourceTree = "<group>"; };
-		10E27BEB205E434000CE246E /* Mapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mapper.cpp; sourceTree = "<group>"; };
-		10E27BEC205E434000CE246E /* Mapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mapper.h; sourceTree = "<group>"; };
-		10E27BED205E434000CE246E /* Mapper0.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mapper0.cpp; sourceTree = "<group>"; };
-		10E27BEE205E434000CE246E /* Mapper0.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mapper0.h; sourceTree = "<group>"; };
-		10E27BEF205E434000CE246E /* Mapper1.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mapper1.cpp; sourceTree = "<group>"; };
-		10E27BF0205E434000CE246E /* Mapper1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mapper1.h; sourceTree = "<group>"; };
-		10E27BF1205E434000CE246E /* Mapper2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mapper2.cpp; sourceTree = "<group>"; };
-		10E27BF2205E434000CE246E /* Mapper2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mapper2.h; sourceTree = "<group>"; };
-		10E27BF3205E434000CE246E /* Mapper3.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mapper3.cpp; sourceTree = "<group>"; };
-		10E27BF4205E434000CE246E /* Mapper3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mapper3.h; sourceTree = "<group>"; };
-		10E27BF5205E434000CE246E /* Mapper7.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mapper7.cpp; sourceTree = "<group>"; };
-		10E27BF6205E434000CE246E /* Mapper7.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mapper7.h; sourceTree = "<group>"; };
-		10E27BF7205E434000CE246E /* Memory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Memory.cpp; sourceTree = "<group>"; };
-		10E27BF8205E434000CE246E /* Memory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Memory.h; sourceTree = "<group>"; };
-		10E27BF9205E434000CE246E /* NES.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NES.cpp; sourceTree = "<group>"; };
-		10E27BFA205E434000CE246E /* NES.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NES.h; sourceTree = "<group>"; };
-		10E27BFB205E434000CE246E /* PPU.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PPU.cpp; sourceTree = "<group>"; };
-		10E27BFC205E434000CE246E /* PPU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PPU.h; sourceTree = "<group>"; };
-		10E27BFD205E434000CE246E /* PPUMemory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PPUMemory.cpp; sourceTree = "<group>"; };
-		10E27BFE205E434000CE246E /* PPUMemory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PPUMemory.h; sourceTree = "<group>"; };
-		10E27BFF205E434000CE246E /* Display.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Display.cpp; path = ../../src/Display.cpp; sourceTree = "<group>"; };
+		10E2D586205F2957009AC3C2 /* glfw3.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = glfw3.h; path = ../lib/GLFW/glfw3.h; sourceTree = "<group>"; };
+		10E2D58D205F2DE2009AC3C2 /* libglfw3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libglfw3.a; path = ../lib/GLFW/libglfw3.a; sourceTree = "<group>"; };
+		10E2D58F205F2E39009AC3C2 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		10E2D591205F2E45009AC3C2 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		10E2D593205F2E4D009AC3C2 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,7 +91,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1060B1261F4373F700C9EFF5 /* GLUT.framework in Frameworks */,
+				10E2D594205F2E4D009AC3C2 /* CoreVideo.framework in Frameworks */,
+				10E2D592205F2E45009AC3C2 /* Cocoa.framework in Frameworks */,
+				10E2D590205F2E39009AC3C2 /* IOKit.framework in Frameworks */,
+				10E2D58E205F2DE2009AC3C2 /* libglfw3.a in Frameworks */,
 				1060B1241F4373F200C9EFF5 /* OpenGL.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -92,10 +102,69 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		102EDAD8205EF179005F0475 /* Nintendoish */ = {
+			isa = PBXGroup;
+			children = (
+				102EDADB205EF187005F0475 /* CHIP8 */,
+				102EDAFB205EF187005F0475 /* Display.cpp */,
+				102EDADA205EF187005F0475 /* Display.h */,
+				102EDAD9205EF187005F0475 /* main.cpp */,
+				102EDADE205EF187005F0475 /* NES */,
+			);
+			name = Nintendoish;
+			sourceTree = "<group>";
+		};
+		102EDADB205EF187005F0475 /* CHIP8 */ = {
+			isa = PBXGroup;
+			children = (
+				102EDADC205EF187005F0475 /* Chip8.cpp */,
+				102EDADD205EF187005F0475 /* Chip8.h */,
+			);
+			name = CHIP8;
+			path = ../src/CHIP8;
+			sourceTree = "<group>";
+		};
+		102EDADE205EF187005F0475 /* NES */ = {
+			isa = PBXGroup;
+			children = (
+				102EDADF205EF187005F0475 /* APU.cpp */,
+				102EDAE0205EF187005F0475 /* APU.h */,
+				102EDAE1205EF187005F0475 /* Cartridge.cpp */,
+				102EDAE2205EF187005F0475 /* Cartridge.h */,
+				102EDAE3205EF187005F0475 /* Controller.cpp */,
+				102EDAE4205EF187005F0475 /* Controller.h */,
+				102EDAE5205EF187005F0475 /* CPU.cpp */,
+				102EDAE6205EF187005F0475 /* CPU.h */,
+				102EDAE7205EF187005F0475 /* Mapper.cpp */,
+				102EDAE8205EF187005F0475 /* Mapper.h */,
+				102EDAE9205EF187005F0475 /* Mapper0.cpp */,
+				102EDAEA205EF187005F0475 /* Mapper0.h */,
+				102EDAEB205EF187005F0475 /* Mapper1.cpp */,
+				102EDAEC205EF187005F0475 /* Mapper1.h */,
+				102EDAED205EF187005F0475 /* Mapper2.cpp */,
+				102EDAEE205EF187005F0475 /* Mapper2.h */,
+				102EDAEF205EF187005F0475 /* Mapper3.cpp */,
+				102EDAF0205EF187005F0475 /* Mapper3.h */,
+				102EDAF1205EF187005F0475 /* Mapper7.cpp */,
+				102EDAF2205EF187005F0475 /* Mapper7.h */,
+				102EDAF3205EF187005F0475 /* Memory.cpp */,
+				102EDAF4205EF187005F0475 /* Memory.h */,
+				102EDAF5205EF187005F0475 /* NES.cpp */,
+				102EDAF6205EF187005F0475 /* NES.h */,
+				102EDAF7205EF187005F0475 /* PPU.cpp */,
+				102EDAF8205EF187005F0475 /* PPU.h */,
+				102EDAF9205EF187005F0475 /* PPUMemory.cpp */,
+				102EDAFA205EF187005F0475 /* PPUMemory.h */,
+			);
+			name = NES;
+			path = ../src/NES;
+			sourceTree = "<group>";
+		};
 		1060B1011F43737D00C9EFF5 = {
 			isa = PBXGroup;
 			children = (
-				10E27BD5205E42FD00CE246E /* Nintendoish */,
+				10E2D584205F2695009AC3C2 /* include */,
+				102EDAD8205EF179005F0475 /* Nintendoish */,
 				1060B10B1F43737D00C9EFF5 /* Products */,
 				1060B1221F4373F200C9EFF5 /* Frameworks */,
 			);
@@ -112,68 +181,21 @@
 		1060B1221F4373F200C9EFF5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				1060B1251F4373F700C9EFF5 /* GLUT.framework */,
+				10E2D593205F2E4D009AC3C2 /* CoreVideo.framework */,
+				10E2D591205F2E45009AC3C2 /* Cocoa.framework */,
+				10E2D58F205F2E39009AC3C2 /* IOKit.framework */,
+				10E2D58D205F2DE2009AC3C2 /* libglfw3.a */,
 				1060B1231F4373F200C9EFF5 /* OpenGL.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		10E27BD5205E42FD00CE246E /* Nintendoish */ = {
+		10E2D584205F2695009AC3C2 /* include */ = {
 			isa = PBXGroup;
 			children = (
-				10E27BDF205E434000CE246E /* CHIP8 */,
-				10E27BE2205E434000CE246E /* NES */,
-				10E27BFF205E434000CE246E /* Display.cpp */,
-				10E27BDE205E434000CE246E /* Display.h */,
-				10E27BDD205E434000CE246E /* main.cpp */,
+				10E2D586205F2957009AC3C2 /* glfw3.h */,
 			);
-			path = Nintendoish;
-			sourceTree = "<group>";
-		};
-		10E27BDF205E434000CE246E /* CHIP8 */ = {
-			isa = PBXGroup;
-			children = (
-				10E27BE0205E434000CE246E /* Chip8.cpp */,
-				10E27BE1205E434000CE246E /* Chip8.h */,
-			);
-			name = CHIP8;
-			path = ../../src/CHIP8;
-			sourceTree = "<group>";
-		};
-		10E27BE2205E434000CE246E /* NES */ = {
-			isa = PBXGroup;
-			children = (
-				10E27BE3205E434000CE246E /* APU.cpp */,
-				10E27BE4205E434000CE246E /* APU.h */,
-				10E27BE5205E434000CE246E /* Cartridge.cpp */,
-				10E27BE6205E434000CE246E /* Cartridge.h */,
-				10E27BE7205E434000CE246E /* Controller.cpp */,
-				10E27BE8205E434000CE246E /* Controller.h */,
-				10E27BE9205E434000CE246E /* CPU.cpp */,
-				10E27BEA205E434000CE246E /* CPU.h */,
-				10E27BEB205E434000CE246E /* Mapper.cpp */,
-				10E27BEC205E434000CE246E /* Mapper.h */,
-				10E27BED205E434000CE246E /* Mapper0.cpp */,
-				10E27BEE205E434000CE246E /* Mapper0.h */,
-				10E27BEF205E434000CE246E /* Mapper1.cpp */,
-				10E27BF0205E434000CE246E /* Mapper1.h */,
-				10E27BF1205E434000CE246E /* Mapper2.cpp */,
-				10E27BF2205E434000CE246E /* Mapper2.h */,
-				10E27BF3205E434000CE246E /* Mapper3.cpp */,
-				10E27BF4205E434000CE246E /* Mapper3.h */,
-				10E27BF5205E434000CE246E /* Mapper7.cpp */,
-				10E27BF6205E434000CE246E /* Mapper7.h */,
-				10E27BF7205E434000CE246E /* Memory.cpp */,
-				10E27BF8205E434000CE246E /* Memory.h */,
-				10E27BF9205E434000CE246E /* NES.cpp */,
-				10E27BFA205E434000CE246E /* NES.h */,
-				10E27BFB205E434000CE246E /* PPU.cpp */,
-				10E27BFC205E434000CE246E /* PPU.h */,
-				10E27BFD205E434000CE246E /* PPUMemory.cpp */,
-				10E27BFE205E434000CE246E /* PPUMemory.h */,
-			);
-			name = NES;
-			path = ../../src/NES;
+			name = include;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -234,23 +256,23 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				10E27C0E205E434000CE246E /* PPU.cpp in Sources */,
-				10E27C0B205E434000CE246E /* Mapper7.cpp in Sources */,
-				10E27C05205E434000CE246E /* CPU.cpp in Sources */,
-				10E27C0D205E434000CE246E /* NES.cpp in Sources */,
-				10E27C09205E434000CE246E /* Mapper2.cpp in Sources */,
-				10E27C07205E434000CE246E /* Mapper0.cpp in Sources */,
-				10E27C06205E434000CE246E /* Mapper.cpp in Sources */,
-				10E27C08205E434000CE246E /* Mapper1.cpp in Sources */,
-				10E27C0C205E434000CE246E /* Memory.cpp in Sources */,
-				10E27C02205E434000CE246E /* APU.cpp in Sources */,
-				10E27C0A205E434000CE246E /* Mapper3.cpp in Sources */,
-				10E27C01205E434000CE246E /* Chip8.cpp in Sources */,
-				10E27C0F205E434000CE246E /* PPUMemory.cpp in Sources */,
-				10E27C04205E434000CE246E /* Controller.cpp in Sources */,
-				10E27C00205E434000CE246E /* main.cpp in Sources */,
-				10E27C03205E434000CE246E /* Cartridge.cpp in Sources */,
-				10E27C10205E434000CE246E /* Display.cpp in Sources */,
+				102EDB0A205EF187005F0475 /* PPU.cpp in Sources */,
+				102EDB07205EF187005F0475 /* Mapper7.cpp in Sources */,
+				102EDB01205EF187005F0475 /* CPU.cpp in Sources */,
+				102EDB09205EF187005F0475 /* NES.cpp in Sources */,
+				102EDB05205EF187005F0475 /* Mapper2.cpp in Sources */,
+				102EDB03205EF187005F0475 /* Mapper0.cpp in Sources */,
+				102EDB02205EF187005F0475 /* Mapper.cpp in Sources */,
+				102EDB04205EF187005F0475 /* Mapper1.cpp in Sources */,
+				102EDB08205EF187005F0475 /* Memory.cpp in Sources */,
+				102EDAFE205EF187005F0475 /* APU.cpp in Sources */,
+				102EDB06205EF187005F0475 /* Mapper3.cpp in Sources */,
+				102EDAFD205EF187005F0475 /* Chip8.cpp in Sources */,
+				102EDB0B205EF187005F0475 /* PPUMemory.cpp in Sources */,
+				102EDB00205EF187005F0475 /* Controller.cpp in Sources */,
+				102EDAFC205EF187005F0475 /* main.cpp in Sources */,
+				102EDAFF205EF187005F0475 /* Cartridge.cpp in Sources */,
+				102EDB0C205EF187005F0475 /* Display.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -362,6 +384,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DEVELOPMENT_TEAM = Q8ZUCZJ2K4;
+				LIBRARY_SEARCH_PATHS = "../lib/**";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -370,6 +393,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DEVELOPMENT_TEAM = Q8ZUCZJ2K4;
+				LIBRARY_SEARCH_PATHS = "../lib/**";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
