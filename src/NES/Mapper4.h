@@ -3,13 +3,12 @@
 #include "Mapper.h"
 
 namespace NES {
-    class Mapper7 :
+    class Mapper4 :
         public Mapper
     {
     public:
-        Mapper7(Cartridge &cartridge);
 
-        uint8_t prgOffset0 = 0x0;
+        Mapper4(Cartridge &cartridge) : Mapper(cartridge) {}
 
         uint8_t getTileData(uint16_t index);
         void  setTileData(uint16_t index, uint8_t value);

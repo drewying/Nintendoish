@@ -9,7 +9,7 @@ namespace NES {
     public:
         Mapper3(Cartridge &cartridge);
 
-        uint8_t chrOffset = 0x0;
+        uint8_t chrOffset0 = 0x0;
 
         uint8_t getTileData(uint16_t index);
         void  setTileData(uint16_t index, uint8_t value);

@@ -8,11 +8,11 @@ Mapper3::Mapper3(Cartridge &cartridge) : Mapper(cartridge) {
 }
 
 uint8_t Mapper3::getTileData(uint16_t index) {
-    return cartridge.chr[index + (chrOffset * 0x2000)];
+    return cartridge.chr[index + (chrOffset0 * 0x2000)];
 }
 
 void Mapper3::setTileData(uint16_t index, uint8_t value) {
-    cartridge.chr[index + (chrOffset * 0x2000)] = value;
+    cartridge.chr[index + (chrOffset0 * 0x2000)] = value;
 }
 
 uint8_t Mapper3::getProgramData(uint16_t index) {
@@ -22,6 +22,6 @@ uint8_t Mapper3::getProgramData(uint16_t index) {
 
 void Mapper3::setProgramData(uint16_t index, uint8_t value) {
     if (index >= 0x8000) {
-        chrOffset = value & 0x3;
+        chrOffset0 = value & 0x3;
     }
 }

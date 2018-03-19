@@ -17,7 +17,7 @@ void Mapper7::setTileData(uint16_t index, uint8_t value) {
 }
 
 uint8_t Mapper7::getProgramData(uint16_t index) {
-    return cartridge.prg[(index - 0x8000) + (prgOffset * 0x8000)];
+    return cartridge.prg[(index - 0x8000) + (prgOffset0 * 0x8000)];
 }
 
 void Mapper7::setProgramData(uint16_t index, uint8_t value) {
@@ -27,6 +27,6 @@ void Mapper7::setProgramData(uint16_t index, uint8_t value) {
         } else {
             cartridge.currentMirroring = Cartridge::SingleScreenB;
         }
-        prgOffset = value & 0x7;
+        prgOffset0 = value & 0x7;
     }
 }
