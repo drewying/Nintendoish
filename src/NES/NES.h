@@ -1,8 +1,9 @@
 #pragma once
 
+#include "APU.h"
 #include "Cartridge.h"
-#include "CPU.h"
 #include "Controller.h"
+#include "CPU.h"
 #include "Memory.h"
 #include "PPU.h"
 #include "PPUMemory.h"
@@ -15,12 +16,20 @@
 namespace NES {
     class APU;
     class Cartridge;
-    class CPU;
     class Controller;
+    class CPU;
     class Memory;
     class PPU;
     class PPUMemory;
-
+    
+    struct Dot {
+        uint8_t* baseColor;
+        uint8_t* backgroundColor;
+        uint8_t* spriteColor;
+        uint8_t priority; //0: Base Color, 1, Background Color, 2 Sprite Color
+    };
+    
+    
     class Console {
     public:
         int emulateCycle();
@@ -34,9 +43,8 @@ namespace NES {
         PPU *ppu;
         PPUMemory *ppuMemory;
         Controller *controllerOne;
-
-        unsigned int graphics[256 * 240] = { 0 };
-        unsigned int updateGraphics = false;
+        
+        Dot graphics[256 * 240] = { 0 };
 
         Console();
         ~Console();

@@ -34,13 +34,22 @@ void updateDisplay(void) {
     glClear(GL_COLOR_BUFFER_BIT);
     for (int x = 0; x < 256; x++) {
         for (int y = 0; y < 240; y++) {
-            unsigned int color = nes->graphics[x + (y * 256)];
-            if (color) {
-                float blue = (float)(color & 0x000000FF);
-                float green = (float)((color & 0x0000FF00) >> 8);
-                float red = (float)((color & 0x00FF0000) >> 16);
-                display->plotPixel(x, y, red / 255.0, green / 255.0, blue / 255.0);
+            NES::Dot dot = nes->graphics[x + (y * 256)];
+            uint8_t* color;
+            switch (dot.priority) {
+                case 0:
+                    color = dot.baseColor;
+                    break;
+                case 1:
+                    color = dot.backgroundColor;
+                    break;
+                case 2:
+                    color = dot.spriteColor;
+                    break;
+                default:
+                    break;
             }
+            if (color != nullptr) display->plotPixel(x, y, color[0] / 255.0, color[1] / 255.0, color[2] / 255.0);
         }
     }
 
@@ -226,18 +235,17 @@ void gameLoop() {
 int main(int argc, char** argv) {
     display = new Display(4, 256, 240);
     display->initialize(argc, argv);
-    //glfwSetInputMode(display->window, GLFW_STICKY_KEYS, 1);
     glfwSetKeyCallback(display->window, keyCallback);
     nes = new NES::Console();
-    //nes->loadProgram("../roms/test/scanline.nes");
-    nes->loadProgram("../roms/Battletoads.nes");
+    //nes->loadProgram("../roms/scanline.nes");
+    //nes->loadProgram("../roms/Battletoads.nes");
     //nes->loadProgram("../roms/Gradius.nes);"
     //nes->loadProgram("../roms/Contra.nes");
     //nes->loadProgram("../roms/Metroid.nes");
     //nes->loadProgram("../roms/IceClimber.nes");
     //nes->loadProgram("../roms/Megaman.nes");
     //nes->loadProgram("../roms/Castlevania.nes");
-    //nes->loadProgram("../roms/Zelda.nes");
+    nes->loadProgram("../roms/Zelda.nes");
     //nes->loadProgram("../roms/Mario.nes");
     //nes->loadProgram("../roms/Excitebike.nes");
     //nes->loadProgram("../roms/DonkeyKong.nes");

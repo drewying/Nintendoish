@@ -29,6 +29,7 @@
 		10E2D590205F2E39009AC3C2 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10E2D58F205F2E39009AC3C2 /* IOKit.framework */; };
 		10E2D592205F2E45009AC3C2 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10E2D591205F2E45009AC3C2 /* Cocoa.framework */; };
 		10E2D594205F2E4D009AC3C2 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10E2D593205F2E4D009AC3C2 /* CoreVideo.framework */; };
+		10E2D59A205F8E53009AC3C2 /* GlassDisplay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10E2D598205F8E52009AC3C2 /* GlassDisplay.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -84,6 +85,8 @@
 		10E2D58F205F2E39009AC3C2 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		10E2D591205F2E45009AC3C2 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		10E2D593205F2E4D009AC3C2 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		10E2D598205F8E52009AC3C2 /* GlassDisplay.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GlassDisplay.cpp; path = ../src/GlassDisplay.cpp; sourceTree = "<group>"; };
+		10E2D599205F8E52009AC3C2 /* GlassDisplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GlassDisplay.h; path = ../src/GlassDisplay.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,6 +111,8 @@
 				102EDADB205EF187005F0475 /* CHIP8 */,
 				102EDAFB205EF187005F0475 /* Display.cpp */,
 				102EDADA205EF187005F0475 /* Display.h */,
+				10E2D598205F8E52009AC3C2 /* GlassDisplay.cpp */,
+				10E2D599205F8E52009AC3C2 /* GlassDisplay.h */,
 				102EDAD9205EF187005F0475 /* main.cpp */,
 				102EDADE205EF187005F0475 /* NES */,
 			);
@@ -265,6 +270,7 @@
 				102EDB02205EF187005F0475 /* Mapper.cpp in Sources */,
 				102EDB04205EF187005F0475 /* Mapper1.cpp in Sources */,
 				102EDB08205EF187005F0475 /* Memory.cpp in Sources */,
+				10E2D59A205F8E53009AC3C2 /* GlassDisplay.cpp in Sources */,
 				102EDAFE205EF187005F0475 /* APU.cpp in Sources */,
 				102EDB06205EF187005F0475 /* Mapper3.cpp in Sources */,
 				102EDAFD205EF187005F0475 /* Chip8.cpp in Sources */,
