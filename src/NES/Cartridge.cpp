@@ -7,6 +7,7 @@
 #include "Mapper2.h"
 #include "Mapper3.h"
 #include "Mapper7.h"
+#include "Mapper9.h"
 
 using namespace NES;
 
@@ -65,6 +66,9 @@ Cartridge::Cartridge(const char* path) {
             break;
         case 7:
             mapper = new Mapper7(*this);
+            break;
+        case 9:
+            mapper = new Mapper9(*this);
             break;
         default:
             printf("Unsupported Mapper");
