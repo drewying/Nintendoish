@@ -7,7 +7,26 @@ namespace NES {
         public Mapper
     {
     public:
-
+        
+        uint8_t prgRAM[0x2000];
+        
+        uint8_t prgOffset0 = 0x0;
+        uint8_t prgOffset1 = 0x0;
+        uint8_t prgOffset2 = 0x0;
+        uint8_t prgOffset3 = 0x0;
+        
+        uint8_t chrOffset0 = 0x0;
+        uint8_t chrOffset1 = 0x0;
+        uint8_t chrOffset2 = 0x0;
+        uint8_t chrOffset3 = 0x0;
+        uint8_t chrOffset4 = 0x0;
+        uint8_t chrOffset5 = 0x0;
+        uint8_t chrOffset6 = 0x0;
+        uint8_t chrOffset7 = 0x0;
+        
+        uint8_t chrMode = 0x0;
+        uint8_t prgMode = 0x0;
+        
         Mapper4(Cartridge &cartridge) : Mapper(cartridge) {}
 
         uint8_t getTileData(uint16_t index);

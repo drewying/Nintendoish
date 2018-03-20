@@ -30,6 +30,7 @@
 		10E2D592205F2E45009AC3C2 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10E2D591205F2E45009AC3C2 /* Cocoa.framework */; };
 		10E2D594205F2E4D009AC3C2 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10E2D593205F2E4D009AC3C2 /* CoreVideo.framework */; };
 		10E2D59D206047BB009AC3C2 /* Mapper4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10E2D59C206047BA009AC3C2 /* Mapper4.cpp */; };
+		10E2D5A02060E327009AC3C2 /* Mapper9.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10E2D59F2060E327009AC3C2 /* Mapper9.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -87,6 +88,8 @@
 		10E2D593205F2E4D009AC3C2 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		10E2D59B206047BA009AC3C2 /* Mapper4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mapper4.h; sourceTree = "<group>"; };
 		10E2D59C206047BA009AC3C2 /* Mapper4.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mapper4.cpp; sourceTree = "<group>"; };
+		10E2D59E2060E326009AC3C2 /* Mapper9.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mapper9.h; sourceTree = "<group>"; };
+		10E2D59F2060E327009AC3C2 /* Mapper9.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mapper9.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -152,6 +155,8 @@
 				10E2D59B206047BA009AC3C2 /* Mapper4.h */,
 				102EDAF1205EF187005F0475 /* Mapper7.cpp */,
 				102EDAF2205EF187005F0475 /* Mapper7.h */,
+				10E2D59F2060E327009AC3C2 /* Mapper9.cpp */,
+				10E2D59E2060E326009AC3C2 /* Mapper9.h */,
 				102EDAF3205EF187005F0475 /* Memory.cpp */,
 				102EDAF4205EF187005F0475 /* Memory.h */,
 				102EDAF5205EF187005F0475 /* NES.cpp */,
@@ -272,6 +277,7 @@
 				102EDB04205EF187005F0475 /* Mapper1.cpp in Sources */,
 				102EDB08205EF187005F0475 /* Memory.cpp in Sources */,
 				102EDAFE205EF187005F0475 /* APU.cpp in Sources */,
+				10E2D5A02060E327009AC3C2 /* Mapper9.cpp in Sources */,
 				102EDB06205EF187005F0475 /* Mapper3.cpp in Sources */,
 				102EDAFD205EF187005F0475 /* Chip8.cpp in Sources */,
 				102EDB0B205EF187005F0475 /* PPUMemory.cpp in Sources */,
