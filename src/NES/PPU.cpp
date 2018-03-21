@@ -125,7 +125,7 @@ void NES::PPU::fetchSprites() {
         uint8_t spriteY = currentScanline - sprite->yPosition;
         uint16_t tileIndex = sprite->tileIndex;
         
-        spriteY = sprite->attributes.verticalFlip ? spriteHeight - spriteY : spriteY;
+        spriteY = sprite->attributes.verticalFlip ? spriteHeight - spriteY - 1 : spriteY;
         
         if (spriteHeight == 8) {
             // 8x8 Sprite
