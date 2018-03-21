@@ -91,23 +91,28 @@ namespace NES {
         } vramRegister;
 
         //Sprite Memory
+        struct SpriteAttributes {
+            uint8_t palette : 2,
+            unused : 3,
+            priority : 1,
+            horizontalFlip : 1,
+            verticalFlip : 1;
+        };
+        
         struct Sprite {
             uint8_t yPosition;
             uint8_t tileIndex;
-            struct {
-                uint8_t palette : 2,
-                    unused : 3,
-                    priority : 1,
-                    horizontalFlip : 1,
-                    verticalFlip : 1;
-            } attributes;
+            SpriteAttributes attributes;
             uint8_t xPosition;
         };
 
         uint8_t activeSpriteCount = 0;
-        Sprite* spr[8]            = { 0 };    // Active Sprites
-        uint8_t oam[0x100]        = { 0 };    // Object Attribute Memory
-        uint8_t sprTiles[0x10]    = { 0 };    // Sprite Tiles
+        uint8_t spriteZeroIndex = 0xF;
+        uint8_t oam[0x100]                     = { 0 };    // Object Attribute Memory
+        uint8_t spr[0x8]                       = { 0 };    // Active Sprites
+        uint8_t sprXPositions[0x8]             = { 0 };
+        SpriteAttributes sprAttributes[0x8]    = { 0 };    // Sprite Tiles
+        uint8_t sprTiles[0x10]                 = { 0 };    // Sprite Tiles
         
         //PPU Access Methods
         uint8_t getPPURegister(uint16_t index);
@@ -130,6 +135,7 @@ namespace NES {
         // Rendering Helpers
         void renderPatternTable();
         void renderTile(int x, int y, int tileIndex);
+        void clearSprites();
         void fetchSprites();
         void evaluateSprites();
         void renderPixel();		
