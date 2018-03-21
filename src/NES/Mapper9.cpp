@@ -32,7 +32,7 @@ uint8_t Mapper9::getTileData(uint16_t index) {
         latch0 = false;
     }
     if (index == 0x0FE8) {
-        latch1 = true;
+        latch0 = true;
     }
     if (index >= 0x1FD8 && index <= 0x1FDF) latch1 = false;
     if (index >= 0x1FE8 && index <= 0x1FEF) latch1 = true;

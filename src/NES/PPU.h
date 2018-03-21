@@ -104,8 +104,10 @@ namespace NES {
             uint8_t xPosition;
         };
 
-        Sprite* spr[8]       = { 0 };    // Active Sprites
-        uint8_t oam[0x100]   = { 0 };    // Object Attribute Memory
+        uint8_t activeSpriteCount = 0;
+        Sprite* spr[8]            = { 0 };    // Active Sprites
+        uint8_t oam[0x100]        = { 0 };    // Object Attribute Memory
+        uint8_t sprTiles[0x10]    = { 0 };    // Sprite Tiles
         
         //PPU Access Methods
         uint8_t getPPURegister(uint16_t index);
@@ -128,7 +130,8 @@ namespace NES {
         // Rendering Helpers
         void renderPatternTable();
         void renderTile(int x, int y, int tileIndex);
-        void prepareSprites();
+        void fetchSprites();
+        void evaluateSprites();
         void renderPixel();		
         
         uint8_t colorTable[0x40][0x3] = {

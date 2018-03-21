@@ -105,6 +105,7 @@ void NES::PPU::copyDMAMemory(uint8_t index) {
 }
 
 void NES::PPU::reset() {
+    std::fill_n(oam, 0x100, 0xFF);
     reg.control.byte = 0x0;
     reg.mask.byte = 0x0;
     reg.status.byte = 0x10;
@@ -115,20 +116,53 @@ void NES::PPU::reset() {
     vramRegister.writeLatch = false;
 }
 
+void NES::PPU::fetchSprites() {
+    uint8_t spriteHeight = reg.control.flags.TallSprites ? 16 : 8;
+    
+    for (int i = 0; i < activeSpriteCount; i++) {
+        Sprite *sprite = spr[i];
+        
+        uint8_t spriteY = currentScanline - sprite->yPosition;
+        uint16_t tileIndex = sprite->tileIndex;
+        
+        spriteY = sprite->attributes.verticalFlip ? spriteHeight - spriteY : spriteY;
+        
+        if (spriteHeight == 8) {
+            // 8x8 Sprite
+            tileIndex *= 0x10;
+            tileIndex += (reg.control.flags.SpriteTableSelect ? 0x1000 : 0x0);
+        } else {
+            // 8x16 Sprite
+            bool tileBank = tileIndex & 0x1;
+            tileIndex &= 0xFE;
+            tileIndex *= 0x10;
+            tileIndex += (tileBank ? 0x1000 : 0x0);
+            if (spriteY >= 8) {
+                //Process bottom half of 8x16 Sprite
+                tileIndex += 0x10;
+                spriteY -= 8;
+            }
+        }
+        
+        tileIndex += spriteY;
+        
+        sprTiles[i * 2] = console.ppuMemory->get(tileIndex);
+        sprTiles[(i * 2) + 1] = console.ppuMemory->get(tileIndex + 8);
+    }
+}
 
-void NES::PPU::prepareSprites() {
+void NES::PPU::evaluateSprites() {
     Sprite* sprite = (Sprite*)oam;
-    unsigned int spriteCount = 0;
+    activeSpriteCount = 0;
     unsigned int oamIndex = 0;
     std::fill_n(spr, 8, nullptr);
     uint8_t spriteHeight = reg.control.flags.TallSprites ? 16 : 8;
-    while (spriteCount < 8 && oamIndex < 64) {
-        if (sprite->yPosition != 0 &&
-            currentScanline >= sprite->yPosition &&
-            currentScanline < sprite->yPosition + spriteHeight)
+    while (activeSpriteCount < 8 && oamIndex < 64) {
+        if (currentScanline >= sprite->yPosition &&
+            currentScanline  < sprite->yPosition + spriteHeight)
         {
-            spr[spriteCount] = sprite;
-            spriteCount++;
+            spr[activeSpriteCount] = sprite;
+            activeSpriteCount++;
         }
         sprite++; // Pointer arithmatic FTW!
         oamIndex++;
@@ -157,41 +191,17 @@ void NES::PPU::renderPixel() {
     } 
 
     if (renderSprites == true) {
-        for (int i = 0; i < 8; i++) { 
+        for (int i = 0; i < activeSpriteCount; i++) { 
             Sprite* sprite = spr[i];
 
             if (sprite != nullptr &&
                 x >= sprite->xPosition &&
                 x  < (sprite->xPosition + 8))
             {
-                    uint8_t spriteHeight = reg.control.flags.TallSprites ? 16 : 8;
                     uint8_t spriteX = x - sprite->xPosition;
-                    uint8_t spriteY = y - (sprite ->yPosition + 1);
-                    uint16_t tileIndex = sprite->tileIndex;
-
-                   spriteY = sprite->attributes.verticalFlip ? spriteHeight - spriteY - 1 : spriteY;                    
-
-                    if (spriteHeight == 8) {
-                        // 8x8 Sprite
-                        tileIndex *= 0x10;
-                        tileIndex += (reg.control.flags.SpriteTableSelect ? 0x1000 : 0x0);
-                    } else {
-                        // 8x16 Sprite
-                        bool tileBank = tileIndex & 0x1;
-                        tileIndex &= 0xFE;
-                        tileIndex *= 0x10;
-                        tileIndex += (tileBank ? 0x1000 : 0x0);
-                        if (spriteY >= 8) {
-                            //Process bottom half of 8x16 Sprite
-                            tileIndex += 0x10;
-                            spriteY -= 8;
-                        }
-                    }
-                    
-                    tileIndex += spriteY;
     
-                    uint8_t tileSliceA = console.ppuMemory->get(tileIndex);
-                    uint8_t tileSliceB = console.ppuMemory->get(tileIndex + 8);
+                    uint8_t tileSliceA = sprTiles[i * 2];
+                    uint8_t tileSliceB = sprTiles[(i * 2) + 1];
 
                     tileSliceA = tileSliceA >> (sprite->attributes.horizontalFlip ? spriteX : 7 - spriteX);
                     tileSliceB = tileSliceB >> (sprite->attributes.horizontalFlip ? spriteX : 7 - spriteX);
@@ -285,7 +295,8 @@ void NES::PPU::step() {
     bool preRenderCycle = (currentCycle >= 321 && currentCycle <= 336);
 
     // Prepare Sprites
-    if (visibleScanline && currentCycle == 257) prepareSprites();
+    if (visibleScanline && currentCycle == 257) evaluateSprites(); //TODO This should be happening at 65 for next scanline
+    if (visibleScanline && currentCycle == 258) fetchSprites();
 
     if (renderingEnabled && renderScanline) {
         if (visibleCycle || preRenderCycle) {

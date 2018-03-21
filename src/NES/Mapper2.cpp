@@ -33,5 +33,5 @@ void Mapper2::setProgramData(uint16_t index, uint8_t value) {
         printf("Ruh Roh. SVRAM not implemented.");
         return;
     }
-    prgOffset1 = (value & 0x7);
+    prgOffset0 = (value & 0x7);
 }
