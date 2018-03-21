@@ -27,7 +27,12 @@ namespace NES {
         uint8_t chrMode = 0x0;
         uint8_t prgMode = 0x0;
         
-        Mapper4(Cartridge &cartridge) : Mapper(cartridge) {}
+        uint8_t bankSelect = 0x0;
+        
+        bool enableRamWrites = true;
+        bool enableRam = true;
+        
+        Mapper4(Cartridge &cartridge);
 
         uint8_t getTileData(uint16_t index);
         void  setTileData(uint16_t index, uint8_t value);

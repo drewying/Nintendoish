@@ -4,6 +4,10 @@
 
 using namespace NES;
 
+Mapper4::Mapper4(Cartridge &cartridge) : Mapper(cartridge) {
+    prgOffset3 = (cartridge.prgSize * 2) - 1;
+}
+
 uint8_t Mapper4::getTileData(uint16_t index) {
     if (index < 0x400) {
         return cartridge.chr[(chrOffset0 * 0x400) + index];
@@ -32,7 +36,11 @@ void Mapper4::setTileData(uint16_t index, uint8_t value) {
 
 uint8_t Mapper4::getProgramData(uint16_t index) {
     if (index < 0x8000) {
-        return prgRAM[index - 0x6000];
+        if (enableRam) {
+            return prgRAM[index - 0x6000];
+        } else {
+            return 0xFF; //TODO This should be open bus.
+        }
     } else if (index < 0xA000) {
         return cartridge.prg[(prgOffset0 * 0x2000) + (index - 0x8000)];
     } else if (index < 0xC000) {
@@ -46,10 +54,86 @@ uint8_t Mapper4::getProgramData(uint16_t index) {
 }
 
 void Mapper4::setProgramData(uint16_t index, uint8_t value) {
+    bool isOdd = value & 0x1;
+    
     if (index < 0x8000) {
-        prgRAM[index - 0x6000] = value;
-    } else if (index < 0xA000) {
+        if (enableRamWrites && enableRam) {
+            prgRAM[index - 0x6000] = value;
+        }
+    } else if (index < 0xA000 && isOdd == false) {
         //Bank Select
+        bankSelect = value;
+    } else if (index < 0xA000 && isOdd == true) {
+        //Bank Data
+        uint8_t prgMode = (bankSelect & 0x40) >> 6;
+        uint8_t chrMode = (bankSelect & 0x80) >> 7;
+        uint8_t bankSelection = (bankSelect & 0x7);
+        
+        switch (bankSelection) {
+            case 0:
+                if (chrMode == 0) {
+                    chrOffset0 = value;
+                    chrOffset1 = value + 1;
+                }
+                if (chrMode == 1) {
+                    chrOffset4 = value;
+                    chrOffset5 = value + 1;
+                }
+                break;
+            case 1:
+                if (chrMode == 0) {
+                    chrOffset2 = value;
+                    chrOffset3 = value + 1;
+                }
+                if (chrMode == 1) {
+                    chrOffset6 = value;
+                    chrOffset7 = value + 1;
+                }
+                break;
+            case 2:
+                if (chrMode == 0) chrOffset4 = value;
+                if (chrMode == 1) chrOffset0 = value;
+                break;
+            case 3:
+                if (chrMode == 0) chrOffset5 = value;
+                if (chrMode == 1) chrOffset1 = value;
+                break;
+            case 4:
+                if (chrMode == 0) chrOffset6 = value;
+                if (chrMode == 1) chrOffset2 = value;
+                break;
+            case 5:
+                if (chrMode == 0) chrOffset7 = value;
+                if (chrMode == 1) chrOffset3 = value;
+                break;
+            case 6:
+                if (prgMode == 0) {
+                    prgOffset0 = value;
+                    prgOffset2 = (cartridge.prgSize * 2) - 2;
+                } else {
+                    prgOffset2 = value;
+                    prgOffset0 = (cartridge.prgSize * 2) - 2;
+                }
+                break;
+            case 7:
+                prgOffset1 = value;
+                break;
+            default:
+                break;
+        }
+    } else if (index < 0xC000 && isOdd == false) {
+        //Mirroring Select
+        if (cartridge.currentMirroring != Cartridge::FourScreen) {
+            if (value & 0x1) {
+                cartridge.currentMirroring = Cartridge::HorizontalMirror;
+            } else {
+                cartridge.currentMirroring = Cartridge::VerticalMirror;
+            }
+        }
+    } else if (index < 0xC000 && isOdd == true) {
+        enableRam = ((value & 0x80) == 0x80);
+        enableRamWrites = ((value & 0x40) != 0x40);
+    } else {
+        printf("Ruh Roh. IRQ Counter not enabled.\n");
     }
-    cartridge.prg[index - 0x8000] = value;
 }

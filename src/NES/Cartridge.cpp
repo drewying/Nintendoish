@@ -6,6 +6,7 @@
 #include "Mapper1.h"
 #include "Mapper2.h"
 #include "Mapper3.h"
+#include "Mapper4.h"
 #include "Mapper7.h"
 #include "Mapper9.h"
 
@@ -63,6 +64,9 @@ Cartridge::Cartridge(const char* path) {
             break;
         case 3:
             mapper = new Mapper3(*this);
+            break;
+        case 4:
+            mapper = new Mapper4(*this);
             break;
         case 7:
             mapper = new Mapper7(*this);
