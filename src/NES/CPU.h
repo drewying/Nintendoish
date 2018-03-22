@@ -61,7 +61,8 @@ namespace NES {
         uint32_t totalCycles = 0;
         uint32_t stallCycles = 0;
         bool requestNMI = false;
-
+        bool requestIRQ = false;
+        
         unsigned int step();
 
         void setNZStatus(uint8_t value);
@@ -78,6 +79,7 @@ namespace NES {
         typedef void (CPU::*Op)(uint16_t);
         
         void NMI();
+        void IRQ();
         
         // Control Flow
         void BCC(uint16_t address);

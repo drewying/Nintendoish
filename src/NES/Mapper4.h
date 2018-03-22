@@ -31,14 +31,22 @@ namespace NES {
         
         bool enableRamWrites = true;
         bool enableRam = true;
+        bool enableIRQ = true;
+        bool reloadIRQ = false;
+        bool scanlineLatch = false;
         
-        Mapper4(Cartridge &cartridge);
+        void tickScanlineCounter(uint16_t index);
+        uint8_t irqReload = 0x0;
+        uint8_t counter = 0x0;
+        
 
         uint8_t getTileData(uint16_t index);
         void  setTileData(uint16_t index, uint8_t value);
 
         uint8_t getProgramData(uint16_t index);
         void  setProgramData(uint16_t index, uint8_t value);
+        
+        Mapper4(Cartridge &cartridge);
     };
 
 }

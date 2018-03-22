@@ -12,7 +12,7 @@
 
 using namespace NES;
 
-Cartridge::Cartridge(const char* path) {
+Cartridge::Cartridge(Console &console, const char* path) : console(console) {
     FILE *rom = fopen(path, "rb");
     if (rom) {
         uint8_t header[16];

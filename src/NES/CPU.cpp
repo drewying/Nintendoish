@@ -257,6 +257,12 @@ void CPU::checkInterrurpts() {
         NMI();
         requestNMI = false;
     }
+    if (requestIRQ == true) {
+        if (reg.P.status.Interrupt == false) {
+            IRQ();
+        }
+        requestIRQ = false;
+    }
 }
 
 void CPU::compareValues(uint8_t a, uint8_t b) {
@@ -293,6 +299,16 @@ void CPU::NMI() {
     reg.P.status.Interrupt = true;
     totalCycles += 7;
 }
+
+void CPU::IRQ() {
+    // IRQe Interrupt
+    pushAddress(reg.PC);
+    PHP(0x0);
+    reg.PC = memory.get(0xFFFF) << 8 | memory.get(0xFFFE);
+    reg.P.status.Interrupt = true;
+    totalCycles += 7;
+}
+
 
 void CPU::BCC(uint16_t address) {
     //Branch on Carry Clear

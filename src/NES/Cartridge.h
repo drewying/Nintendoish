@@ -1,11 +1,12 @@
 #pragma once
 
 #include "Mapper.h"
-
+#include "NES.h"
 #include <stdint.h>
 
 namespace NES {
     class Mapper;
+    class Console;
     class Cartridge {
     public:
         typedef enum {
@@ -15,7 +16,8 @@ namespace NES {
             SingleScreenB,
             FourScreen,
         } BackgroundMirroring;
-
+        
+        Console &console;
         Mapper* mapper;
         uint8_t* prg;
         uint8_t* chr;
@@ -32,7 +34,7 @@ namespace NES {
         uint8_t getProgramData(uint16_t index);
         void  setProgramData(uint16_t index, uint8_t value);
 
-        Cartridge(const char* path);
+        Cartridge(Console &console, const char* path);
         ~Cartridge();
     };
 };
