@@ -18,11 +18,8 @@ using namespace std;
 static Display *display;
 static NES::Console *nes;
 
-ifstream logfile;
 bool pause = false;
-bool passedTest = false;
-bool runTests = false;
-bool fullLog = false;
+bool log = true;
 int debugStartLineNumber = 0000;
 int lineNumber = 0x0;
 
@@ -92,90 +89,49 @@ void updateNES() {
     while (nes->ppu->totalFrames == currentFrame) nes->emulateCycle();
 }
 
-void testNES(void) {
-    if (nes->cpu->stallCycles == 0x0) {
-
-        std::stringstream ss;
-
-        uint8_t nextInstruction = nes->memory->get(nes->cpu->reg.PC);
-
-        ss << uppercase << setfill('0') << setw(4) << hex << nes->cpu->reg.PC << "  " << uppercase << setfill('0') << setw(2) << hex << (uint16_t)nextInstruction;
-        /*if (reg.PC - startingPC > 1) {
-        debugBuffer << " " << uppercase << setfill('0') << setw(2) << hex << (uint16_t)lo;
-        }
-        else {
-        debugBuffer << "   ";
-        }
-        if (reg.PC - startingPC > 2) {
-        debugBuffer << " " << uppercase << setfill('0') << setw(2) << hex << (uint16_t)hi;
-        }
-        else {
-        debugBuffer << "   ";
-        }*/
-        ss << "      ";
-        ss << "  " << nes->cpu->debugTable[nextInstruction];
-        ss << "                             A:" << uppercase << setfill('0') << setw(2) << hex << (uint16_t)nes->cpu->reg.A;
-        ss << " X:" << uppercase << setfill('0') << setw(2) << hex << (uint16_t)nes->cpu->reg.X;
-        ss << " Y:" << uppercase << setfill('0') << setw(2) << hex << (uint16_t)nes->cpu->reg.Y;
-        ss << " P:" << uppercase << setfill('0') << setw(2) << hex << (uint16_t)nes->cpu->reg.P.byte;
-        ss << " SP:" << uppercase << setfill('0') << setw(2) << hex << (uint16_t)nes->cpu->reg.S;
-        ss << " CYC:" << setfill(' ') << dec << setw(3) << nes->ppu->currentCycle << " SL:" << nes->ppu->currentScanline;
-
-        lineNumber++;
-        string logLine;
-        if (!getline(logfile, logLine)){
-            if (passedTest){
-                cout << "Tests Passed" << endl;
-            } else {
-                cout << "Tests Failed" << endl;
-            }
-            exit(0);
-        }
-
-        string logPc = logLine.substr(0, 4);
-        string logOp = logLine.substr(6, 2);
-        string logLo = logLine.substr(9, 2);
-        string logHi = logLine.substr(12, 2);
-        string logDesc = logLine.substr(16, 3);
-        string logA = logLine.substr(50, 2);
-        string logX = logLine.substr(55, 2);
-        string logY = logLine.substr(60, 2);
-        string logP = logLine.substr(65, 2);
-        string logSP = logLine.substr(71, 2);
-        string logCYC = logLine.substr(78, 3);
-        string logSL = logLine.substr(85, 3);
-    
-        string emuLine = ss.str();
-        string emuPc = emuLine.substr(0, 4);
-        string emuOp = emuLine.substr(6, 2);
-        string emuLo = emuLine.substr(9, 2);
-        string emuHi = emuLine.substr(12, 2);
-        string emuDesc = emuLine.substr(16, 3);
-        string emuA = emuLine.substr(50, 2);
-        string emuX = emuLine.substr(55, 2);
-        string emuY = emuLine.substr(60, 2);
-        string emuP = emuLine.substr(65, 2);
-        string emuSP = emuLine.substr(71, 2);
-        string emuCYC = emuLine.substr(78, 3);
-        string emuSL = emuLine.substr(85, 3);
-
-
-        if (logPc == emuPc && logOp == emuOp && /*logLo == emuLo && logHi == emuHi &&*/ logDesc == emuDesc && logA == emuA && logX == emuX && logY == emuY && logP == emuP && logSP == emuSP && logCYC == emuCYC && logSL == emuSL) {
-            if (lineNumber > debugStartLineNumber || fullLog == true) {
-                //cout << lineNumber << " " << logLine << endl;
+void logLoop() {
+    while (!glfwWindowShouldClose(display->window)) {
+        if (!pause) {
+            if (nes->cpu->stallCycles == 0x0) {
+                
+                std::stringstream ss;
+                
+                uint8_t nextInstruction = nes->memory->get(nes->cpu->reg.PC);
+                
+                ss << uppercase << setfill('0') << setw(4) << hex << nes->cpu->reg.PC << "  " << uppercase << setfill('0') << setw(2) << hex << (uint16_t)nextInstruction;
+                /*if (reg.PC - startingPC > 1) {
+                 debugBuffer << " " << uppercase << setfill('0') << setw(2) << hex << (uint16_t)lo;
+                 }
+                 else {
+                 debugBuffer << "   ";
+                 }
+                 if (reg.PC - startingPC > 2) {
+                 debugBuffer << " " << uppercase << setfill('0') << setw(2) << hex << (uint16_t)hi;
+                 }
+                 else {
+                 debugBuffer << "   ";
+                 }*/
+                ss << "      ";
+                ss << "  " << nes->cpu->debugTable[nextInstruction];
+                ss << "                             A:" << uppercase << setfill('0') << setw(2) << hex << (uint16_t)nes->cpu->reg.A;
+                ss << " X:" << uppercase << setfill('0') << setw(2) << hex << (uint16_t)nes->cpu->reg.X;
+                ss << " Y:" << uppercase << setfill('0') << setw(2) << hex << (uint16_t)nes->cpu->reg.Y;
+                ss << " P:" << uppercase << setfill('0') << setw(2) << hex << (uint16_t)nes->cpu->reg.P.byte;
+                ss << " SP:" << uppercase << setfill('0') << setw(2) << hex << (uint16_t)nes->cpu->reg.S;
+                ss << " CYC:" << setfill(' ') << dec << setw(3) << nes->ppu->currentCycle << " SL:" << nes->ppu->currentScanline;
+                
+                lineNumber++;
+                
+                string emuLine = ss.str();
+                
                 cout << lineNumber << " " << emuLine << endl;
-                //cout << "CORRECT. FRAME:" << nes->ppu->frameCount << endl << endl;
             }
+            
+            nes->emulateCycle();;
         }
-        else if (lineNumber > debugStartLineNumber || fullLog == true) {
-            //cout << lineNumber << " " << logLine << endl;
-            cout << lineNumber << " "   << emuLine << endl;
-            //cout << "NOT CORRECT. FRAME:" << nes->ppu->frameCount << endl << endl;
-            passedTest = false;
-        }
+        glfwPollEvents();
     }
-
-    nes->emulateCycle();;
+    glfwTerminate();
 }
 
 void gameLoop() {
@@ -218,7 +174,6 @@ void gameLoop() {
             frameCount = 0;
         }
         glfwPollEvents();
-        
     }
     glfwTerminate();
 }
@@ -244,7 +199,7 @@ int main(int argc, char** argv) {
     //nes->loadProgram("../roms/DonkeyKong.nes");
     //nes->loadProgram("../roms/sprite_ram.nes");
 
-    
-    gameLoop();
+    if (log) logLoop();
+    else gameLoop();
     return 0;
 }
