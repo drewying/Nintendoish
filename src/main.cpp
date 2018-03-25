@@ -19,7 +19,7 @@ static Display *display;
 static NES::Console *nes;
 
 bool pause = false;
-bool log = true;
+bool log = false;
 int debugStartLineNumber = 0000;
 int lineNumber = 0x0;
 
@@ -184,6 +184,7 @@ int main(int argc, char** argv) {
     //glfwSetInputMode(display->window, GLFW_STICKY_KEYS, 1);
     glfwSetKeyCallback(display->window, keyCallback);
     nes = new NES::Console();
+    //nes->loadProgram("../roms/1-clocking.nes");
     //nes->loadProgram("../roms/PunchOut.nes");
     //nes->loadProgram("../roms/test/scanline.nes");
     //nes->loadProgram("../roms/Battletoads.nes");

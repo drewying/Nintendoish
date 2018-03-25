@@ -9,6 +9,15 @@ Mapper4::Mapper4(Cartridge &cartridge) : Mapper(cartridge) {
     prgOffset1 = 0x1;
     prgOffset2 = (cartridge.prgSize * 2) - 2;
     prgOffset3 = (cartridge.prgSize * 2) - 1;
+    
+    chrOffset0 = 0x0;
+    chrOffset1 = 0x1;
+    chrOffset2 = 0x2;
+    chrOffset3 = 0x3;
+    chrOffset4 = 0x4;
+    chrOffset5 = 0x5;
+    chrOffset6 = 0x6;
+    chrOffset7 = 0x7;
 }
 
 uint8_t Mapper4::getTileData(uint16_t index) {
