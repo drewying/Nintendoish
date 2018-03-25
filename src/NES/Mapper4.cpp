@@ -50,11 +50,7 @@ void Mapper4::setTileData(uint16_t index, uint8_t value) {
 
 uint8_t Mapper4::getProgramData(uint16_t index) {
     if (index < 0x8000) {
-        if (enableRam) {
-            return prgRAM[index - 0x6000];
-        } else {
-            return 0xFF; //TODO This should be open bus.
-        }
+        return enableRam ? prgRAM[index - 0x6000] : 0xFF; //TODO This should be open bus
     } else if (index < 0xA000) {
         return cartridge.prg[(prgOffset0 * 0x2000) + (index - 0x8000)];
     } else if (index < 0xC000) {
@@ -79,29 +75,29 @@ void Mapper4::setProgramData(uint16_t index, uint8_t value) {
         bankSelect = value;
     } else if (index < 0xA000 && isOdd == true) {
         //Bank Data
-        uint8_t prgMode = (bankSelect & 0x40) >> 6;
-        uint8_t chrMode = (bankSelect & 0x80) >> 7;
+        uint8_t prgMode = (bankSelect >> 6) & 0x1;;
+        uint8_t chrMode = (bankSelect >> 7) & 0x1;
         uint8_t bankSelection = (bankSelect & 0x7);
         
         switch (bankSelection) {
             case 0:
                 if (chrMode == 0) {
-                    chrOffset0 = value;
-                    chrOffset1 = value + 1;
+                    chrOffset0 = value & 0xFE;
+                    chrOffset1 = value | 0x1;
                 }
                 if (chrMode == 1) {
-                    chrOffset4 = value;
-                    chrOffset5 = value + 1;
+                    chrOffset4 = value & 0xFE;
+                    chrOffset5 = value | 0x1;
                 }
                 break;
             case 1:
                 if (chrMode == 0) {
-                    chrOffset2 = value;
-                    chrOffset3 = value + 1;
+                    chrOffset2 = value & 0xFE;
+                    chrOffset3 = value | 0x1;
                 }
                 if (chrMode == 1) {
-                    chrOffset6 = value;
-                    chrOffset7 = value + 1;
+                    chrOffset6 = value & 0xFE;
+                    chrOffset7 = value | 0x1;
                 }
                 break;
             case 2:

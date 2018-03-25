@@ -65,7 +65,7 @@ void Mapper1::setProgramData(uint16_t index, uint8_t value) {
             //  Select 4 KB or 8 KB CHR bank at PPU $0000 (low bit ignored in 8 KB mode)
             if (chrBankMode == 0x0) {
                 chrOffset0 = loadRegister & 0xE;
-                chrOffset1 = chrOffset0 + 0x1;
+                chrOffset1 = chrOffset0 | 0x1;
             } else if (chrBankMode == 0x1) {
                 chrOffset0 = loadRegister;
             }
