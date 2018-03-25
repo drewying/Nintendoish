@@ -12,12 +12,12 @@ Mapper4::Mapper4(Cartridge &cartridge) : Mapper(cartridge) {
     
     chrOffset0 = 0x0;
     chrOffset1 = 0x1;
-    chrOffset2 = 0x2;
-    chrOffset3 = 0x3;
-    chrOffset4 = 0x4;
-    chrOffset5 = 0x5;
-    chrOffset6 = 0x6;
-    chrOffset7 = 0x7;
+//    chrOffset2 = 0x2;
+//    chrOffset3 = 0x3;
+//    chrOffset4 = 0x4;
+//    chrOffset5 = 0x5;
+//    chrOffset6 = 0x6;
+//    chrOffset7 = 0x7;
 }
 
 uint8_t Mapper4::getTileData(uint16_t index) {
@@ -63,6 +63,40 @@ uint8_t Mapper4::getProgramData(uint16_t index) {
     return 0x0;
 }
 
+void Mapper4::updateOffsets() {
+    if (chrMode == 0) {
+        chrOffset0 = registers[0] & 0xFE;
+        chrOffset1 = registers[0] | 0x1;
+        chrOffset2 = registers[1] & 0xFE;
+        chrOffset3 = registers[1] | 0x1;
+        chrOffset4 = registers[2];
+        chrOffset5 = registers[3];
+        chrOffset6 = registers[4];
+        chrOffset7 = registers[5];
+    } else {
+        chrOffset0 = registers[2];
+        chrOffset1 = registers[3];
+        chrOffset2 = registers[4];
+        chrOffset3 = registers[5];
+        chrOffset4 = registers[0] & 0xFE;
+        chrOffset5 = registers[0] | 0x1;
+        chrOffset6 = registers[1] & 0xFE;
+        chrOffset7 = registers[1] | 0x1;
+    }
+    
+    if (prgMode == 0) {
+        prgOffset0 = registers[6];
+        prgOffset1 = registers[7];
+        prgOffset2 = (cartridge.prgSize * 2) - 2;
+        prgOffset3 = (cartridge.prgSize * 2) - 1;
+    } else {
+        prgOffset0 = (cartridge.prgSize * 2) - 2;
+        prgOffset1 = registers[7];
+        prgOffset2 = registers[6];
+        prgOffset3 = (cartridge.prgSize * 2) - 1;
+    }
+}
+
 void Mapper4::setProgramData(uint16_t index, uint8_t value) {
     bool isOdd = (value & 0x1);
     
@@ -72,65 +106,14 @@ void Mapper4::setProgramData(uint16_t index, uint8_t value) {
         }
     } else if (index < 0xA000 && isOdd == false) {
         //Bank Select
-        bankSelect = value;
+        prgMode = (value & 0x40);
+        chrMode = (value & 0x80);
+        selectedRegister = (bankSelect & 0x7);
+        //updateOffsets();
     } else if (index < 0xA000 && isOdd == true) {
         //Bank Data
-        uint8_t prgMode = (bankSelect >> 6) & 0x1;;
-        uint8_t chrMode = (bankSelect >> 7) & 0x1;
-        uint8_t bankSelection = (bankSelect & 0x7);
-        
-        switch (bankSelection) {
-            case 0:
-                if (chrMode == 0) {
-                    chrOffset0 = value & 0xFE;
-                    chrOffset1 = value | 0x1;
-                }
-                if (chrMode == 1) {
-                    chrOffset4 = value & 0xFE;
-                    chrOffset5 = value | 0x1;
-                }
-                break;
-            case 1:
-                if (chrMode == 0) {
-                    chrOffset2 = value & 0xFE;
-                    chrOffset3 = value | 0x1;
-                }
-                if (chrMode == 1) {
-                    chrOffset6 = value & 0xFE;
-                    chrOffset7 = value | 0x1;
-                }
-                break;
-            case 2:
-                if (chrMode == 0) chrOffset4 = value;
-                if (chrMode == 1) chrOffset0 = value;
-                break;
-            case 3:
-                if (chrMode == 0) chrOffset5 = value;
-                if (chrMode == 1) chrOffset1 = value;
-                break;
-            case 4:
-                if (chrMode == 0) chrOffset6 = value;
-                if (chrMode == 1) chrOffset2 = value;
-                break;
-            case 5:
-                if (chrMode == 0) chrOffset7 = value;
-                if (chrMode == 1) chrOffset3 = value;
-                break;
-            case 6:
-                if (prgMode == 0) {
-                    prgOffset0 = value;
-                    prgOffset2 = (cartridge.prgSize * 2) - 2;
-                } else {
-                    prgOffset2 = value;
-                    prgOffset0 = (cartridge.prgSize * 2) - 2;
-                }
-                break;
-            case 7:
-                prgOffset1 = value;
-                break;
-            default:
-                break;
-        }
+        registers[selectedRegister] = value;
+        updateOffsets();
     } else if (index < 0xC000 && isOdd == false) {
         //Mirroring Select
         if (cartridge.currentMirroring != Cartridge::FourScreen) {

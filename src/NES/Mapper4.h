@@ -26,6 +26,8 @@ namespace NES {
         
         uint8_t chrMode = 0x0;
         uint8_t prgMode = 0x0;
+        uint8_t selectedRegister = 0x0;
+        uint8_t registers[8];
         
         uint8_t bankSelect = 0x0;
         
@@ -39,6 +41,7 @@ namespace NES {
         uint8_t irqReload = 0x0;
         uint8_t counter = 0x0;
         
+        void updateOffsets();
 
         uint8_t getTileData(uint16_t index);
         void  setTileData(uint16_t index, uint8_t value);
