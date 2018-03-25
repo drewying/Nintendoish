@@ -5,19 +5,7 @@
 using namespace NES;
 
 Mapper4::Mapper4(Cartridge &cartridge) : Mapper(cartridge) {
-    prgOffset0 = 0x0;
-    prgOffset1 = 0x1;
-    prgOffset2 = (cartridge.prgSize * 2) - 2;
-    prgOffset3 = (cartridge.prgSize * 2) - 1;
-    
-    chrOffset0 = 0x0;
-    chrOffset1 = 0x1;
-//    chrOffset2 = 0x2;
-//    chrOffset3 = 0x3;
-//    chrOffset4 = 0x4;
-//    chrOffset5 = 0x5;
-//    chrOffset6 = 0x6;
-//    chrOffset7 = 0x7;
+    updateOffsets();
 }
 
 uint8_t Mapper4::getTileData(uint16_t index) {
@@ -104,36 +92,44 @@ void Mapper4::setProgramData(uint16_t index, uint8_t value) {
         if (enableRamWrites && enableRam) {
             prgRAM[index - 0x6000] = value;
         }
-    } else if (index < 0xA000 && isOdd == false) {
-        //Bank Select
-        prgMode = (value & 0x40);
-        chrMode = (value & 0x80);
-        selectedRegister = (bankSelect & 0x7);
-        //updateOffsets();
-    } else if (index < 0xA000 && isOdd == true) {
-        //Bank Data
-        registers[selectedRegister] = value;
-        updateOffsets();
-    } else if (index < 0xC000 && isOdd == false) {
-        //Mirroring Select
-        if (cartridge.currentMirroring != Cartridge::FourScreen) {
-            if (value & 0x1) {
-                cartridge.currentMirroring = Cartridge::HorizontalMirror;
-            } else {
-                cartridge.currentMirroring = Cartridge::VerticalMirror;
-            }
+    } else if (index < 0xA000) {
+        if (isOdd == false) {
+            //Bank Select
+            prgMode = (value & 0x40);
+            chrMode = (value & 0x80);
+            selectedRegister = (bankSelect & 0x7);
+            updateOffsets();
+        } else {
+            //Bank Data
+            registers[selectedRegister] = value;
+            updateOffsets();
         }
-    } else if (index < 0xC000 && isOdd == true) {
-        enableRam = ((value & 0x80) == 0x80);
-        enableRamWrites = ((value & 0x40) != 0x40);
-    } else if (index < 0xE000 && isOdd == false) {
-        irqReload = value;
-    } else if (index < 0xE000 && isOdd == true) {
-        reloadIRQ = true;
-    } else if (isOdd == false) {
-        enableIRQ = false;
+    } else if (index < 0xC000) {
+        if (isOdd == false) {
+            //Mirroring Select
+            if (cartridge.currentMirroring != Cartridge::FourScreen) {
+                if (value & 0x1) {
+                    cartridge.currentMirroring = Cartridge::HorizontalMirror;
+                } else {
+                    cartridge.currentMirroring = Cartridge::VerticalMirror;
+                }
+            }
+        } else {
+            enableRam = ((value & 0x80) == 0x80);
+            enableRamWrites = ((value & 0x40) != 0x40);
+        }
+    } else if (index < 0xE000) {
+        if (isOdd == false) {
+            irqReload = value;
+        } else {
+            reloadIRQ = true;
+        }
     } else {
-        enableIRQ = true;
+        if (isOdd == false) {
+            enableIRQ = false;
+        } else {
+            enableIRQ = true;
+        }
     }
 }
 
