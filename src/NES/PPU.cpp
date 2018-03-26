@@ -117,15 +117,19 @@ void NES::PPU::reset() {
 }
 
 void NES::PPU::fetchSprites() {
-    uint8_t spriteHeight = reg.control.flags.TallSprites ? 16 : 8;
     
-    for (int i = 0; i < activeSpriteCount; i++) {
-        Sprite *sprite = spr[i];
+    
+    for (int i = 0; i < 8; i++) {
+        uint8_t spriteHeight = reg.control.flags.TallSprites ? 16 : 8;
+        uint16_t tileIndex = 0xFF;
+        uint8_t spriteY = 0x0;
         
-        uint8_t spriteY = currentScanline - sprite->yPosition;
-        uint16_t tileIndex = sprite->tileIndex;
-        
-        spriteY = sprite->attributes.verticalFlip ? spriteHeight - spriteY - 1 : spriteY;
+        if (i < activeSpriteCount) {
+            Sprite *sprite = spr[i];
+            spriteY = currentScanline - sprite->yPosition;
+            spriteY = sprite->attributes.verticalFlip ? spriteHeight - spriteY - 1 : spriteY;
+            tileIndex = sprite->tileIndex;
+        }
         
         if (spriteHeight == 8) {
             // 8x8 Sprite

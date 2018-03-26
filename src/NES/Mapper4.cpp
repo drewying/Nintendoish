@@ -134,20 +134,19 @@ void Mapper4::setProgramData(uint16_t index, uint8_t value) {
 }
 
 void Mapper4::tickScanlineCounter(uint16_t index){
-    if (index < 0x1000) {
-        scanlineLatch = false;
-    }
+    bool currentLatch = scanlineLatch;
+    scanlineLatch = index >= 0x1000;
     
-    if (index >= 0x1000 && scanlineLatch == false) {
-        scanlineLatch = true;
+    if (currentLatch == false && scanlineLatch == true) {
         if (counter == 0 || reloadIRQ) {
             reloadIRQ = false;
-            counter = irqReload;
+            counter = irqReload ;
         } else {
             counter--;
-            if (counter == 0 && enableIRQ) {
-                cartridge.console.cpu->requestIRQ = true;
-            }
+        }
+        
+        if (counter == 0 && enableIRQ) {
+            cartridge.console.cpu->requestIRQ = true;
         }
     }
 }
