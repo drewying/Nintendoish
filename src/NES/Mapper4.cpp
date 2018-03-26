@@ -9,7 +9,7 @@ Mapper4::Mapper4(Cartridge &cartridge) : Mapper(cartridge) {
 }
 
 uint8_t Mapper4::getTileData(uint16_t index) {
-    tickScanlineCounter(index);
+    //tickScanlineCounter(index);
     
     if (index < 0x400) {
         return cartridge.chr[(chrOffset0 * 0x400) + index];
@@ -51,12 +51,39 @@ uint8_t Mapper4::getProgramData(uint16_t index) {
     return 0x0;
 }
 
+uint8_t Mapper4::chrOffset(uint8_t offset) {
+    int index = offset;
+    if (index >= 0x80) {
+        index -= 0x100;
+    }
+    size_t size = ((cartridge.chrSize * 0x2000) / sizeof cartridge.chr[0]);
+    index %= size / 0x0400;
+    index = offset * 0x0400;
+    if (index < 0) {
+        index += size;
+    }
+    return (uint8_t)index;
+}
+
+uint8_t Mapper4::prgOffset(uint8_t offset) {
+    if (offset >= 0x80) {
+        offset -= 0x100;
+    }
+    size_t size = ((cartridge.prgSize * 0x4000) / sizeof cartridge.prg[0]);
+    offset %= size / 0x2000;
+    offset = offset * 0x2000;
+    //if (offset < 0) {
+    //    offset += len(m.CHR)
+    //}
+    return offset;
+}
+
 void Mapper4::updateOffsets() {
     if (chrMode == 0) {
-        chrOffset0 = registers[0] & 0xFE;
-        chrOffset1 = registers[0] | 0x1;
-        chrOffset2 = registers[1] & 0xFE;
-        chrOffset3 = registers[1] | 0x1;
+        chrOffset0 = (registers[0] & 0xFE);
+        chrOffset1 = (registers[0] | 0x1);
+        chrOffset2 = (registers[1] & 0xFE);
+        chrOffset3 = (registers[1] | 0x1);
         chrOffset4 = registers[2];
         chrOffset5 = registers[3];
         chrOffset6 = registers[4];
@@ -66,27 +93,27 @@ void Mapper4::updateOffsets() {
         chrOffset1 = registers[3];
         chrOffset2 = registers[4];
         chrOffset3 = registers[5];
-        chrOffset4 = registers[0] & 0xFE;
-        chrOffset5 = registers[0] | 0x1;
-        chrOffset6 = registers[1] & 0xFE;
-        chrOffset7 = registers[1] | 0x1;
+        chrOffset4 = (registers[0] & 0xFE);
+        chrOffset5 = (registers[0] | 0x1);
+        chrOffset6 = (registers[1] & 0xFE);
+        chrOffset7 = (registers[1] | 0x1);
     }
     
     if (prgMode == 0) {
-        prgOffset0 = registers[6];
-        prgOffset1 = registers[7];
+        prgOffset0 = (registers[6] & 0x3F);
+        prgOffset1 = (registers[7] & 0x3F);
         prgOffset2 = (cartridge.prgSize * 2) - 2;
         prgOffset3 = (cartridge.prgSize * 2) - 1;
     } else {
         prgOffset0 = (cartridge.prgSize * 2) - 2;
-        prgOffset1 = registers[7];
-        prgOffset2 = registers[6];
+        prgOffset1 = (registers[7] & 0x3F);
+        prgOffset2 = (registers[6] & 0x3F);
         prgOffset3 = (cartridge.prgSize * 2) - 1;
     }
 }
 
 void Mapper4::setProgramData(uint16_t index, uint8_t value) {
-    bool isOdd = (value & 0x1);
+    bool isOdd = (index & 0x1);
     
     if (index < 0x8000) {
         if (enableRamWrites && enableRam) {
@@ -97,7 +124,7 @@ void Mapper4::setProgramData(uint16_t index, uint8_t value) {
             //Bank Select
             prgMode = (value & 0x40);
             chrMode = (value & 0x80);
-            selectedRegister = (bankSelect & 0x7);
+            selectedRegister = (value & 0x7);
             updateOffsets();
         } else {
             //Bank Data
