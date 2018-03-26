@@ -197,10 +197,10 @@ int main(int argc, char** argv) {
     //nes->loadProgram("../roms/Contra.nes");
     //nes->loadProgram("../roms/Metroid.nes");
     //nes->loadProgram("../roms/IceClimber.nes");
-    nes->loadProgram("../roms/Megaman3.nes");
+    //nes->loadProgram("../roms/Megaman3.nes");
     //nes->loadProgram("../roms/Castlevania.nes");
     //nes->loadProgram("../roms/Zelda.nes");
-    //nes->loadProgram("../roms/Mario.nes");
+    nes->loadProgram("../roms/SuperMario3.nes");
     //nes->loadProgram("../roms/Excitebike.nes");
     //nes->loadProgram("../roms/DonkeyKong.nes");
     //nes->loadProgram("../roms/sprite_ram.nes");

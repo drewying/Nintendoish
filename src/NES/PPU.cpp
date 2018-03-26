@@ -288,7 +288,6 @@ void NES::PPU::step() {
     if (currentCycle == 341) { // Next Scanline
         currentCycle = 0;
         currentScanline++;
-        printf("Current Scanline: %i\n", currentScanline);
         if (currentScanline == 0 && oddFrame && reg.mask.flags.RenderBackground) {
             // Skip 0,0 on odd frames.
             currentCycle++;
