@@ -120,16 +120,26 @@ void NES::PPU::fetchSprites() {
     
     
     for (int i = 0; i < 8; i++) {
-        uint8_t spriteHeight = reg.control.flags.TallSprites ? 16 : 8;
-        uint16_t tileIndex = 0xFF;
-        uint8_t spriteY = 0x0;
+        
+        
+        Sprite *sprite;
         
         if (i < activeSpriteCount) {
-            Sprite *sprite = spr[i];
-            spriteY = currentScanline - sprite->yPosition;
-            spriteY = sprite->attributes.verticalFlip ? spriteHeight - spriteY - 1 : spriteY;
-            tileIndex = sprite->tileIndex;
+            sprite = spr[i];
+        } else {
+            //For the first empty sprite slot, we will read sprite #63's Y-coordinate followed by 3 $FF bytes; for subsequent empty sprite slots, we will read four $FF bytes
+            
+            Sprite defaultSprite = Sprite{0xFF, 0xFF, 0x3, 0x7, 0x1, 0x1, 0x1, 0xFF};
+            if (i == activeSpriteCount) defaultSprite.yPosition = oam[252];
+            sprite = &defaultSprite;
         }
+        
+        uint8_t spriteHeight = reg.control.flags.TallSprites ? 16 : 8;
+        uint16_t tileIndex = sprite->tileIndex;
+        uint8_t spriteY = currentScanline - sprite->yPosition;
+        spriteY = sprite->attributes.verticalFlip ? spriteHeight - spriteY - 1 : spriteY;
+        
+        //if (i >= activeSpriteCount) spriteY = 0x8;
         
         if (spriteHeight == 8) {
             // 8x8 Sprite
@@ -148,7 +158,7 @@ void NES::PPU::fetchSprites() {
             }
         }
         
-        tileIndex += spriteY;
+        tileIndex += (spriteY % 0x8);
         
         sprTiles[i * 2] = console.ppuMemory->get(tileIndex);
         sprTiles[(i * 2) + 1] = console.ppuMemory->get(tileIndex + 8);
@@ -301,7 +311,7 @@ void NES::PPU::step() {
 
     // Prepare Sprites
     if (visibleScanline && currentCycle == 259) evaluateSprites(); //TODO This should be happening at 65 for next scanline
-    if (visibleScanline && currentCycle == 260) fetchSprites();
+    if (renderingEnabled && renderScanline && currentCycle == 260) fetchSprites();
 
     if (renderingEnabled && renderScanline) {
         if (visibleCycle || preRenderCycle) {
