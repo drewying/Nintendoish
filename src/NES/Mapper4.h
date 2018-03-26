@@ -29,9 +29,6 @@ namespace NES {
         uint8_t selectedRegister = 0x0;
         uint8_t registers[8];
         
-        uint8_t prgOffset(uint8_t offset);
-        uint8_t chrOffset(uint8_t offset);
-        
         bool enableRamWrites = true;
         bool enableRam = true;
         bool enableIRQ = true;

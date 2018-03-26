@@ -9,7 +9,7 @@ Mapper4::Mapper4(Cartridge &cartridge) : Mapper(cartridge) {
 }
 
 uint8_t Mapper4::getTileData(uint16_t index) {
-    //tickScanlineCounter(index);
+    tickScanlineCounter(index);
     
     if (index < 0x400) {
         return cartridge.chr[(chrOffset0 * 0x400) + index];
@@ -49,33 +49,6 @@ uint8_t Mapper4::getProgramData(uint16_t index) {
         return cartridge.prg[(prgOffset3 * 0x2000) + (index - 0xE000)];
     }
     return 0x0;
-}
-
-uint8_t Mapper4::chrOffset(uint8_t offset) {
-    int index = offset;
-    if (index >= 0x80) {
-        index -= 0x100;
-    }
-    size_t size = ((cartridge.chrSize * 0x2000) / sizeof cartridge.chr[0]);
-    index %= size / 0x0400;
-    index = offset * 0x0400;
-    if (index < 0) {
-        index += size;
-    }
-    return (uint8_t)index;
-}
-
-uint8_t Mapper4::prgOffset(uint8_t offset) {
-    if (offset >= 0x80) {
-        offset -= 0x100;
-    }
-    size_t size = ((cartridge.prgSize * 0x4000) / sizeof cartridge.prg[0]);
-    offset %= size / 0x2000;
-    offset = offset * 0x2000;
-    //if (offset < 0) {
-    //    offset += len(m.CHR)
-    //}
-    return offset;
 }
 
 void Mapper4::updateOffsets() {

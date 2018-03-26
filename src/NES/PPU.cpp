@@ -274,7 +274,7 @@ void NES::PPU::step() {
     if (currentCycle == 341) { // Next Scanline
         currentCycle = 0;
         currentScanline++;
-        //printf("Current Scanline: %i\n", currentScanline);
+        printf("Current Scanline: %i\n", currentScanline);
         if (currentScanline == 0 && oddFrame && reg.mask.flags.RenderBackground) {
             // Skip 0,0 on odd frames.
             currentCycle++;
@@ -296,8 +296,8 @@ void NES::PPU::step() {
     bool preRenderCycle = (currentCycle >= 321 && currentCycle <= 336);
 
     // Prepare Sprites
-    if (visibleScanline && currentCycle == 257) evaluateSprites(); //TODO This should be happening at 65 for next scanline
-    if (visibleScanline && currentCycle == 258) fetchSprites();
+    if (visibleScanline && currentCycle == 259) evaluateSprites(); //TODO This should be happening at 65 for next scanline
+    if (visibleScanline && currentCycle == 260) fetchSprites();
 
     if (renderingEnabled && renderScanline) {
         if (visibleCycle || preRenderCycle) {
