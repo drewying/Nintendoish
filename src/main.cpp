@@ -21,7 +21,7 @@ static NES::Console *nes;
 bool pause = false;
 bool log = false;
 bool timeSynch = true;
-int debugStartLineNumber = 2000;
+int debugStartLineNumber = 0000;
 int lineNumber = 0x0;
 
 const double cyclesPerSecond = 1789773;

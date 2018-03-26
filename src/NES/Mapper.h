@@ -19,6 +19,8 @@ namespace NES {
 
         virtual uint8_t getProgramData(uint16_t index) { return 0x0;  };
         virtual void  setProgramData(uint16_t index, uint8_t value) {};
+        
+        virtual void step() {};
     };
 };
 

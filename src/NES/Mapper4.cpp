@@ -9,7 +9,7 @@ Mapper4::Mapper4(Cartridge &cartridge) : Mapper(cartridge) {
 }
 
 uint8_t Mapper4::getTileData(uint16_t index) {
-    tickScanlineCounter(index);
+    
     
     if (index < 0x400) {
         return cartridge.chr[(chrOffset0 * 0x400) + index];
@@ -30,6 +30,20 @@ uint8_t Mapper4::getTileData(uint16_t index) {
     }
     
     return 0x0;
+}
+
+void Mapper4::step() {
+    if (cartridge.console.ppu->currentCycle != 280) {
+        return;
+    }
+    if (cartridge.console.ppu->currentScanline > 239 && cartridge.console.ppu->currentScanline < 261) {
+        return;
+    }
+    if (cartridge.console.ppu->reg.mask.flags.RenderSprites == false ||
+        cartridge.console.ppu->reg.mask.flags.RenderBackground == false) {
+        return;
+    }
+    tickScanlineCounter(0x0);
 }
 
 void Mapper4::setTileData(uint16_t index, uint8_t value) {
@@ -134,20 +148,13 @@ void Mapper4::setProgramData(uint16_t index, uint8_t value) {
 }
 
 void Mapper4::tickScanlineCounter(uint16_t index){
-    if (index < 0x1000) {
-        scanlineLatch = false;
-    }
-    
-    if (index >= 0x1000 && scanlineLatch == false) {
-        scanlineLatch = true;
-        if (counter == 0 || reloadIRQ) {
-            reloadIRQ = false;
-            counter = irqReload;
-        } else {
-            counter--;
-            if (counter == 0 && enableIRQ) {
-                cartridge.console.cpu->requestIRQ = true;
-            }
+    if (counter == 0 || reloadIRQ) {
+        reloadIRQ = false;
+        counter = irqReload;
+    } else {
+        counter--;
+        if (counter == 0 && enableIRQ) {
+            cartridge.console.cpu->requestIRQ = true;
         }
     }
 }
