@@ -19,7 +19,7 @@ static Display *display;
 static NES::Console *nes;
 
 bool pause = false;
-bool log = false;
+bool showLog = false;
 bool timeSynch = true;
 int debugStartLineNumber = 2000;
 int lineNumber = 0x0;
@@ -199,13 +199,16 @@ int main(int argc, char** argv) {
     //nes->loadProgram("../roms/IceClimber.nes");
     //nes->loadProgram("../roms/Megaman3.nes");
     //nes->loadProgram("../roms/Castlevania.nes");
-    //nes->loadProgram("../roms/Zelda.nes");
-    nes->loadProgram("../roms/SuperMario3.nes");
+    nes->loadProgram("../roms/Zelda.nes");
+    //nes->loadProgram("../roms/SuperMario3.nes");
     //nes->loadProgram("../roms/Excitebike.nes");
     //nes->loadProgram("../roms/DonkeyKong.nes");
     //nes->loadProgram("../roms/sprite_ram.nes");
 
-    if (log) logLoop();
-    else gameLoop();
+    if (showLog) {
+        logLoop();
+    } else {
+        gameLoop();
+    }
     return 0;
 }
