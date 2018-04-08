@@ -2,8 +2,9 @@
 #include <iostream>
 
 using namespace std;
+using namespace NES;
 
-uint8_t NES::APU::getAPURegister(uint16_t index) {
+uint8_t APU::getAPURegister(uint16_t index) {
     switch (index) {
     case 0x4017:
         return frameCounter;
@@ -14,22 +15,52 @@ uint8_t NES::APU::getAPURegister(uint16_t index) {
     }
 }
 
-void NES::APU::setAPURegister(uint16_t index, uint8_t value) {
-    switch (index) {
-    case 0x4010:
-        if (value & 0x80) {
-            printf("Ruh Roh. DMC IRQ Not enabled");
-        }
-        break;
-    case 0x4017:
-        frameCounter = value;
-        break;
-    default:
-        break;
-    }
+void APU::setAPURegister(uint16_t index, uint8_t value) {
+    if (index >= 0x4000 && index <= 0x4007) processPulse(index, value);
+    if (index >= 0x4008 && index <= 0x400B) processTriangle(index, value);
+    if (index >= 0x400C && index <= 0x400F) processNoise(index, value);
+    if (index >= 0x4010 && index <= 0x4013) processDMC(index, value);
+    if (index == 0x4015) processControl(index, value);
+    if (index == 0x4017) frameCounter = value;
 }
 
-void NES::APU::step() {
+void APU::processPulse(uint16_t index, uint8_t value) {
+    Pulse *pulse = &pulse1;
+    if (index >= 0x4004) {
+        pulse = &pulse2;
+        index -= 0x4;
+    }
+    
+    switch (index) {
+        case 0x4000:
+            pulse->duty = value >> 0x6;
+            pulse->haltLengthCounter = (value >> 0x5) & 0x1;
+            pulse->constantVolume = (value >> 0x4) & 0x1;
+            pulse->divider = (value & 0xF);
+            break;
+            
+        default:
+            break;
+    }
+    
+}
+
+void APU::processTriangle(uint16_t index, uint8_t value) {
+}
+
+void APU::processNoise(uint16_t index, uint8_t value) {
+
+}
+
+void APU::processDMC(uint16_t index, uint8_t value) {
+
+}
+
+void APU::processControl(uint16_t index, uint8_t value) {
+    
+}
+
+void APU::step() {
     totalCycles++;
     currentCycle++;
     bool sequence = frameCounter & 0x80;
