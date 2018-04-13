@@ -35,9 +35,12 @@ namespace NES {
         PPUMemory *ppuMemory;
         Controller *controllerOne;
 
-        unsigned int graphics[256 * 240] = { 0 };
-        unsigned int updateGraphics = false;
+        const static unsigned int AUDIO_BUFFER_SIZE = 29580 * 5; //5 frames worth of audio buffer
+        unsigned int audioBufferLength = 0x0;
 
+        unsigned int displayBuffer[256 * 240] = { 0 };
+        float audioBuffer[AUDIO_BUFFER_SIZE] = { 0 }; //2 seconds of audio
+        
         Console();
         ~Console();
     };

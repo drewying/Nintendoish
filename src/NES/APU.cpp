@@ -36,9 +36,22 @@ void APU::processPulse(uint16_t index, uint8_t value) {
             pulse->duty = value >> 0x6;
             pulse->haltLengthCounter = (value >> 0x5) & 0x1;
             pulse->constantVolume = (value >> 0x4) & 0x1;
-            pulse->divider = (value & 0xF);
+            pulse->volume = (value & 0xF);
             break;
-            
+        case 0x4001:
+            //sweep
+            break;
+        case 0x4002:
+            //timer low 8 bits
+            pulse->timerLow = value;
+            break;
+        case 0x4003:
+            pulse->timerLength = (value & 0x3) << 0x8;
+            pulse->timerLength |= pulse->timerLow;
+            pulse->lengthCounter = value >> 0x3;
+            pulse->sequence = 0x0;
+            //TODO restart envelope
+            break;
         default:
             break;
     }
@@ -60,9 +73,34 @@ void APU::processControl(uint16_t index, uint8_t value) {
     
 }
 
+float APU::sample() {
+    //TODO Lookup instead of linear approximation
+    return 0.00752 * (pulse1.sample() + pulse2.sample());
+}
+
 void APU::step() {
+    stepCycle = !stepCycle;
+    if (stepCycle == true) {
+        stepFrameCounter();
+    }
+
+    console.audioBuffer[console.audioBufferLength] = sample();
+    console.audioBufferLength++;
+    if (console.audioBufferLength >= console.AUDIO_BUFFER_SIZE) {
+        printf("\n Buffer Overflow");
+        console.audioBufferLength = 0;
+    }
+}
+
+void APU::stepFrameCounter() {
+
     totalCycles++;
     currentCycle++;
+
+    pulse1.stepTimer();
+    pulse2.stepTimer();
+
+
     bool sequence = frameCounter & 0x80;
     bool irqEnabled = frameCounter & 0x40;
     
@@ -74,6 +112,8 @@ void APU::step() {
         if (currentCycle == 7457) {
             //Clock Envelopes and Triangle Linear Counter
             //Clock Length Counters and Sweep Units 
+            pulse1.stepLengthCounter();
+            pulse2.stepLengthCounter();
         }
         if (currentCycle == 11186) {
             //Clock Envelopes and Triangle Linear Counter
@@ -82,6 +122,8 @@ void APU::step() {
             //Clock Envelopes and Triangle Linear Counter
             //Clock Length Counters and Sweep Units 
             currentCycle = 0;
+            pulse1.stepLengthCounter();
+            pulse2.stepLengthCounter();
         }
     } else {
         //4-Step Sequence
@@ -91,6 +133,7 @@ void APU::step() {
         if (currentCycle == 7457) {
             //Clock Envelopes and Triangle Linear Counter
             //Clock Length Counters and Sweep Units 
+            pulse1.stepLengthCounter();
         }
         if (currentCycle == 11186) {
             //Clock Envelopes and Triangle Linear Counter
@@ -104,6 +147,8 @@ void APU::step() {
             //Clock Envelopes and Triangle Linear Counter
             //Clock Length Counters and Sweep Units 
             currentCycle = 0;
+            pulse1.stepLengthCounter();
+            pulse2.stepLengthCounter();
         }
     }
 }

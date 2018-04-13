@@ -11,6 +11,7 @@
 #include <iomanip>
 #include "NES/NES.h"
 #include "NES/PPU.h"
+#include "wavefile.h"
 
 using namespace std::chrono;
 using namespace std;
@@ -20,19 +21,22 @@ static NES::Console *nes;
 
 bool pause = false;
 bool showLog = false;
-bool timeSynch = true;
+bool timeSynch = false;
 int debugStartLineNumber = 2000;
 int lineNumber = 0x0;
 
 const double cyclesPerSecond = 1789773;
-const double targetFps = 60.0988;
+const double audioSamplesPerSecond = 1789773;
+const double targetFPS = 60.0988; //NTSC Vertical Scan Rate
 
-void updateDisplay(void) {
+Wave wav = makeWave(audioSamplesPerSecond, 1, 32);
+
+void updateDisplay() {
     
     glClear(GL_COLOR_BUFFER_BIT);
     for (int x = 0; x < 256; x++) {
         for (int y = 0; y < 240; y++) {
-            unsigned int color = nes->graphics[x + (y * 256)];
+            unsigned int color = nes->displayBuffer[x + (y * 256)];
             if (color) {
                 float blue = (float)(color & 0x000000FF);
                 float green = (float)((color & 0x0000FF00) >> 8);
@@ -44,6 +48,19 @@ void updateDisplay(void) {
 
     glEnd();
     glfwSwapBuffers(display->window);
+}
+
+void updateAudio() {
+    for (unsigned int i = 0; i < nes->audioBufferLength; i += (cyclesPerSecond / audioSamplesPerSecond)) {
+        waveAddSample(&wav, &nes->audioBuffer[i]);
+    }
+    nes->audioBufferLength = 0;
+}
+
+void updateNES() {
+    //Update one frame
+    int currentFrame = nes->ppu->totalFrames;
+    while (nes->ppu->totalFrames == currentFrame) nes->emulateCycle();
 }
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -81,13 +98,6 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
         default:
             break;
     }
-}
-
-
-void updateNES() {
-    //Update one frame
-    int currentFrame = nes->ppu->totalFrames;
-    while (nes->ppu->totalFrames == currentFrame) nes->emulateCycle();
 }
 
 void logLoop() {
@@ -141,7 +151,7 @@ void logLoop() {
 
 void gameLoop() {
     
-    double targetFPS = 60.0988; //NTSC Vertical Scan Rate
+    waveSetDuration(&wav, 60);
     double targetFrameLength = 1000.0/targetFPS;
     double startTime = glfwGetTime() * 1000;
     
@@ -166,7 +176,7 @@ void gameLoop() {
                 sleptFrames++;
             }
             updateNES();
-            
+            updateAudio();
             if (!skipFrame || !timeSynch){
                 updateDisplay();
             } else {
@@ -180,6 +190,7 @@ void gameLoop() {
         }
         glfwPollEvents();
     }
+    waveToFile(&wav, "output.wav");
     glfwTerminate();
 }
 
@@ -189,6 +200,9 @@ int main(int argc, char** argv) {
     //glfwSetInputMode(display->window, GLFW_STICKY_KEYS, 1);
     glfwSetKeyCallback(display->window, keyCallback);
     nes = new NES::Console();
+    
+    
+    
     //nes->loadProgram("../roms/1-clocking.nes");
     //nes->loadProgram("../roms/PunchOut.nes");
     //nes->loadProgram("../roms/test/scanline.nes");

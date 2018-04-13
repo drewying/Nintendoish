@@ -18,6 +18,7 @@ uint8_t NES::Memory::get(uint16_t index) {
         return console.ppu->getPPURegister(index);
     }
 
+
     if (index == 0x4014) {
         //OAM DMA Access
         return console.ppu->getPPURegister(index);
@@ -52,10 +53,14 @@ void NES::Memory::set(uint16_t index, uint8_t value) {
     if (index < 0x2000) {
         //RAM Access
         ram[index % 0x800] = value;
-    } else if (index < 0x4000) {
+    }
+    else if (index < 0x4000) {
         //PPU Access. Mirrors of $2000-2007 (repeats every 8 bytes)
         index = 0x2000 + (index % 0x8);
         console.ppu->setPPURegister(index, value);
+    } else if (index < 0x4014) {
+        //APU Access
+        console.apu->setAPURegister(index, value);
     } else if (index == 0x4014) {
         //OAM DMA Access
         console.ppu->setPPURegister(index, value);
@@ -63,10 +68,11 @@ void NES::Memory::set(uint16_t index, uint8_t value) {
         //APU Access
         console.apu->setAPURegister(index, value);
     } else if (index == 0x4016) {
-        //Controller 1
+        //Controller 1/2 Start Poll
         console.controllerOne->startPoll();
     } else if (index == 0x4017) {
-        //Controller 2
+        //APU Access
+        console.apu->setAPURegister(index, value);
     } else if (index >= 0x6000) {
         console.cartridge->setProgramData(index, value);
     }

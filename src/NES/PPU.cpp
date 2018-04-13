@@ -238,7 +238,7 @@ void NES::PPU::renderPixel() {
     if (spriteColor != 0x0 && (backgroundPriority == false || backgoundColor == 0x0)) finalColor = colorTable[console.ppuMemory->get(0x3F00 | spriteColor)];
 
     unsigned int combinedColor = finalColor[0] << 16 | finalColor[1] << 8 | finalColor[2];
-    console.graphics[x + (y * 256)] = combinedColor;
+    console.displayBuffer[x + (y * 256)] = combinedColor;
 } 
 
 void NES::PPU::renderPatternTable() {
@@ -273,7 +273,7 @@ void NES::PPU::renderTile(int x, int y, int tileIndex) {
             if (colorIndex == 0) color = backgroundColor;
 
             unsigned int combinedColor = color[0] << 16 | color[1] << 8 | color[2];
-            console.graphics[x + j + ((y + i) * 256)] = combinedColor;
+            console.displayBuffer[x + j + ((y + i) * 256)] = combinedColor;
             tileSliceA = tileSliceA >> 1;
             tileSliceB = tileSliceB >> 1;
         }
@@ -297,7 +297,6 @@ void NES::PPU::step() {
             totalFrames++;
             currentScanline = -1;
             oddFrame ^= 1;
-            console.updateGraphics = true;
         }
     }
 
