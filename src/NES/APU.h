@@ -9,7 +9,7 @@ namespace NES {
     public:
         struct Channel {
             uint16_t timer;
-            uint16_t timerLength;
+            uint16_t period;
             uint16_t lengthCounter;
             uint8_t volume;
             uint8_t divider;
@@ -38,7 +38,7 @@ namespace NES {
                 if (timer < 8 || lengthCounter == 0 || dutyTable[duty][sequence] == 0) {
                     return 0;
                 }
-                return dutyTable[duty][sequence] * volume;
+                return volume;
             }
 
             void stepEnvelope() {
@@ -51,11 +51,9 @@ namespace NES {
 
             void stepTimer() {
                 if (timer == 0) {
+                    timer = period;
                     sequence++;
-                    if (sequence == 8) {
-                        sequence = 0;
-                    }
-                    timer = timerLength;
+                    sequence %= 8;
                 } else {
                     timer--;
                 }

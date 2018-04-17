@@ -35,6 +35,8 @@ namespace NES {
         PPUMemory *ppuMemory;
         Controller *controllerOne;
 
+        const static unsigned int CPU_CLOCK_RATE = 1789773;
+        const static unsigned int AUDIO_SAMPLE_RATE = 44100;
         const static unsigned int AUDIO_BUFFER_SIZE = 29580 * 5; //5 frames worth of audio buffer
         unsigned int audioBufferLength = 0x0;
 

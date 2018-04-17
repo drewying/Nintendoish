@@ -1,6 +1,3 @@
-#include "glfw3.h"
-#include "Display.h"
-#include "CHIP8/Chip8.h"
 #include <iostream>
 #include <stdio.h>
 #include <chrono>
@@ -9,9 +6,16 @@
 #include <fstream>
 #include <sstream>
 #include <iomanip>
+#include <algorithm> 
+
+#include "wavefile.h"
+#include "glfw3.h"
+#include "portaudio.h"
+#include "Display.h"
+#include "CHIP8/Chip8.h"
 #include "NES/NES.h"
 #include "NES/PPU.h"
-#include "wavefile.h"
+
 
 using namespace std::chrono;
 using namespace std;
@@ -25,11 +29,20 @@ bool timeSynch = false;
 int debugStartLineNumber = 2000;
 int lineNumber = 0x0;
 
-const double cyclesPerSecond = 1789773;
-const double audioSamplesPerSecond = 1789773;
+const double audioSamplesPerSecond = 44100;
 const double targetFPS = 60.0988; //NTSC Vertical Scan Rate
 
-Wave wav = makeWave(audioSamplesPerSecond, 1, 32);
+//Wave wav = makeWave(audioSamplesPerSecond, 1, 8);
+PaStream *audioStream;
+PaError audioError;
+
+
+typedef int PaStreamCallback(const void *input,
+    void *output,
+    unsigned long frameCount,
+    const PaStreamCallbackTimeInfo* timeInfo,
+    PaStreamCallbackFlags statusFlags,
+    void *userData);
 
 void updateDisplay() {
     
@@ -50,17 +63,44 @@ void updateDisplay() {
     glfwSwapBuffers(display->window);
 }
 
+
 void updateAudio() {
-    for (unsigned int i = 0; i < nes->audioBufferLength; i += (cyclesPerSecond / audioSamplesPerSecond)) {
+    /*for (unsigned int i = 0; i < nes->audioBufferLength; i++) {
         waveAddSample(&wav, &nes->audioBuffer[i]);
     }
-    nes->audioBufferLength = 0;
+    nes->audioBufferLength = 0;*/
 }
 
 void updateNES() {
     //Update one frame
     int currentFrame = nes->ppu->totalFrames;
-    while (nes->ppu->totalFrames == currentFrame) nes->emulateCycle();
+    while (nes->ppu->totalFrames == currentFrame) {
+        nes->emulateCycle();
+        updateAudio();
+    }
+}
+
+int audioCallback(const void *inputBuffer, void *outputBuffer,
+    unsigned long framesPerBuffer,
+    const PaStreamCallbackTimeInfo* timeInfo,
+    PaStreamCallbackFlags statusFlags,
+    void *audioBuffer) {
+    if (nes->audioBufferLength == 0) {
+            return 0;
+        }
+        static int audioBufferIndex = 0;
+        float *audio = (float*)audioBuffer;
+
+        memcpy(outputBuffer, audio + audioBufferIndex, min(min((unsigned int)framesPerBuffer, nes->audioBufferLength), nes->AUDIO_BUFFER_SIZE - audioBufferIndex) * sizeof(float));
+
+        audioBufferIndex += framesPerBuffer;
+
+        if (audioBufferIndex >= nes->audioBufferLength) {
+            audioBufferIndex = 0;
+            nes->audioBufferLength = 0;
+        }
+
+        return 0;
 }
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -150,8 +190,8 @@ void logLoop() {
 }
 
 void gameLoop() {
-    
-    waveSetDuration(&wav, 60);
+    Pa_StartStream(audioStream);
+    //waveSetDuration(&wav, 60);
     double targetFrameLength = 1000.0/targetFPS;
     double startTime = glfwGetTime() * 1000;
     
@@ -176,7 +216,7 @@ void gameLoop() {
                 sleptFrames++;
             }
             updateNES();
-            updateAudio();
+            //updateAudio();
             if (!skipFrame || !timeSynch){
                 updateDisplay();
             } else {
@@ -190,17 +230,37 @@ void gameLoop() {
         }
         glfwPollEvents();
     }
-    waveToFile(&wav, "output.wav");
+    Pa_StopStream(audioStream);
+    //waveToFile(&wav, "output.wav");
     glfwTerminate();
 }
 
 int main(int argc, char** argv) {
+    audioError = Pa_Initialize();
+    if (audioError != paNoError) {
+        printf("Error initalizing Audio\n");
+        exit(0);
+    }
+
     display = new Display(4, 256, 240);
     display->initialize(argc, argv);
-    //glfwSetInputMode(display->window, GLFW_STICKY_KEYS, 1);
     glfwSetKeyCallback(display->window, keyCallback);
     nes = new NES::Console();
     
+    audioError = Pa_OpenDefaultStream(&audioStream,
+        0,          /* no input channels */
+        1,          /* mono output */
+        paFloat32,  /* 32 bit floating point output */
+        44100,
+        paFramesPerBufferUnspecified,        /* frames per buffer, i.e. the number
+                     of sample frames that PortAudio will
+                     request from the callback. Many apps
+                     may want to use
+                     paFramesPerBufferUnspecified, which
+                     tells PortAudio to pick the best,
+                     possibly changing, buffer size.*/
+        audioCallback, /* this is your callback function */
+        &nes->audioBuffer);
     
     
     //nes->loadProgram("../roms/1-clocking.nes");
@@ -215,6 +275,7 @@ int main(int argc, char** argv) {
     //nes->loadProgram("../roms/Castlevania.nes");
     nes->loadProgram("../roms/Zelda.nes");
     //nes->loadProgram("../roms/SuperMario3.nes");
+    //nes->loadProgram("../roms/Mario.nes");
     //nes->loadProgram("../roms/Excitebike.nes");
     //nes->loadProgram("../roms/DonkeyKong.nes");
     //nes->loadProgram("../roms/sprite_ram.nes");

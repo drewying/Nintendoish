@@ -46,8 +46,8 @@ void APU::processPulse(uint16_t index, uint8_t value) {
             pulse->timerLow = value;
             break;
         case 0x4003:
-            pulse->timerLength = (value & 0x3) << 0x8;
-            pulse->timerLength |= pulse->timerLow;
+            pulse->period = (value & 0x3) << 0x8;
+            pulse->period |= pulse->timerLow;
             pulse->lengthCounter = value >> 0x3;
             pulse->sequence = 0x0;
             //TODO restart envelope
@@ -79,23 +79,25 @@ float APU::sample() {
 }
 
 void APU::step() {
+    totalCycles++;
+    currentCycle++;
+
     stepCycle = !stepCycle;
     if (stepCycle == true) {
         stepFrameCounter();
     }
 
-    console.audioBuffer[console.audioBufferLength] = sample();
-    console.audioBufferLength++;
-    if (console.audioBufferLength >= console.AUDIO_BUFFER_SIZE) {
-        printf("\n Buffer Overflow");
-        console.audioBufferLength = 0;
+    static bool r = 0;
+    if (currentCycle % ((console.CPU_CLOCK_RATE/console.AUDIO_SAMPLE_RATE) + r) == 0) {
+        if (console.audioBufferLength < console.AUDIO_BUFFER_SIZE) {
+            console.audioBuffer[console.audioBufferLength++] = sample();
+        } else {
+            printf("\n Buffer Overflow");
+        }
     }
 }
 
 void APU::stepFrameCounter() {
-
-    totalCycles++;
-    currentCycle++;
 
     pulse1.stepTimer();
     pulse2.stepTimer();
