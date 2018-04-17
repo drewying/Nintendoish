@@ -90,14 +90,18 @@ int audioCallback(const void *inputBuffer, void *outputBuffer,
         }
         static int audioBufferIndex = 0;
         float *audio = (float*)audioBuffer;
+        float *out = (float*)outputBuffer;
 
-        memcpy(outputBuffer, audio + audioBufferIndex, min(min((unsigned int)framesPerBuffer, nes->audioBufferLength), nes->AUDIO_BUFFER_SIZE - audioBufferIndex) * sizeof(float));
+        int numberOfSamples = min((unsigned int)framesPerBuffer, (nes->audioBufferLength - audioBufferIndex));
 
-        audioBufferIndex += framesPerBuffer;
-
-        if (audioBufferIndex >= nes->audioBufferLength) {
+        memcpy(outputBuffer, audio + audioBufferIndex, numberOfSamples * sizeof(float));
+        
+        if (audioBufferIndex + framesPerBuffer >= nes->audioBufferLength) {
+            //We've processed all known samples. Reset the buffer for the emulator.
             audioBufferIndex = 0;
             nes->audioBufferLength = 0;
+        } else {
+            audioBufferIndex += numberOfSamples;
         }
 
         return 0;
