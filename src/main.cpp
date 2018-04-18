@@ -76,7 +76,6 @@ void updateNES() {
     int currentFrame = nes->ppu->totalFrames;
     while (nes->ppu->totalFrames == currentFrame) {
         nes->emulateCycle();
-        updateAudio();
     }
 }
 
@@ -92,16 +91,16 @@ int audioCallback(const void *inputBuffer, void *outputBuffer,
         float *audio = (float*)audioBuffer;
         float *out = (float*)outputBuffer;
 
-        int numberOfSamples = min((unsigned int)framesPerBuffer, (nes->audioBufferLength - audioBufferIndex));
+        unsigned long unprocessedFrames = nes->audioBufferLength - audioBufferIndex;
 
-        memcpy(outputBuffer, audio + audioBufferIndex, numberOfSamples * sizeof(float));
-        
-        if (audioBufferIndex + framesPerBuffer >= nes->audioBufferLength) {
-            //We've processed all known samples. Reset the buffer for the emulator.
+        if (unprocessedFrames < framesPerBuffer) {
+            //We've reached the end of the NES's audio buffer.
+            memcpy(outputBuffer, audio + audioBufferIndex, unprocessedFrames * sizeof(float));
             audioBufferIndex = 0;
             nes->audioBufferLength = 0;
         } else {
-            audioBufferIndex += numberOfSamples;
+            memcpy(outputBuffer, audio + audioBufferIndex, framesPerBuffer * sizeof(float));
+            audioBufferIndex += framesPerBuffer;
         }
 
         return 0;
@@ -256,7 +255,7 @@ int main(int argc, char** argv) {
         1,          /* mono output */
         paFloat32,  /* 32 bit floating point output */
         44100,
-        paFramesPerBufferUnspecified,        /* frames per buffer, i.e. the number
+        736,        /* frames per buffer, i.e. the number
                      of sample frames that PortAudio will
                      request from the callback. Many apps
                      may want to use
