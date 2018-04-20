@@ -7,7 +7,7 @@ using namespace NES;
 uint8_t APU::getAPURegister(uint16_t index) {
     switch (index) {
     case 0x4015:
-
+        return pulse2.lengthCounter > 0 | pulse1.lengthCounter > 0;
         break;
     case 0x4017:
         return frameCounter;
@@ -41,7 +41,9 @@ void APU::processDMC(uint16_t index, uint8_t value) {
 
 void APU::processControl(uint16_t index, uint8_t value) {
     pulse1.enabled = ((value & 0x1) == 0x1);
+    pulse1.lengthCounter = 0x0;
     pulse2.enabled = ((value & 0x2) == 0x2);
+    pulse2.lengthCounter = 0x0;
 }
 
 float APU::sample() {
@@ -91,9 +93,12 @@ void APU::stepFrameCounter() {
             //Clock Envelopes and Triangle Linear Counter
             //Clock Length Counters and Sweep Units 
             pulse1.stepLengthCounter();
-            pulse2.stepLengthCounter();
             pulse1.stepEnvelope();
+            pulse1.stepSweep();
+
+            pulse2.stepLengthCounter();
             pulse2.stepEnvelope();
+            pulse2.stepSweep();
         }
         if (currentCycle == 11186) {
             //Clock Envelopes and Triangle Linear Counter
@@ -103,9 +108,12 @@ void APU::stepFrameCounter() {
             //Clock Length Counters and Sweep Units 
             currentCycle = 0;
             pulse1.stepLengthCounter();
-            pulse2.stepLengthCounter();
             pulse1.stepEnvelope();
+            pulse1.stepSweep();
+
+            pulse2.stepLengthCounter();
             pulse2.stepEnvelope();
+            pulse2.stepSweep();
         }
     } else {
         //4-Step Sequence
@@ -118,9 +126,12 @@ void APU::stepFrameCounter() {
             //Clock Envelopes and Triangle Linear Counter
             //Clock Length Counters and Sweep Units 
             pulse1.stepLengthCounter();
-            pulse2.stepLengthCounter();
             pulse1.stepEnvelope();
+            pulse1.stepSweep();
+
+            pulse2.stepLengthCounter();
             pulse2.stepEnvelope();
+            pulse2.stepSweep();
         }
         if (currentCycle == 11186) {
             //Clock Envelopes and Triangle Linear Counter
@@ -137,9 +148,12 @@ void APU::stepFrameCounter() {
             //Clock Length Counters and Sweep Units 
             currentCycle = 0;
             pulse1.stepLengthCounter();
-            pulse2.stepLengthCounter();
             pulse1.stepEnvelope();
+            pulse1.stepSweep();
+
+            pulse2.stepLengthCounter();
             pulse2.stepEnvelope();
+            pulse2.stepSweep();
         }
     }
 }

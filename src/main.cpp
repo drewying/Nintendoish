@@ -25,7 +25,7 @@ static NES::Console *nes;
 
 bool pause = false;
 bool showLog = false;
-bool timeSynch = false;
+bool timeSync = false;
 int debugStartLineNumber = 2000;
 int lineNumber = 0x0;
 
@@ -79,15 +79,16 @@ void updateNES() {
     }
 }
 
+int audioBufferIndex = 0;
+
 int audioCallback(const void *inputBuffer, void *outputBuffer,
     unsigned long framesPerBuffer,
     const PaStreamCallbackTimeInfo* timeInfo,
     PaStreamCallbackFlags statusFlags,
     void *audioBuffer) {
-    if (nes->audioBufferLength == 0) {
+    if (nes->audioBufferLength == 0 || pause == true) {
             return 0;
         }
-        static int audioBufferIndex = 0;
         float *audio = (float*)audioBuffer;
         float *out = (float*)outputBuffer;
 
@@ -203,28 +204,29 @@ void gameLoop() {
     int sleptFrames = 0;
     
     while (!glfwWindowShouldClose(display->window)) {
-        bool skipFrame = false;
+        bool dropFrame = false;
         bool sleepFrame = false;
         
         long realTime = (glfwGetTime() * 1000) - startTime; //How much time we've taken
         long gameTime = (frameCount * targetFrameLength);   //How much time in the game
         
         if (gameTime - realTime > targetFrameLength) sleepFrame = true; //We are behind. Sleep a frame.
-        if (realTime - gameTime > targetFrameLength) skipFrame = true; //We are ahead. Skip rendeirng.
+        if (realTime - gameTime > targetFrameLength) dropFrame = true; //We are ahead. Skip rendeirng.
         
         if (!pause) {
-            if (sleepFrame && timeSynch) {
-                printf("Sleeping\n");
+            if (sleepFrame == true && timeSync == true) {
+                //printf("Sleeping\n");
                 std::this_thread::sleep_for(std::chrono::milliseconds(realTime - gameTime));
                 sleptFrames++;
             }
             updateNES();
             //updateAudio();
-            if (!skipFrame || !timeSynch){
-                updateDisplay();
-            } else {
-                printf("Skipping frame\n");
+            if (dropFrame == true && timeSync == true){
+                //printf("Skipping frame\n");
                 droppedFrames++;
+                audioBufferIndex += 736;
+            } else {
+                updateDisplay();
             }
             frameCount++;
         } else {

@@ -12,10 +12,14 @@ namespace NES {
         struct Divider {
             uint16_t period;
             uint16_t counter;
+            bool enabled = true;
             void reload() {
                 counter = period;
             }
             void tick() {
+                if (enabled == false) {
+                    return;
+                }
                 if (counter == 0) {
                     reload();
                 } else {
@@ -49,10 +53,17 @@ namespace NES {
             
             Divider timer;
 
-            //Envelope Generator
-            bool startEnvelope;
-            bool loopEnvelope;
-            Divider decayDivider;
+            //Sweep
+            Divider sweepDivider;
+            bool sweepEnable = false;
+            bool sweepReload = false;
+            bool sweepNegate = false;
+            uint8_t sweepShift = 0x0;
+
+            //Envelope
+            bool envelopeReload;
+            bool envelopeLoop;
+            Divider envelopeDecay;
             Divider envelopeDivider;
             
 
@@ -65,16 +76,21 @@ namespace NES {
                 case 0x4000:
                     duty = value >> 0x6;
                     haltLengthCounter = (value >> 0x5) & 0x1;
-                    loopEnvelope = haltLengthCounter;
+                    envelopeLoop = haltLengthCounter;
                     useConstantVolume = (value >> 0x4) & 0x1;
                     volume = (value & 0xF);
                     envelopeDivider.period = volume;
                     break;
                 case 0x4001:
-                    //sweep
+                    //Sweep
+                    sweepEnable = ((value & 0x80) == 0x80);
+                    sweepDivider.period = (value & 0x70) >> 4;
+                    sweepNegate = ((value & 0x8) == 0x8);
+                    sweepReload = true;
+                    sweepShift = value & 0x7;
                     break;
                 case 0x4002:
-                    //timer low 8 bits
+                    //Timer low 8 bits
                     periodLowBits = value;
                     break;
                 case 0x4003:
@@ -82,8 +98,7 @@ namespace NES {
                     timer.period |= periodLowBits;
                     lengthCounter = value >> 0x3;
                     sequencerIndex = 0x0;
-                    startEnvelope = true;
-                    //TODO restart envelope
+                    envelopeReload = true;
                     break;
                 default:
                     break;
@@ -91,45 +106,58 @@ namespace NES {
             };
 
             uint8_t sample() {
-                if (timer.counter < 8 || lengthCounter == 0 || dutyTable[duty][sequencerIndex] == 0 || enabled != true) {
+                if (timer.period < 8 || lengthCounter == 0 || timer.period > 0x7FF || dutyTable[duty][sequencerIndex] == 0 || enabled == false) {
                     return 0;
                 } else if (useConstantVolume == true) {
                     return volume;
                 } else {
-                    return decayDivider.counter;
+                    return envelopeDecay.counter;
                 }
             }
 
             void stepEnvelope() {
-                if (startEnvelope == false) {
-                    envelopeDivider.tick();
+                if (envelopeReload == true) {
+                    envelopeReload = false;
+                    envelopeDecay.period = 15;
+                    envelopeDecay.reload();
+                    envelopeDivider.reload();
+                } else {
                     if (envelopeDivider.counter == 0) {
                         envelopeDivider.period = volume;
-                        decayDivider.tick();
-                        if (decayDivider.counter == 0) {
-                            if (loopEnvelope == false) {
-                                decayDivider.period = 0;
+                        if (envelopeDecay.counter == 0) {
+                            if (envelopeLoop == false) {
+                                envelopeDecay.enabled = false;
                             }
                         }
+                        envelopeDecay.tick();
                     }
-                } else {
-                    startEnvelope = false;
-                    decayDivider.period = 15;
-                    decayDivider.reload();
-                    envelopeDivider.reload();
+                    envelopeDivider.tick();
                 }
             }
 
             void stepSweep() {
-
+                if (sweepReload == true) {
+                    sweepReload = false;
+                    sweepDivider.reload();
+                } else {
+                    if (sweepDivider.counter == 0 && sweepEnable == true) {
+                        uint16_t change = timer.period >> sweepShift;
+                        if (sweepNegate == true) {
+                            timer.period -= change;
+                        } else {
+                            timer.period += change;
+                        }
+                    }
+                    sweepDivider.tick();
+                }
             }
 
             void stepTimer() {
-                timer.tick();
                 if (timer.counter == 0) {
                     sequencerIndex++;
                     sequencerIndex %= 8;
                 }
+                timer.tick();
             }
 
             void stepLengthCounter() {
