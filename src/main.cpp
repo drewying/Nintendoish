@@ -25,7 +25,7 @@ static NES::Console *nes;
 
 bool pause = false;
 bool showLog = false;
-bool timeSync = false;
+bool timeSync = true;
 int debugStartLineNumber = 2000;
 int lineNumber = 0x0;
 
@@ -86,25 +86,35 @@ int audioCallback(const void *inputBuffer, void *outputBuffer,
     const PaStreamCallbackTimeInfo* timeInfo,
     PaStreamCallbackFlags statusFlags,
     void *audioBuffer) {
-    if (nes->audioBufferLength == 0 || pause == true) {
-            return 0;
-        }
-        float *audio = (float*)audioBuffer;
-        float *out = (float*)outputBuffer;
-
-        unsigned long unprocessedFrames = nes->audioBufferLength - audioBufferIndex;
-
-        if (unprocessedFrames < framesPerBuffer) {
-            //We've reached the end of the NES's audio buffer.
-            memcpy(outputBuffer, audio + audioBufferIndex, unprocessedFrames * sizeof(float));
-            audioBufferIndex = 0;
-            nes->audioBufferLength = 0;
-        } else {
-            memcpy(outputBuffer, audio + audioBufferIndex, framesPerBuffer * sizeof(float));
-            audioBufferIndex += framesPerBuffer;
-        }
-
+    if (audioBufferIndex > nes->AUDIO_BUFFER_SIZE) {
+        audioBufferIndex = 0;
+        nes->audioBufferLength = 0;
+    }
+    if (pause == true) {
         return 0;
+    }
+    if (nes->audioBufferLength == 0) {
+        return 0;
+    }
+    if (nes->audioBufferLength < audioBufferIndex) {
+        return 0;
+    }
+    float *audio = (float*)audioBuffer;
+    float *out = (float*)outputBuffer;
+
+    unsigned long unprocessedFrames = nes->audioBufferLength - audioBufferIndex;
+
+    if (unprocessedFrames < framesPerBuffer) {
+        //We've reached the end of the NES's audio buffer.
+        memcpy(outputBuffer, audio + audioBufferIndex, unprocessedFrames * sizeof(float));
+        audioBufferIndex = 0;
+        nes->audioBufferLength = 0;
+    } else {
+        memcpy(outputBuffer, audio + audioBufferIndex, framesPerBuffer * sizeof(float));
+        audioBufferIndex += framesPerBuffer;
+    }
+
+    return 0;
 }
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -207,8 +217,8 @@ void gameLoop() {
         bool dropFrame = false;
         bool sleepFrame = false;
         
-        long realTime = (glfwGetTime() * 1000) - startTime; //How much time we've taken
-        long gameTime = (frameCount * targetFrameLength);   //How much time in the game
+        long realTime = (glfwGetTime() * 1000) - startTime; //How much time we've taken in the real world
+        long gameTime = (frameCount * targetFrameLength);   //How much time in the game has passed
         
         if (gameTime - realTime > targetFrameLength) sleepFrame = true; //We are behind. Sleep a frame.
         if (realTime - gameTime > targetFrameLength) dropFrame = true; //We are ahead. Skip rendeirng.
@@ -224,7 +234,7 @@ void gameLoop() {
             if (dropFrame == true && timeSync == true){
                 //printf("Skipping frame\n");
                 droppedFrames++;
-                audioBufferIndex += 736;
+                audioBufferIndex += 735;
             } else {
                 updateDisplay();
             }
@@ -257,7 +267,7 @@ int main(int argc, char** argv) {
         1,          /* mono output */
         paFloat32,  /* 32 bit floating point output */
         44100,
-        736,        /* frames per buffer, i.e. the number
+        735,        /* frames per buffer, i.e. the number
                      of sample frames that PortAudio will
                      request from the callback. Many apps
                      may want to use

@@ -37,7 +37,7 @@ namespace NES {
 
         const static unsigned int CPU_CLOCK_RATE = 1789773;
         const static unsigned int AUDIO_SAMPLE_RATE = 44100;
-        const static unsigned int AUDIO_BUFFER_SIZE = 441000; //60 frames worth of audio buffer
+        const static unsigned int AUDIO_BUFFER_SIZE = 44100; //1 second worth of audio buffer
         unsigned int audioBufferLength = 0x0;
         
         unsigned int displayBuffer[256 * 240] = { 0 };
