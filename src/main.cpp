@@ -79,40 +79,39 @@ void updateNES() {
     }
 }
 
-int audioBufferIndex = 0;
+int playedSamples = 0;
 
 int audioCallback(const void *inputBuffer, void *outputBuffer,
     unsigned long framesPerBuffer,
     const PaStreamCallbackTimeInfo* timeInfo,
     PaStreamCallbackFlags statusFlags,
     void *audioBuffer) {
-    if (audioBufferIndex > nes->AUDIO_BUFFER_SIZE) {
-        audioBufferIndex = 0;
-        nes->audioBufferLength = 0;
-    }
     if (pause == true) {
         return 0;
     }
     if (nes->audioBufferLength == 0) {
         return 0;
     }
-    if (nes->audioBufferLength < audioBufferIndex) {
+    if (nes->audioBufferLength < playedSamples) {
         return 0;
     }
+    
+    int currentIndex = playedSamples % nes->AUDIO_BUFFER_SIZE;
     float *audio = (float*)audioBuffer;
     float *out = (float*)outputBuffer;
-
-    unsigned long unprocessedFrames = nes->audioBufferLength - audioBufferIndex;
-
-    if (unprocessedFrames < framesPerBuffer) {
-        //We've reached the end of the NES's audio buffer.
-        memcpy(outputBuffer, audio + audioBufferIndex, unprocessedFrames * sizeof(float));
-        audioBufferIndex = 0;
-        nes->audioBufferLength = 0;
-    } else {
-        memcpy(outputBuffer, audio + audioBufferIndex, framesPerBuffer * sizeof(float));
-        audioBufferIndex += framesPerBuffer;
+    
+    unsigned long unplayedSamples = min((unsigned int)framesPerBuffer, nes->audioBufferLength - playedSamples);
+    if (unplayedSamples < framesPerBuffer) {
+        printf("Buffer underrun\n");
     }
+    if (currentIndex + unplayedSamples >= nes->AUDIO_BUFFER_SIZE) {
+        memcpy(outputBuffer, audio + currentIndex, (nes->AUDIO_BUFFER_SIZE - currentIndex) * sizeof(float));
+        memcpy(outputBuffer, audio, (unplayedSamples - (nes->AUDIO_BUFFER_SIZE - currentIndex)) * sizeof(float));
+    } else {
+        memcpy(outputBuffer, audio + currentIndex, unplayedSamples * sizeof(float));
+    }
+    
+    playedSamples += unplayedSamples;
 
     return 0;
 }
@@ -232,9 +231,9 @@ void gameLoop() {
             updateNES();
             //updateAudio();
             if (dropFrame == true && timeSync == true){
-                //printf("Skipping frame\n");
+                printf("Skipping frame\n");
                 droppedFrames++;
-                audioBufferIndex += 735;
+                playedSamples += 735;
             } else {
                 updateDisplay();
             }
@@ -267,7 +266,7 @@ int main(int argc, char** argv) {
         1,          /* mono output */
         paFloat32,  /* 32 bit floating point output */
         44100,
-        735,        /* frames per buffer, i.e. the number
+        paFramesPerBufferUnspecified,        /* frames per buffer, i.e. the number
                      of sample frames that PortAudio will
                      request from the callback. Many apps
                      may want to use

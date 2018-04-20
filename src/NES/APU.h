@@ -29,7 +29,15 @@ namespace NES {
         };
 
         struct Channel {
+            uint8_t lengthCounterTable[0x20] = {
+                 10, 254, 20,  2, 40,  4, 80,  6,
+                160,   8, 60, 10, 14, 12, 26, 14,
+                 12,  16, 24, 18, 48, 20, 96, 22,
+                192,  24, 72, 26, 16, 28, 32, 30
+            };
+
             bool enabled = false;
+            bool lengthCounterEnabled = false;
             uint16_t lengthCounter;
             uint8_t duty;
             virtual uint8_t sample() { return 0x0; };
@@ -63,13 +71,17 @@ namespace NES {
             //Envelope
             bool envelopeReload;
             bool envelopeLoop;
-            Divider envelopeDecay;
+            Divider envelopeVolume;
             Divider envelopeDivider;
             
 
             uint8_t volume;
             uint8_t sequencerIndex = 0x0;
             uint8_t periodLowBits = 0x0;
+
+            Pulse() {
+                envelopeVolume.period = 15;
+            }
             
             void writeRegister(uint16_t index, uint8_t value) {
                 switch (index) {
@@ -96,7 +108,7 @@ namespace NES {
                 case 0x4003:
                     timer.period = (value & 0x3) << 0x8;
                     timer.period |= periodLowBits;
-                    lengthCounter = value >> 0x3;
+                    lengthCounter = lengthCounterTable[value >> 0x3];
                     sequencerIndex = 0x0;
                     envelopeReload = true;
                     break;
@@ -111,25 +123,25 @@ namespace NES {
                 } else if (useConstantVolume == true) {
                     return volume;
                 } else {
-                    return envelopeDecay.counter;
+                    return envelopeVolume.counter;
                 }
             }
 
             void stepEnvelope() {
                 if (envelopeReload == true) {
                     envelopeReload = false;
-                    envelopeDecay.period = 15;
-                    envelopeDecay.reload();
+                    envelopeVolume.enabled = true;
+                    envelopeVolume.reload();
                     envelopeDivider.reload();
                 } else {
                     if (envelopeDivider.counter == 0) {
                         envelopeDivider.period = volume;
-                        if (envelopeDecay.counter == 0) {
+                        if (envelopeVolume.counter == 0) {
                             if (envelopeLoop == false) {
-                                envelopeDecay.enabled = false;
-                            }
+                                envelopeVolume.enabled = false;
+                            } 
                         }
-                        envelopeDecay.tick();
+                        envelopeVolume.tick();
                     }
                     envelopeDivider.tick();
                 }

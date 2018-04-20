@@ -42,7 +42,7 @@ void APU::processDMC(uint16_t index, uint8_t value) {
 void APU::processControl(uint16_t index, uint8_t value) {
     pulse1.enabled = ((value & 0x1) == 0x1);
     pulse1.lengthCounter = 0x0;
-    pulse2.enabled = ((value & 0x2) == 0x2);
+    //pulse2.enabled = ((value & 0x2) == 0x2);
     pulse2.lengthCounter = 0x0;
 }
 
@@ -53,31 +53,27 @@ float APU::sample() {
 
 void APU::step() {
     totalCycles++;
-    currentCycle++;
 
-    stepCycle = !stepCycle;
-    if (stepCycle == true) {
+    if (totalCycles % 2 == 0) {
         stepFrameCounter();
     }
 
     static bool r = 0;
     static int nextClock = (console.CPU_CLOCK_RATE / console.AUDIO_SAMPLE_RATE);
-    if (currentCycle == nextClock) {
+    if (totalCycles == nextClock) {
         r = !r;
         nextClock += (console.CPU_CLOCK_RATE / console.AUDIO_SAMPLE_RATE) + r;
-        if (console.audioBufferLength < console.AUDIO_BUFFER_SIZE) {
-            console.audioBuffer[console.audioBufferLength++] = sample();
-        } else {
-            printf("\n Buffer Overflow");
-        }
+        console.audioBuffer[console.audioBufferLength % console.AUDIO_BUFFER_SIZE] = sample();
+        console.audioBufferLength++;
     } 
 }
 
 void APU::stepFrameCounter() {
+    
+    currentCycle++;
 
     pulse1.stepTimer();
     pulse2.stepTimer();
-
 
     bool sequence = frameCounter & 0x80;
     bool irqEnabled = frameCounter & 0x40;
