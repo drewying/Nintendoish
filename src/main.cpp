@@ -25,7 +25,7 @@ static NES::Console *nes;
 
 bool pause = false;
 bool showLog = false;
-bool timeSync = true;
+bool timeSync = false;
 int debugStartLineNumber = 2000;
 int lineNumber = 0x0;
 

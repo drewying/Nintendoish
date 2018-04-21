@@ -42,7 +42,7 @@ void APU::processDMC(uint16_t index, uint8_t value) {
 void APU::processControl(uint16_t index, uint8_t value) {
     pulse1.enabled = ((value & 0x1) == 0x1);
     pulse1.lengthCounter = 0x0;
-    //pulse2.enabled = ((value & 0x2) == 0x2);
+    pulse2.enabled = ((value & 0x2) == 0x2);
     pulse2.lengthCounter = 0x0;
 }
 

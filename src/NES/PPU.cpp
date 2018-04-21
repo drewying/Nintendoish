@@ -238,9 +238,6 @@ void NES::PPU::renderPixel() {
     if (spriteColor != 0x0 && (backgroundPriority == false || backgoundColor == 0x0)) finalColor = colorTable[console.ppuMemory->get(0x3F00 | spriteColor)];
 
     unsigned int combinedColor = finalColor[2] << 16 | finalColor[1] << 8 | finalColor[0];
-    //OpenGL demands we flip
-    y = 240 - y;
-    x = 256 - x;
     console.displayBuffer[x + (y * 256)] = combinedColor;
 } 
 
