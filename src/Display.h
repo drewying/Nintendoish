@@ -7,8 +7,9 @@ class Display {
     int width;
     int height;
 public:
+    unsigned int mainTexture;
     Display(float scale, int width, int  height);
-    void plotPixel(int x, int y, float r, float g, float b);
+    void drawBuffer(unsigned int* pixelBuffer);
     void initialize(int argc, char **argv);
     GLFWwindow* window;
     ~Display();

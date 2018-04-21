@@ -32,7 +32,6 @@ int lineNumber = 0x0;
 const double audioSamplesPerSecond = 44100;
 const double targetFPS = 60.0988; //NTSC Vertical Scan Rate
 
-//Wave wav = makeWave(audioSamplesPerSecond, 1, 8);
 PaStream *audioStream;
 PaError audioError;
 
@@ -45,30 +44,7 @@ typedef int PaStreamCallback(const void *input,
     void *userData);
 
 void updateDisplay() {
-    
-    glClear(GL_COLOR_BUFFER_BIT);
-    for (int x = 0; x < 256; x++) {
-        for (int y = 0; y < 240; y++) {
-            unsigned int color = nes->displayBuffer[x + (y * 256)];
-            if (color) {
-                float blue = (float)(color & 0x000000FF);
-                float green = (float)((color & 0x0000FF00) >> 8);
-                float red = (float)((color & 0x00FF0000) >> 16);
-                display->plotPixel(x, y, red / 255.0, green / 255.0, blue / 255.0);
-            }
-        }
-    }
-
-    glEnd();
-    glfwSwapBuffers(display->window);
-}
-
-
-void updateAudio() {
-    /*for (unsigned int i = 0; i < nes->audioBufferLength; i++) {
-        waveAddSample(&wav, &nes->audioBuffer[i]);
-    }
-    nes->audioBufferLength = 0;*/
+    display->drawBuffer(nes->displayBuffer);
 }
 
 void updateNES() {
@@ -204,7 +180,6 @@ void logLoop() {
 
 void gameLoop() {
     Pa_StartStream(audioStream);
-    //waveSetDuration(&wav, 60);
     double targetFrameLength = 1000.0/targetFPS;
     double startTime = glfwGetTime() * 1000;
     
@@ -224,12 +199,10 @@ void gameLoop() {
         
         if (!pause) {
             if (sleepFrame == true && timeSync == true) {
-                //printf("Sleeping\n");
                 std::this_thread::sleep_for(std::chrono::milliseconds(realTime - gameTime));
                 sleptFrames++;
             }
             updateNES();
-            //updateAudio();
             if (dropFrame == true && timeSync == true){
                 printf("Skipping frame\n");
                 droppedFrames++;
@@ -245,7 +218,6 @@ void gameLoop() {
         glfwPollEvents();
     }
     Pa_StopStream(audioStream);
-    //waveToFile(&wav, "output.wav");
     glfwTerminate();
 }
 
