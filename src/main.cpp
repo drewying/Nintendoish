@@ -35,13 +35,10 @@ const double targetFPS = 60.0988; //NTSC Vertical Scan Rate
 PaStream *audioStream;
 PaError audioError;
 
-
-typedef int PaStreamCallback(const void *input,
-    void *output,
-    unsigned long frameCount,
-    const PaStreamCallbackTimeInfo* timeInfo,
-    PaStreamCallbackFlags statusFlags,
-    void *userData);
+void updateAudio() {
+    Pa_WriteStream(audioStream, nes->audioBuffer, nes->audioBufferLength);
+    nes->audioBufferLength = 0;
+}
 
 void updateDisplay() {
     display->drawBuffer(nes->displayBuffer);
@@ -53,45 +50,6 @@ void updateNES() {
     while (nes->ppu->totalFrames == currentFrame) {
         nes->emulateCycle();
     }
-}
-
-int playedSamples = 0;
-
-int audioCallback(const void *inputBuffer, void *outputBuffer,
-    unsigned long framesPerBuffer,
-    const PaStreamCallbackTimeInfo* timeInfo,
-    PaStreamCallbackFlags statusFlags,
-    void *audioBuffer) {
-    if (pause == true) {
-        return 0;
-    }
-
-    float *audioIn = (float*)audioBuffer;
-    float *audioOut = (float*)outputBuffer;
-    
-    if (playedSamples > nes->audioBufferLength) {
-        //Buffer was reset by the emulator. Play to the end, reset our buffer.
-        memcpy(audioOut, audioIn + playedSamples, min(nes->AUDIO_BUFFER_SIZE - playedSamples, (unsigned int)framesPerBuffer) * sizeof(float));
-        playedSamples = 0;
-    }
-    int unplayedSamples = nes->audioBufferLength - playedSamples;
-
-    if (unplayedSamples == 0) {
-        //Nothing to process. Fill with last element in buffer.
-        memset(audioOut, audioIn[nes->audioBufferLength], framesPerBuffer * sizeof(float));
-    } else if (framesPerBuffer > unplayedSamples) {
-        //We've reached the end of the audio buffer. Reset buffer and fill the gap with last element in buffer.
-        memcpy(audioOut, audioIn + playedSamples, unplayedSamples * sizeof(float));
-        memset(audioOut + unplayedSamples, audioIn[nes->audioBufferLength], (framesPerBuffer - unplayedSamples) * sizeof(float));
-        playedSamples = 0;
-        nes->audioBufferLength = 0;
-    } else {
-        //Still data in the buffer to process. 
-        memcpy(audioOut, audioIn + playedSamples, framesPerBuffer * sizeof(float));
-        playedSamples += framesPerBuffer;
-    }
-
-    return 0;
 }
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -208,9 +166,9 @@ void gameLoop() {
             if (dropFrame == true && timeSync == true){
                 printf("Skipping frame\n");
                 droppedFrames++;
-                playedSamples += 735;
             } else {
                 updateDisplay();
+                updateAudio();
             }
             frameCount++;
         } else {
@@ -230,25 +188,25 @@ int main(int argc, char** argv) {
         exit(0);
     }
 
+    PaStreamParameters output;
+    output.device = Pa_GetDefaultOutputDevice();
+    output.channelCount = 1;
+    output.sampleFormat = paFloat32;
+    output.suggestedLatency = Pa_GetDeviceInfo(output.device)->defaultHighOutputLatency;
+    output.hostApiSpecificStreamInfo = NULL;
+
+    Pa_OpenStream(&audioStream,
+        NULL,
+        &output,
+        44100,
+        736,
+        paClipOff,
+        NULL,
+        NULL);
     display = new Display(4, 256, 240);
     display->initialize(argc, argv);
     glfwSetKeyCallback(display->window, keyCallback);
     nes = new NES::Console();
-    
-    audioError = Pa_OpenDefaultStream(&audioStream,
-        0,          /* no input channels */
-        1,          /* mono output */
-        paFloat32,  /* 32 bit floating point output */
-        44100,
-        735,        /* frames per buffer, i.e. the number
-                     of sample frames that PortAudio will
-                     request from the callback. Many apps
-                     may want to use
-                     paFramesPerBufferUnspecified, which
-                     tells PortAudio to pick the best,
-                     possibly changing, buffer size.*/
-        audioCallback, /* this is your callback function */
-        &nes->audioBuffer);
     
     
     //nes->loadProgram("../roms/1-clocking.nes");

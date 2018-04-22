@@ -41,9 +41,9 @@ void APU::processDMC(uint16_t index, uint8_t value) {
 
 void APU::processControl(uint16_t index, uint8_t value) {
     pulse1.enabled = ((value & 0x1) == 0x1);
-    pulse1.lengthCounter = 0x0;
+    if (pulse1.enabled == false) pulse1.lengthCounter = 0x0;
     pulse2.enabled = ((value & 0x2) == 0x2);
-    pulse2.lengthCounter = 0x0;
+    if (pulse2.enabled == false) pulse2.lengthCounter = 0x0;
 }
 
 float APU::sample() {
@@ -63,11 +63,9 @@ void APU::step() {
     if (totalCycles == nextClock) {
         r = !r;
         nextClock += (console.CPU_CLOCK_RATE / console.AUDIO_SAMPLE_RATE) + r;
-        if (console.audioBufferLength >= console.AUDIO_BUFFER_SIZE) {
-            console.audioBufferLength = 0;
+        if (console.audioBufferLength < console.AUDIO_BUFFER_SIZE) {
+            console.audioBuffer[console.audioBufferLength++] = sample();
         }
-        console.audioBuffer[console.audioBufferLength++] = sample();
-       
     } 
 }
 
@@ -78,8 +76,8 @@ void APU::stepFrameCounter() {
     pulse1.stepTimer();
     pulse2.stepTimer();
 
-    bool sequence = frameCounter & 0x80;
-    bool irqEnabled = frameCounter & 0x40;
+    bool sequence = ((frameCounter & 0x80) == 0x80);
+    bool irqEnabled = ((frameCounter & 0x40) == 0x40);
     
     if (sequence == true) {
         //5-Step Sequence

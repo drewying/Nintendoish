@@ -10,8 +10,8 @@ namespace NES {
     public:
 
         struct Divider {
-            uint16_t period;
-            uint16_t counter;
+            uint16_t period = 0;
+            uint16_t counter = 0;
             bool enabled = true;
             void reload() {
                 counter = period;
@@ -83,6 +83,7 @@ namespace NES {
             }
             
             void writeRegister(uint16_t index, uint8_t value) {
+                uint16_t t;
                 switch (index) {
                 case 0x4000:
                     duty = value >> 0x6;
@@ -102,11 +103,12 @@ namespace NES {
                     break;
                 case 0x4002:
                     //Timer low 8 bits
-                    periodLowBits = value;
+                    //timer.period |= value;
+                    timer.period = (timer.period & 0xFF00) | value;
                     break;
                 case 0x4003:
-                    timer.period = (value & 0x3) << 0x8;
-                    timer.period |= periodLowBits;
+                    //timer.period |= ((value & 0x7) << 0x8);
+                    timer.period = (timer.period & 0x00FF) | ((value & 7) << 8);
                     lengthCounter = lengthCounterTable[value >> 0x3];
                     sequencerIndex = 0x0;
                     envelopeReload = true;
