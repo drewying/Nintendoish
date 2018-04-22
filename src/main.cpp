@@ -65,29 +65,31 @@ int audioCallback(const void *inputBuffer, void *outputBuffer,
     if (pause == true) {
         return 0;
     }
-    if (nes->audioBufferLength == 0) {
-        return 0;
-    }
-    if (nes->audioBufferLength < playedSamples) {
-        return 0;
-    }
+
+    float *audioIn = (float*)audioBuffer;
+    float *audioOut = (float*)outputBuffer;
     
-    int currentIndex = playedSamples % nes->AUDIO_BUFFER_SIZE;
-    float *audio = (float*)audioBuffer;
-    float *out = (float*)outputBuffer;
-    
-    unsigned long unplayedSamples = min((unsigned int)framesPerBuffer, nes->audioBufferLength - playedSamples);
-    if (unplayedSamples < framesPerBuffer) {
-        printf("Buffer underrun\n");
+    if (playedSamples > nes->audioBufferLength) {
+        //Buffer was reset by the emulator. Play to the end, reset our buffer.
+        memcpy(audioOut, audioIn + playedSamples, min(nes->AUDIO_BUFFER_SIZE - playedSamples, (unsigned int)framesPerBuffer) * sizeof(float));
+        playedSamples = 0;
     }
-    if (currentIndex + unplayedSamples >= nes->AUDIO_BUFFER_SIZE) {
-        memcpy(outputBuffer, audio + currentIndex, (nes->AUDIO_BUFFER_SIZE - currentIndex) * sizeof(float));
-        memcpy(outputBuffer, audio, (unplayedSamples - (nes->AUDIO_BUFFER_SIZE - currentIndex)) * sizeof(float));
+    int unplayedSamples = nes->audioBufferLength - playedSamples;
+
+    if (unplayedSamples == 0) {
+        //Nothing to process. Fill with last element in buffer.
+        memset(audioOut, audioIn[nes->audioBufferLength], framesPerBuffer * sizeof(float));
+    } else if (framesPerBuffer > unplayedSamples) {
+        //We've reached the end of the audio buffer. Reset buffer and fill the gap with last element in buffer.
+        memcpy(audioOut, audioIn + playedSamples, unplayedSamples * sizeof(float));
+        memset(audioOut + unplayedSamples, audioIn[nes->audioBufferLength], (framesPerBuffer - unplayedSamples) * sizeof(float));
+        playedSamples = 0;
+        nes->audioBufferLength = 0;
     } else {
-        memcpy(outputBuffer, audio + currentIndex, unplayedSamples * sizeof(float));
+        //Still data in the buffer to process. 
+        memcpy(audioOut, audioIn + playedSamples, framesPerBuffer * sizeof(float));
+        playedSamples += framesPerBuffer;
     }
-    
-    playedSamples += unplayedSamples;
 
     return 0;
 }
@@ -238,7 +240,7 @@ int main(int argc, char** argv) {
         1,          /* mono output */
         paFloat32,  /* 32 bit floating point output */
         44100,
-        paFramesPerBufferUnspecified,        /* frames per buffer, i.e. the number
+        735,        /* frames per buffer, i.e. the number
                      of sample frames that PortAudio will
                      request from the callback. Many apps
                      may want to use

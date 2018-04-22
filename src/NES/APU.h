@@ -37,7 +37,6 @@ namespace NES {
             };
 
             bool enabled = false;
-            bool lengthCounterEnabled = false;
             uint16_t lengthCounter;
             uint8_t duty;
             virtual uint8_t sample() { return 0x0; };

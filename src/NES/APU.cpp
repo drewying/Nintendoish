@@ -63,8 +63,11 @@ void APU::step() {
     if (totalCycles == nextClock) {
         r = !r;
         nextClock += (console.CPU_CLOCK_RATE / console.AUDIO_SAMPLE_RATE) + r;
-        console.audioBuffer[console.audioBufferLength % console.AUDIO_BUFFER_SIZE] = sample();
-        console.audioBufferLength++;
+        if (console.audioBufferLength >= console.AUDIO_BUFFER_SIZE) {
+            console.audioBufferLength = 0;
+        }
+        console.audioBuffer[console.audioBufferLength++] = sample();
+       
     } 
 }
 
@@ -136,7 +139,10 @@ void APU::stepFrameCounter() {
         }
         if (currentCycle == 14914) {
             //IRQ
-            printf("Ruh Roh. IRQ Not Yet Implemented");
+            if (irqEnabled) {
+                printf("Triggering IRQ");
+                console.cpu->requestIRQ = true;
+            }
         }
         
         if (currentCycle == 14915) {
