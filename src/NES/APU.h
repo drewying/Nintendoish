@@ -83,7 +83,6 @@ namespace NES {
             }
             
             void writeRegister(uint16_t index, uint8_t value) {
-                uint16_t t;
                 switch (index) {
                 case 0x4000:
                     duty = value >> 0x6;
@@ -124,7 +123,7 @@ namespace NES {
                 } else if (useConstantVolume == true) {
                     return volume;
                 } else {
-                    return envelopeVolume.counter;
+                    return (uint8_t)envelopeVolume.counter;
                 }
             }
 

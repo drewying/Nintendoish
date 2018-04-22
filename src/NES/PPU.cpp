@@ -185,8 +185,8 @@ void NES::PPU::evaluateSprites() {
 
 void NES::PPU::renderPixel() {
 
-    unsigned int x = currentCycle - 1;
-    unsigned int y = currentScanline;
+    uint16_t x = currentCycle - 1;
+    uint16_t y = currentScanline;
     
     uint16_t backgoundColor = 0x0;
     uint16_t spriteColor = 0x0;

@@ -7,7 +7,7 @@ using namespace NES;
 uint8_t APU::getAPURegister(uint16_t index) {
     switch (index) {
     case 0x4015:
-        return pulse2.lengthCounter > 0 | pulse1.lengthCounter > 0;
+        return ((pulse2.lengthCounter > 0) << 0x1) | (pulse1.lengthCounter > 0);
         break;
     case 0x4017:
         return frameCounter;
@@ -48,7 +48,7 @@ void APU::processControl(uint16_t index, uint8_t value) {
 
 float APU::sample() {
     //TODO Lookup instead of linear approximation
-    return 0.00752 * (pulse1.sample() + pulse2.sample());
+    return 0.00752f * (float)(pulse1.sample() + pulse2.sample());
 }
 
 void APU::step() {
