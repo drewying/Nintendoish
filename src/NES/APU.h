@@ -34,14 +34,18 @@ namespace NES {
             };
 
             bool enabled = false;
+            bool haltLengthCounter = false;
             uint16_t lengthCounter;
             uint8_t duty;
             virtual uint8_t sample() { return 0x0; };
             virtual void stepEnvelope() {};
-            virtual void stepSweep() {};
             virtual void stepTimer() {};
             virtual void writeRegister(uint16_t index, uint8_t value) {};
-            virtual void stepLengthCounter() {};
+            void stepLengthCounter() {
+                if (haltLengthCounter == false && lengthCounter > 0) {
+                    lengthCounter--;
+                }
+            }
         };
 
         struct Pulse : Channel {
@@ -52,7 +56,6 @@ namespace NES {
                 { 1, 0, 0, 1, 1, 1, 1, 1 }
             };
 
-            bool haltLengthCounter;
             bool useConstantVolume;
 
             Divider timer;
@@ -69,7 +72,6 @@ namespace NES {
             bool envelopeLoop;
             Divider envelopeVolume;
             Divider envelopeDivider;
-
 
             uint8_t volume;
             uint8_t sequencerIndex = 0x0;
@@ -115,8 +117,7 @@ namespace NES {
             uint8_t sample() {
                 if (timer.period < 8 || lengthCounter == 0 || timer.period > 0x7FF || dutyTable[duty][sequencerIndex] == 0 || enabled == false) {
                     return 0;
-                }
-                else if (useConstantVolume == true) {
+                } else if (useConstantVolume == true) {
                     return volume;
                 }
                 else {
@@ -169,12 +170,6 @@ namespace NES {
                 }
                 timer.tick();
             }
-
-            void stepLengthCounter() {
-                if (haltLengthCounter == false && lengthCounter > 0) {
-                    lengthCounter--;
-                }
-            }
         };
 
         struct Triangle : Channel {
@@ -192,7 +187,6 @@ namespace NES {
             uint8_t sequencerIndex;
             bool linearCounterEnabled = false;
             bool linearCounterReload = false;
-            bool haltLengthCounter = false;
 
             uint8_t sample() { 
                 return dutyTable[sequencerIndex];
@@ -200,7 +194,7 @@ namespace NES {
             void stepLinearCounter() {
                 if (linearCounterReload == true) {
                     linearCounter.reload();
-                }else {
+                } else {
                     linearCounter.tick();
                 }
                 if (linearCounterEnabled == false) {
@@ -231,14 +225,86 @@ namespace NES {
                     break;
                 }
             };
-
-            void stepLengthCounter() {
-                if (haltLengthCounter == false && lengthCounter > 0) {
-                    lengthCounter--;
-                }
-            };
         };
         
+        struct Noise : Channel {
+            uint16_t periodTable[16] = {
+                4, 8, 16, 32, 64, 96, 128, 160, 202, 254, 380, 508, 762, 1016, 2034, 4068
+            };
+
+            uint8_t volume;
+            Divider timer;
+            uint16_t shiftRegister = 0x1;
+            bool modeFlag = 0;
+            bool useConstantVolume;
+            bool envelopeReload;
+            bool envelopeLoop;
+            Divider envelopeVolume;
+            Divider envelopeDivider;
+
+            void writeRegister(uint16_t index, uint8_t value) {
+                switch (index) {
+                case 0x400C:
+                    haltLengthCounter = (value >> 0x5) & 0x1;
+                    envelopeLoop = haltLengthCounter;
+                    useConstantVolume = (value >> 0x4) & 0x1;
+                    volume = (value & 0xF);
+                    envelopeDivider.period = volume;
+                    break;
+                case 0x400E:
+                    modeFlag = ((value & 0x80) == 0x80);
+                    timer.period = periodTable[(value & 0xF)];
+                    timer.reload();
+                    break;
+                case 0x400F:
+                    lengthCounter = lengthCounterTable[value >> 0x3];
+                    envelopeReload = true;
+                    break;
+                }
+            };
+
+            uint8_t sample() { 
+                if (enabled == false | lengthCounter == 0 | (shiftRegister & 0x1) == 0x1) {
+                    return 0;
+                } else if (useConstantVolume == true) {
+                    return volume;
+                } else {
+                    return (uint8_t)envelopeVolume.counter;
+                }
+            };
+            
+            void stepEnvelope() {
+                if (envelopeReload == true) {
+                    envelopeReload = false;
+                    envelopeVolume.loopCounter = true;
+                    envelopeVolume.reload();
+                    envelopeDivider.reload();
+                }
+                else {
+                    if (envelopeDivider.counter == 0) {
+                        envelopeDivider.period = volume;
+                        if (envelopeVolume.counter == 0) {
+                            if (envelopeLoop == false) {
+                                envelopeVolume.loopCounter = false;
+                            }
+                        }
+                        envelopeVolume.tick();
+                    }
+                    envelopeDivider.tick();
+                }
+            };
+            
+            void stepTimer() {
+                if (timer.counter == 0) {
+                    uint8_t feedback = shiftRegister & 0x1;
+                    feedback ^= (modeFlag ? ((shiftRegister & 0x40) >> 0x6) : ((shiftRegister & 0x2) >> 0x1));
+                    shiftRegister = shiftRegister >> 0x1;
+                    shiftRegister |= (feedback << 14);
+                }
+                timer.tick();
+            };
+        };
+
         APU(Console &console) : console(console) { };
 
         Console &console;
@@ -246,6 +312,7 @@ namespace NES {
         Pulse pulse1 = Pulse();
         Pulse pulse2 = Pulse();
         Triangle triangle = Triangle();
+        Noise noise = Noise();
 
         uint32_t totalCycles = 0;
         uint32_t currentCycle = 0;
@@ -262,7 +329,6 @@ namespace NES {
 
         void clockQuarterFrame();
         void clockHalfFrame();
-        void processNoise(uint16_t index, uint8_t value);
         void processDMC(uint16_t index, uint8_t value);
         void processControl(uint16_t index, uint8_t value);
         
