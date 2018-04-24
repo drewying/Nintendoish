@@ -25,7 +25,14 @@ void APU::setAPURegister(uint16_t index, uint8_t value) {
     if (index >= 0x400C && index <= 0x400F) processNoise(index, value);
     if (index >= 0x4010 && index <= 0x4013) processDMC(index, value);
     if (index == 0x4015) processControl(index, value);
-    if (index == 0x4017) frameCounter = value;
+    if (index == 0x4017) {
+        currentCycle = 0;
+        frameCounter = value;
+        if ((frameCounter & 0x80) == 0x80) {
+            clockHalfFrame();
+            clockQuarterFrame();
+        }
+    }
 }
 
 void APU::processNoise(uint16_t index, uint8_t value) {
@@ -37,9 +44,9 @@ void APU::processDMC(uint16_t index, uint8_t value) {
 }
 
 void APU::processControl(uint16_t index, uint8_t value) {
-    //pulse1.enabled = ((value & 0x1) == 0x1);
+    pulse1.enabled = ((value & 0x1) == 0x1);
     if (pulse1.enabled == false) pulse1.lengthCounter = 0x0;
-    //pulse2.enabled = ((value & 0x2) == 0x2);
+    pulse2.enabled = ((value & 0x2) == 0x2);
     if (pulse2.enabled == false) pulse2.lengthCounter = 0x0;
     triangle.enabled = ((value & 0x4) == 0x4);
     if (triangle.enabled == false) triangle.lengthCounter = 0x0;
@@ -56,7 +63,7 @@ void APU::step() {
     totalCycles++;
     triangle.stepTimer();
 
-    if (totalCycles % 2 == 0) {
+    if (totalCycles % 2 == 1) {
         stepFrameCounter();
     }
     
@@ -78,73 +85,37 @@ void APU::stepFrameCounter() {
     pulse1.stepTimer();
     pulse2.stepTimer();
 
-    bool sequence = ((frameCounter & 0x80) == 0x80);
+    bool sequenceMode = ((frameCounter & 0x80) == 0x80);
     bool irqEnabled = ((frameCounter & 0x40) == 0x40);
     
-    if (sequence == true) {
+    if (sequenceMode == true) {
         //5-Step Sequence
         if (currentCycle == 3729) {
-            //Clock Envelopes and Triangle Linear Counter
-            pulse1.stepEnvelope();
-            pulse2.stepEnvelope();
-            triangle.stepLinearCounter();
+            clockQuarterFrame();
         }
         if (currentCycle == 7457) {
-            //Clock Envelopes and Triangle Linear Counter
-            //Clock Length Counters and Sweep Units 
-            pulse1.stepLengthCounter();
-            pulse1.stepEnvelope();
-            pulse1.stepSweep();
-
-            pulse2.stepLengthCounter();
-            pulse2.stepEnvelope();
-            pulse2.stepSweep();
-
-            triangle.stepLinearCounter();
+            clockHalfFrame();
+            clockQuarterFrame();
         }
         if (currentCycle == 11186) {
-            //Clock Envelopes and Triangle Linear Counter
+            clockQuarterFrame();
         }
         if (currentCycle == 18641) {
-            //Clock Envelopes and Triangle Linear Counter
-            //Clock Length Counters and Sweep Units 
+            clockHalfFrame();
+            clockQuarterFrame();
             currentCycle = 0;
-            pulse1.stepLengthCounter();
-            pulse1.stepEnvelope();
-            pulse1.stepSweep();
-
-            pulse2.stepLengthCounter();
-            pulse2.stepEnvelope();
-            pulse2.stepSweep();
-
-            triangle.stepLinearCounter();
         }
     } else {
         //4-Step Sequence
         if (currentCycle == 3729) {
-            //Clock Envelopes and Triangle Linear Counter
-            pulse1.stepEnvelope();
-            pulse2.stepEnvelope();
-            triangle.stepLinearCounter();
+            clockQuarterFrame();
         }
         if (currentCycle == 7457) {
-            //Clock Envelopes and Triangle Linear Counter
-            //Clock Length Counters and Sweep Units 
-            pulse1.stepLengthCounter();
-            pulse1.stepEnvelope();
-            pulse1.stepSweep();
-
-            pulse2.stepLengthCounter();
-            pulse2.stepEnvelope();
-            pulse2.stepSweep();
-
-            triangle.stepLinearCounter();
+            clockHalfFrame();
+            clockQuarterFrame();
         }
         if (currentCycle == 11186) {
-            //Clock Envelopes and Triangle Linear Counter
-            pulse1.stepEnvelope();
-            pulse2.stepEnvelope();
-            triangle.stepLinearCounter();
+            clockQuarterFrame();
         }
         if (currentCycle == 14914) {
             //IRQ
@@ -155,18 +126,25 @@ void APU::stepFrameCounter() {
         }
         
         if (currentCycle == 14915) {
-            //Clock Envelopes and Triangle Linear Counter
-            //Clock Length Counters and Sweep Units 
+            clockHalfFrame();
+            clockQuarterFrame();
             currentCycle = 0;
-            pulse1.stepLengthCounter();
-            pulse1.stepEnvelope();
-            pulse1.stepSweep();
-
-            pulse2.stepLengthCounter();
-            pulse2.stepEnvelope();
-            pulse2.stepSweep();
-
-            triangle.stepLinearCounter();
         }
     }
+}
+
+void APU::clockHalfFrame() {
+    //Clock Length Counters and Sweep Units 
+    pulse1.stepLengthCounter();
+    pulse1.stepSweep();
+    pulse2.stepLengthCounter();
+    pulse2.stepSweep();
+    triangle.stepLengthCounter();
+}
+
+void APU::clockQuarterFrame() {
+    //Clock Envelopes and Triangle Linear Counter
+    pulse1.stepEnvelope();
+    pulse2.stepEnvelope();
+    triangle.stepLinearCounter();
 }

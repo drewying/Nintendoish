@@ -12,12 +12,12 @@ namespace NES {
         struct Divider {
             uint16_t period = 0;
             uint16_t counter = 0;
-            bool enabled = true;
+            bool loopCounter = true;
             void reload() {
                 counter = period;
             }
             void tick() {
-                if (counter == 0 && enabled == true) {
+                if (counter == 0 && loopCounter == true) {
                     reload();
                 } else if (counter > 0) {
                     counter--;
@@ -127,16 +127,15 @@ namespace NES {
             void stepEnvelope() {
                 if (envelopeReload == true) {
                     envelopeReload = false;
-                    envelopeVolume.enabled = true;
+                    envelopeVolume.loopCounter = true;
                     envelopeVolume.reload();
                     envelopeDivider.reload();
-                }
-                else {
+                } else {
                     if (envelopeDivider.counter == 0) {
                         envelopeDivider.period = volume;
                         if (envelopeVolume.counter == 0) {
                             if (envelopeLoop == false) {
-                                envelopeVolume.enabled = false;
+                                envelopeVolume.loopCounter = false;
                             }
                         }
                         envelopeVolume.tick();
@@ -184,23 +183,32 @@ namespace NES {
                  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15
             };
 
+            Triangle() {
+                linearCounter.loopCounter = false;
+            }
+
             Divider timer;
             Divider linearCounter;
             uint8_t sequencerIndex;
+            bool linearCounterEnabled = false;
+            bool linearCounterReload = false;
             bool haltLengthCounter = false;
 
             uint8_t sample() { 
-                if (enabled == false || lengthCounter == 0 || linearCounter.counter == 0) {
-                    return 0x0;
-                } else {
-                    return dutyTable[sequencerIndex];
-                }
+                return dutyTable[sequencerIndex];
             };
             void stepLinearCounter() {
-                linearCounter.tick();
+                if (linearCounterReload == true) {
+                    linearCounter.reload();
+                }else {
+                    linearCounter.tick();
+                }
+                if (linearCounterEnabled == false) {
+                    linearCounterReload = false;
+                }
             };
             void stepTimer() {
-                if (timer.counter == 0) {
+                if (timer.counter == 0 && enabled == true && linearCounter.counter != 0 && lengthCounter != 0) {
                     sequencerIndex++;
                     sequencerIndex %= 32;
                 }
@@ -209,9 +217,9 @@ namespace NES {
             void writeRegister(uint16_t index, uint8_t value) {
                 switch (index){
                 case 0x4008:
-                    linearCounter.enabled = ((value & 0x80) == 0x80);
+                    linearCounterEnabled = ((value & 0x80) == 0x80);
                     linearCounter.period = (value & 0x7F);
-                    haltLengthCounter = !linearCounter.enabled;
+                    haltLengthCounter = !linearCounterEnabled;
                     break;
                 case 0x400A:
                     timer.period = (timer.period & 0xFF00) | value;
@@ -219,8 +227,7 @@ namespace NES {
                 case 0x400B:
                     timer.period = (timer.period & 0x00FF) | ((value & 7) << 8);
                     lengthCounter = lengthCounterTable[value >> 0x3];
-                    timer.reload();
-                    linearCounter.reload();
+                    linearCounterReload = true;
                     break;
                 }
             };
@@ -242,7 +249,6 @@ namespace NES {
 
         uint32_t totalCycles = 0;
         uint32_t currentCycle = 0;
-        bool stepCycle = false;
         uint8_t frameCounter;
 
 
@@ -254,6 +260,8 @@ namespace NES {
 
         float sample();
 
+        void clockQuarterFrame();
+        void clockHalfFrame();
         void processNoise(uint16_t index, uint8_t value);
         void processDMC(uint16_t index, uint8_t value);
         void processControl(uint16_t index, uint8_t value);
