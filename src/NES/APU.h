@@ -17,12 +17,9 @@ namespace NES {
                 counter = period;
             }
             void tick() {
-                if (enabled == false) {
-                    return;
-                }
-                if (counter == 0) {
+                if (counter == 0 && enabled == true) {
                     reload();
-                } else {
+                } else if (counter > 0) {
                     counter--;
                 }
             }
@@ -46,7 +43,7 @@ namespace NES {
             virtual void writeRegister(uint16_t index, uint8_t value) {};
             virtual void stepLengthCounter() {};
         };
-        
+
         struct Pulse : Channel {
             uint8_t dutyTable[4][8] = {
                 { 0, 1, 0, 0, 0, 0, 0, 0 },
@@ -57,7 +54,7 @@ namespace NES {
 
             bool haltLengthCounter;
             bool useConstantVolume;
-            
+
             Divider timer;
 
             //Sweep
@@ -72,7 +69,7 @@ namespace NES {
             bool envelopeLoop;
             Divider envelopeVolume;
             Divider envelopeDivider;
-            
+
 
             uint8_t volume;
             uint8_t sequencerIndex = 0x0;
@@ -81,7 +78,7 @@ namespace NES {
             Pulse() {
                 envelopeVolume.period = 15;
             }
-            
+
             void writeRegister(uint16_t index, uint8_t value) {
                 switch (index) {
                 case 0x4000:
@@ -102,11 +99,9 @@ namespace NES {
                     break;
                 case 0x4002:
                     //Timer low 8 bits
-                    //timer.period |= value;
                     timer.period = (timer.period & 0xFF00) | value;
                     break;
                 case 0x4003:
-                    //timer.period |= ((value & 0x7) << 0x8);
                     timer.period = (timer.period & 0x00FF) | ((value & 7) << 8);
                     lengthCounter = lengthCounterTable[value >> 0x3];
                     sequencerIndex = 0x0;
@@ -120,9 +115,11 @@ namespace NES {
             uint8_t sample() {
                 if (timer.period < 8 || lengthCounter == 0 || timer.period > 0x7FF || dutyTable[duty][sequencerIndex] == 0 || enabled == false) {
                     return 0;
-                } else if (useConstantVolume == true) {
+                }
+                else if (useConstantVolume == true) {
                     return volume;
-                } else {
+                }
+                else {
                     return (uint8_t)envelopeVolume.counter;
                 }
             }
@@ -133,13 +130,14 @@ namespace NES {
                     envelopeVolume.enabled = true;
                     envelopeVolume.reload();
                     envelopeDivider.reload();
-                } else {
+                }
+                else {
                     if (envelopeDivider.counter == 0) {
                         envelopeDivider.period = volume;
                         if (envelopeVolume.counter == 0) {
                             if (envelopeLoop == false) {
                                 envelopeVolume.enabled = false;
-                            } 
+                            }
                         }
                         envelopeVolume.tick();
                     }
@@ -156,7 +154,8 @@ namespace NES {
                         uint16_t change = timer.period >> sweepShift;
                         if (sweepNegate == true) {
                             timer.period -= change;
-                        } else {
+                        }
+                        else {
                             timer.period += change;
                         }
                     }
@@ -178,6 +177,60 @@ namespace NES {
                 }
             }
         };
+
+        struct Triangle : Channel {
+            uint8_t dutyTable[32] = {
+                15, 14, 13, 12, 11, 10,  9,  8,  7,  6,  5,  4,  3,  2,  1,  0,
+                 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15
+            };
+
+            Divider timer;
+            Divider linearCounter;
+            uint8_t sequencerIndex;
+            bool haltLengthCounter = false;
+
+            uint8_t sample() { 
+                if (enabled == false || lengthCounter == 0 || linearCounter.counter == 0) {
+                    return 0x0;
+                } else {
+                    return dutyTable[sequencerIndex];
+                }
+            };
+            void stepLinearCounter() {
+                linearCounter.tick();
+            };
+            void stepTimer() {
+                if (timer.counter == 0) {
+                    sequencerIndex++;
+                    sequencerIndex %= 32;
+                }
+                timer.tick();
+            };
+            void writeRegister(uint16_t index, uint8_t value) {
+                switch (index){
+                case 0x4008:
+                    linearCounter.enabled = ((value & 0x80) == 0x80);
+                    linearCounter.period = (value & 0x7F);
+                    haltLengthCounter = !linearCounter.enabled;
+                    break;
+                case 0x400A:
+                    timer.period = (timer.period & 0xFF00) | value;
+                    break;
+                case 0x400B:
+                    timer.period = (timer.period & 0x00FF) | ((value & 7) << 8);
+                    lengthCounter = lengthCounterTable[value >> 0x3];
+                    timer.reload();
+                    linearCounter.reload();
+                    break;
+                }
+            };
+
+            void stepLengthCounter() {
+                if (haltLengthCounter == false && lengthCounter > 0) {
+                    lengthCounter--;
+                }
+            };
+        };
         
         APU(Console &console) : console(console) { };
 
@@ -185,7 +238,8 @@ namespace NES {
         
         Pulse pulse1 = Pulse();
         Pulse pulse2 = Pulse();
-        
+        Triangle triangle = Triangle();
+
         uint32_t totalCycles = 0;
         uint32_t currentCycle = 0;
         bool stepCycle = false;
@@ -200,7 +254,6 @@ namespace NES {
 
         float sample();
 
-        void processTriangle(uint16_t index, uint8_t value);
         void processNoise(uint16_t index, uint8_t value);
         void processDMC(uint16_t index, uint8_t value);
         void processControl(uint16_t index, uint8_t value);

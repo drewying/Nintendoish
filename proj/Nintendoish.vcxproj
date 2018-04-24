@@ -60,9 +60,6 @@
     <ClInclude Include="..\src\NES\PPU.h" />
     <ClInclude Include="..\src\NES\PPUMemory.h" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\src\Display.vs" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{BEC7B8BE-F38F-41C4-B12A-5DD0214FD5FB}</ProjectGuid>
