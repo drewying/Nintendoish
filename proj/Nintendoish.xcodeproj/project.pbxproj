@@ -25,6 +25,12 @@
 		102EDB0B205EF187005F0475 /* PPUMemory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 102EDAF9205EF187005F0475 /* PPUMemory.cpp */; };
 		102EDB0C205EF187005F0475 /* Display.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 102EDAFB205EF187005F0475 /* Display.cpp */; };
 		1060B1241F4373F200C9EFF5 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1060B1231F4373F200C9EFF5 /* OpenGL.framework */; };
+		10D7FF38209458530070569F /* libportaudio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 10D7FF37209458530070569F /* libportaudio.a */; };
+		10D7FF3A209458700070569F /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10D7FF39209458700070569F /* CoreAudio.framework */; };
+		10D7FF3C2094587B0070569F /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10D7FF3B2094587B0070569F /* AudioToolbox.framework */; };
+		10D7FF3E209458830070569F /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10D7FF3D209458830070569F /* AudioUnit.framework */; };
+		10D7FF402094588D0070569F /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10D7FF3F2094588D0070569F /* CoreServices.framework */; };
+		10D7FF42209458950070569F /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10D7FF41209458950070569F /* Carbon.framework */; };
 		10E2D58E205F2DE2009AC3C2 /* libglfw3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 10E2D58D205F2DE2009AC3C2 /* libglfw3.a */; };
 		10E2D590205F2E39009AC3C2 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10E2D58F205F2E39009AC3C2 /* IOKit.framework */; };
 		10E2D592205F2E45009AC3C2 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10E2D591205F2E45009AC3C2 /* Cocoa.framework */; };
@@ -81,6 +87,13 @@
 		102EDAFB205EF187005F0475 /* Display.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Display.cpp; path = ../src/Display.cpp; sourceTree = "<group>"; };
 		1060B10A1F43737D00C9EFF5 /* Nintendoish */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Nintendoish; sourceTree = BUILT_PRODUCTS_DIR; };
 		1060B1231F4373F200C9EFF5 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		10D7FF37209458530070569F /* libportaudio.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libportaudio.a; path = ../lib/PortAudio/libportaudio.a; sourceTree = "<group>"; };
+		10D7FF39209458700070569F /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
+		10D7FF3B2094587B0070569F /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		10D7FF3D209458830070569F /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
+		10D7FF3F2094588D0070569F /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
+		10D7FF41209458950070569F /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
+		10D7FF43209458B60070569F /* portaudio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = portaudio.h; path = ../lib/PortAudio/portaudio.h; sourceTree = "<group>"; };
 		10E2D586205F2957009AC3C2 /* glfw3.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = glfw3.h; path = ../lib/GLFW/glfw3.h; sourceTree = "<group>"; };
 		10E2D58D205F2DE2009AC3C2 /* libglfw3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libglfw3.a; path = ../lib/GLFW/libglfw3.a; sourceTree = "<group>"; };
 		10E2D58F205F2E39009AC3C2 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
@@ -97,9 +110,15 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				10D7FF42209458950070569F /* Carbon.framework in Frameworks */,
+				10D7FF402094588D0070569F /* CoreServices.framework in Frameworks */,
+				10D7FF3E209458830070569F /* AudioUnit.framework in Frameworks */,
+				10D7FF3C2094587B0070569F /* AudioToolbox.framework in Frameworks */,
+				10D7FF3A209458700070569F /* CoreAudio.framework in Frameworks */,
 				10E2D594205F2E4D009AC3C2 /* CoreVideo.framework in Frameworks */,
 				10E2D592205F2E45009AC3C2 /* Cocoa.framework in Frameworks */,
 				10E2D590205F2E39009AC3C2 /* IOKit.framework in Frameworks */,
+				10D7FF38209458530070569F /* libportaudio.a in Frameworks */,
 				10E2D58E205F2DE2009AC3C2 /* libglfw3.a in Frameworks */,
 				1060B1241F4373F200C9EFF5 /* OpenGL.framework in Frameworks */,
 			);
@@ -191,10 +210,16 @@
 		1060B1221F4373F200C9EFF5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				10D7FF41209458950070569F /* Carbon.framework */,
+				10D7FF3F2094588D0070569F /* CoreServices.framework */,
+				10D7FF3D209458830070569F /* AudioUnit.framework */,
+				10D7FF3B2094587B0070569F /* AudioToolbox.framework */,
+				10D7FF39209458700070569F /* CoreAudio.framework */,
 				10E2D593205F2E4D009AC3C2 /* CoreVideo.framework */,
 				10E2D591205F2E45009AC3C2 /* Cocoa.framework */,
 				10E2D58F205F2E39009AC3C2 /* IOKit.framework */,
 				10E2D58D205F2DE2009AC3C2 /* libglfw3.a */,
+				10D7FF37209458530070569F /* libportaudio.a */,
 				1060B1231F4373F200C9EFF5 /* OpenGL.framework */,
 			);
 			name = Frameworks;
@@ -203,6 +228,7 @@
 		10E2D584205F2695009AC3C2 /* include */ = {
 			isa = PBXGroup;
 			children = (
+				10D7FF43209458B60070569F /* portaudio.h */,
 				10E2D586205F2957009AC3C2 /* glfw3.h */,
 			);
 			name = include;
