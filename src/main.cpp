@@ -211,14 +211,14 @@ int main(int argc, char** argv) {
     //nes->loadProgram("../roms/1-clocking.nes");
     //nes->loadProgram("../roms/PunchOut.nes");
     //nes->loadProgram("../roms/test/scanline.nes");
-    //nes->loadProgram("../roms/Battletoads.nes");
+    nes->loadProgram("../roms/Battletoads.nes");
     //nes->loadProgram("../roms/Gradius.nes");
     //nes->loadProgram("../roms/Contra.nes");
     //nes->loadProgram("../roms/Metroid.nes");
     //nes->loadProgram("../roms/IceClimber.nes");
     //nes->loadProgram("../roms/Megaman3.nes");
     //nes->loadProgram("../roms/Castlevania.nes");
-    nes->loadProgram("../roms/Zelda.nes");
+    //nes->loadProgram("../roms/Zelda.nes");
     //nes->loadProgram("../roms/SuperMario3.nes");
     //nes->loadProgram("../roms/Mario.nes");
     //nes->loadProgram("../roms/Excitebike.nes");

@@ -7,7 +7,7 @@ using namespace NES;
 uint8_t APU::getAPURegister(uint16_t index) {
     switch (index) {
     case 0x4015:
-        return    ((noise.lengthCounter > 0) << 0x4) | 
+        return    ((noise.lengthCounter > 0) << 0x3) | 
                ((triangle.lengthCounter > 0) << 0x2) | 
                  ((pulse2.lengthCounter > 0) << 0x1) | 
                   (pulse1.lengthCounter > 0);

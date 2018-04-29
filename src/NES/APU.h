@@ -24,6 +24,40 @@ namespace NES {
                 }
             }
         };
+        
+        struct Envelope {
+            bool startFlag = false;
+            bool useConstantVolume = false;
+            Divider decay;
+            Divider divider;
+            
+            Envelope() {
+                decay.period = 15;
+                decay.loopCounter = false;
+            }
+            void tick() {
+                if (startFlag == false) {
+                    if (divider.counter == 0) {
+                        decay.tick();
+                    }
+                    divider.tick();
+                } else {
+                    startFlag = false;
+                    divider.reload();
+                    decay.reload();
+                }
+            }
+            void setVolume(uint16_t volume) {
+                divider.period = volume;
+            }
+            uint16_t getVolume() {
+                if (useConstantVolume) {
+                    return divider.period;
+                } else {
+                    return decay.counter;
+                }
+            }
+        };
 
         struct Channel {
             uint8_t lengthCounterTable[0x20] = {
@@ -56,8 +90,6 @@ namespace NES {
                 { 1, 0, 0, 1, 1, 1, 1, 1 }
             };
 
-            bool useConstantVolume;
-
             Divider timer;
 
             //Sweep
@@ -68,28 +100,18 @@ namespace NES {
             uint8_t sweepShift = 0x0;
 
             //Envelope
-            bool envelopeReload;
-            bool envelopeLoop;
-            Divider envelopeVolume;
-            Divider envelopeDivider;
+            Envelope envelope;
 
-            uint8_t volume;
             uint8_t sequencerIndex = 0x0;
-            uint8_t periodLowBits = 0x0;
-
-            Pulse() {
-                envelopeVolume.period = 15;
-            }
 
             void writeRegister(uint16_t index, uint8_t value) {
                 switch (index) {
                 case 0x4000:
                     duty = value >> 0x6;
                     haltLengthCounter = (value >> 0x5) & 0x1;
-                    envelopeLoop = haltLengthCounter;
-                    useConstantVolume = (value >> 0x4) & 0x1;
-                    volume = (value & 0xF);
-                    envelopeDivider.period = volume;
+                    envelope.decay.loopCounter = haltLengthCounter;
+                    envelope.useConstantVolume = (value >> 0x4) & 0x1;
+                    envelope.setVolume(value & 0xF);
                     break;
                 case 0x4001:
                     //Sweep
@@ -107,7 +129,7 @@ namespace NES {
                     timer.period = (timer.period & 0x00FF) | ((value & 7) << 8);
                     lengthCounter = lengthCounterTable[value >> 0x3];
                     sequencerIndex = 0x0;
-                    envelopeReload = true;
+                    envelope.startFlag = true;
                     break;
                 default:
                     break;
@@ -117,32 +139,12 @@ namespace NES {
             uint8_t sample() {
                 if (timer.period < 8 || lengthCounter == 0 || timer.period > 0x7FF || dutyTable[duty][sequencerIndex] == 0 || enabled == false) {
                     return 0;
-                } else if (useConstantVolume == true) {
-                    return volume;
                 }
-                else {
-                    return (uint8_t)envelopeVolume.counter;
-                }
+                return envelope.getVolume();
             }
 
             void stepEnvelope() {
-                if (envelopeReload == true) {
-                    envelopeReload = false;
-                    envelopeVolume.loopCounter = true;
-                    envelopeVolume.reload();
-                    envelopeDivider.reload();
-                } else {
-                    if (envelopeDivider.counter == 0) {
-                        envelopeDivider.period = volume;
-                        if (envelopeVolume.counter == 0) {
-                            if (envelopeLoop == false) {
-                                envelopeVolume.loopCounter = false;
-                            }
-                        }
-                        envelopeVolume.tick();
-                    }
-                    envelopeDivider.tick();
-                }
+                envelope.tick();
             }
 
             void stepSweep() {
@@ -232,24 +234,18 @@ namespace NES {
                 4, 8, 16, 32, 64, 96, 128, 160, 202, 254, 380, 508, 762, 1016, 2034, 4068
             };
 
-            uint8_t volume;
             Divider timer;
             uint16_t shiftRegister = 0x1;
             bool modeFlag = 0;
-            bool useConstantVolume;
-            bool envelopeReload;
-            bool envelopeLoop;
-            Divider envelopeVolume;
-            Divider envelopeDivider;
+            Envelope envelope;
 
             void writeRegister(uint16_t index, uint8_t value) {
                 switch (index) {
                 case 0x400C:
                     haltLengthCounter = (value >> 0x5) & 0x1;
-                    envelopeLoop = haltLengthCounter;
-                    useConstantVolume = (value >> 0x4) & 0x1;
-                    volume = (value & 0xF);
-                    envelopeDivider.period = volume;
+                    envelope.decay.loopCounter = haltLengthCounter;
+                    envelope.useConstantVolume = (value >> 0x4) & 0x1;
+                    envelope.setVolume(value & 0xF);
                     break;
                 case 0x400E:
                     modeFlag = ((value & 0x80) == 0x80);
@@ -258,7 +254,7 @@ namespace NES {
                     break;
                 case 0x400F:
                     lengthCounter = lengthCounterTable[value >> 0x3];
-                    envelopeReload = true;
+                    envelope.startFlag = true;
                     break;
                 }
             };
@@ -266,32 +262,12 @@ namespace NES {
             uint8_t sample() { 
                 if (enabled == false | lengthCounter == 0 | (shiftRegister & 0x1) == 0x1) {
                     return 0;
-                } else if (useConstantVolume == true) {
-                    return volume;
-                } else {
-                    return (uint8_t)envelopeVolume.counter;
                 }
+                return envelope.getVolume();
             };
             
             void stepEnvelope() {
-                if (envelopeReload == true) {
-                    envelopeReload = false;
-                    envelopeVolume.loopCounter = true;
-                    envelopeVolume.reload();
-                    envelopeDivider.reload();
-                }
-                else {
-                    if (envelopeDivider.counter == 0) {
-                        envelopeDivider.period = volume;
-                        if (envelopeVolume.counter == 0) {
-                            if (envelopeLoop == false) {
-                                envelopeVolume.loopCounter = false;
-                            }
-                        }
-                        envelopeVolume.tick();
-                    }
-                    envelopeDivider.tick();
-                }
+                envelope.tick();
             };
             
             void stepTimer() {
