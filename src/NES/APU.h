@@ -75,6 +75,9 @@ namespace NES {
             virtual void stepEnvelope() {};
             virtual void stepTimer() {};
             virtual void writeRegister(uint16_t index, uint8_t value) {};
+            void setLengthCounter(uint8_t value) {
+                lengthCounter = lengthCounterTable[value >> 0x3];
+            }
             void stepLengthCounter() {
                 if (haltLengthCounter == false && lengthCounter > 0) {
                     lengthCounter--;
@@ -127,7 +130,7 @@ namespace NES {
                     break;
                 case 0x4003:
                     timer.period = (timer.period & 0x00FF) | ((value & 7) << 8);
-                    lengthCounter = lengthCounterTable[value >> 0x3];
+                    setLengthCounter(value >> 0x3);
                     sequencerIndex = 0x0;
                     envelope.startFlag = true;
                     break;
@@ -222,7 +225,7 @@ namespace NES {
                     break;
                 case 0x400B:
                     timer.period = (timer.period & 0x00FF) | ((value & 7) << 8);
-                    lengthCounter = lengthCounterTable[value >> 0x3];
+                    setLengthCounter(value >> 0x3);
                     linearCounterReload = true;
                     break;
                 }
@@ -253,7 +256,7 @@ namespace NES {
                     timer.reload();
                     break;
                 case 0x400F:
-                    lengthCounter = lengthCounterTable[value >> 0x3];
+                    setLengthCounter(value >> 0x3);
                     envelope.startFlag = true;
                     break;
                 }
@@ -279,6 +282,39 @@ namespace NES {
                 }
                 timer.tick();
             };
+        };
+
+        struct DMC : Channel {
+            uint16_t periodTable[0x10] = {
+                428, 380, 340, 320, 286, 254, 226, 214, 190, 160, 142, 128, 106,  84,  72,  54
+            };
+
+            uint16_t currentAddress;
+            uint16_t currentLength;
+            uint8_t shiftRegister;
+            uint8_t shiftCount;
+            uint8_t sampleBuffer;
+            uint8_t sampleLength;
+
+            bool interruptFlag;
+            Divider timer;
+            uint8_t sample() {
+                
+            }
+            void stepTimer() {
+
+            }
+            void writeRegister(uint16_t index, uint8_t value) {
+                switch (index) {
+                case 0x4010:
+                    interruptFlag = value & 0x80 == 0x80;
+                    timer.loopCounter = value & 0x40 == 0x40;
+                    timer.period = periodTable[value & 0xF];
+                    break;
+                case 0x4011:
+                    break;
+                }
+            }
         };
 
         APU(Console &console) : console(console) { };
