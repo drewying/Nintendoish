@@ -299,16 +299,17 @@ namespace NES {
             bool interruptFlag;
             Divider timer;
             uint8_t sample() {
-                
+                return 0;
             }
+            
             void stepTimer() {
 
             }
             void writeRegister(uint16_t index, uint8_t value) {
                 switch (index) {
                 case 0x4010:
-                    interruptFlag = value & 0x80 == 0x80;
-                    timer.loopCounter = value & 0x40 == 0x40;
+                    interruptFlag = (value & 0x80) == 0x80;
+                    timer.loopCounter = (value & 0x40) == 0x40;
                     timer.period = periodTable[value & 0xF];
                     break;
                 case 0x4011:

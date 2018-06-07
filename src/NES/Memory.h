@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef __cplusplus
+
 #include "NES.h"
 #include <stdint.h>
 
@@ -19,3 +21,4 @@ namespace NES {
     };
 };
 
+#endif

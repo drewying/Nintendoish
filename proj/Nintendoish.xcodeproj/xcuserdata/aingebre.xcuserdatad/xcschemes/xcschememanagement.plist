@@ -4,15 +4,30 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>Nintendoish-iOS.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>1</integer>
+		</dict>
 		<key>Nintendoish.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
+		<key>TestApp.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>2</integer>
+		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
 		<key>1060B1091F43737D00C9EFF5</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>10969B5020C6F91E00895FC1</key>
 		<dict>
 			<key>primary</key>
 			<true/>

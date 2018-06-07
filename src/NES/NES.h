@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef __cplusplus
+
 #include "Cartridge.h"
 #include "CPU.h"
 #include "Controller.h"
@@ -38,13 +40,18 @@ namespace NES {
         const static unsigned int CPU_CLOCK_RATE = 1789773;
         const static unsigned int AUDIO_SAMPLE_RATE = 44100;
         const static unsigned int AUDIO_BUFFER_SIZE = 44100; //1 second worth of audio buffer
-        unsigned int audioBufferLength = 0x0;
+        const static unsigned int DISPLAY_BUFFER_SIZE = 256 * 240; //NES resolution
         
-        unsigned int displayBuffer[256 * 240] = { 0 };
+        unsigned int audioBufferLength = 0x0;
         float audioBuffer[AUDIO_BUFFER_SIZE] = { 0 };
+        
+        unsigned int displayBuffer[DISPLAY_BUFFER_SIZE] = { 0 };
+        
         
         Console();
         ~Console();
     };
 };
+
+#endif
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef __cplusplus
+
 #include "NES.h"
 #include <stdint.h>
 
@@ -20,3 +22,5 @@ namespace NES {
         uint16_t mirrorIndex(uint16_t index);
     };
 };
+
+#endif

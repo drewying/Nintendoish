@@ -1,4 +1,7 @@
 #pragma once
+
+#ifdef __cplusplus
+
 #include "NES.h"
 #include "Memory.h"
 #include <string>
@@ -165,3 +168,5 @@ namespace NES {
         void XAA(uint16_t address);
     };
 };
+
+#endif

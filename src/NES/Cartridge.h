@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef __cplusplus
+
 #include "Mapper.h"
 #include "NES.h"
 #include <stdint.h>
@@ -38,3 +40,5 @@ namespace NES {
         ~Cartridge();
     };
 };
+
+#endif

@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef __cplusplus
+
 #include "NES.h"
 #include "Cartridge.h"
 
@@ -22,3 +24,4 @@ namespace NES {
     };
 };
 
+#endif
