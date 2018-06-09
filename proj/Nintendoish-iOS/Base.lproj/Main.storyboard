@@ -1,24 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13122.16" systemVersion="17A278a" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BV1-FR-VrT">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14269.12" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="nB0-vR-1ee">
+    <device id="retina4_7" orientation="landscape">
+        <adaptation id="fullscreen"/>
+    </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13104.12"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14252.5"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Game View Controller-->
-        <scene sceneID="tXr-a1-R10">
+        <!--View Controller-->
+        <scene sceneID="2SY-sh-bfm">
             <objects>
-                <viewController id="BV1-FR-VrT" customClass="GameViewController" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="3se-qz-xqx" customClass="MTKView">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                <viewController id="nB0-vR-1ee" customClass="NESViewController" customModule="Nintendoish_iOS" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="59I-G1-Ofv">
+                        <rect key="frame" x="0.0" y="0.0" width="667" height="375"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <viewLayoutGuide key="safeArea" id="rZh-zQ-HcR"/>
+                        <subviews>
+                            <mtkView contentMode="scaleToFill" colorPixelFormat="BGRA8Unorm_sRGB" depthStencilPixelFormat="Invalid" translatesAutoresizingMaskIntoConstraints="NO" id="D1f-oJ-9mx">
+                                <rect key="frame" x="133.5" y="0.0" width="400" height="375"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="D1f-oJ-9mx" secondAttribute="height" multiplier="256:240" id="VUn-Xg-Duo"/>
+                                </constraints>
+                            </mtkView>
+                        </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="D1f-oJ-9mx" firstAttribute="bottom" secondItem="6Cr-mc-O5o" secondAttribute="bottom" id="2a4-Ls-Lzc"/>
+                            <constraint firstItem="D1f-oJ-9mx" firstAttribute="leading" secondItem="6Cr-mc-O5o" secondAttribute="leading" id="OlZ-bz-3xF"/>
+                            <constraint firstItem="6Cr-mc-O5o" firstAttribute="trailing" secondItem="D1f-oJ-9mx" secondAttribute="trailing" id="aMj-NR-fO8"/>
+                            <constraint firstItem="D1f-oJ-9mx" firstAttribute="centerX" secondItem="59I-G1-Ofv" secondAttribute="centerX" id="e8A-Ab-Ue9"/>
+                            <constraint firstItem="D1f-oJ-9mx" firstAttribute="top" secondItem="6Cr-mc-O5o" secondAttribute="top" id="mtw-ut-QXA"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="6Cr-mc-O5o"/>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="aMj-NR-fO8"/>
+                                <exclude reference="2a4-Ls-Lzc"/>
+                                <exclude reference="OlZ-bz-3xF"/>
+                            </mask>
+                        </variation>
+                        <variation key="heightClass=compact-widthClass=compact">
+                            <mask key="constraints">
+                                <include reference="2a4-Ls-Lzc"/>
+                            </mask>
+                        </variation>
+                        <variation key="heightClass=regular-widthClass=compact">
+                            <mask key="constraints">
+                                <include reference="aMj-NR-fO8"/>
+                                <include reference="OlZ-bz-3xF"/>
+                            </mask>
+                        </variation>
                     </view>
+                    <connections>
+                        <outlet property="metalView" destination="D1f-oJ-9mx" id="DXG-Ws-lqn"/>
+                    </connections>
                 </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="SZV-WD-TEh" sceneMemberID="firstResponder"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="fLR-5S-OVW" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="-1082" y="94"/>
         </scene>
     </scenes>
 </document>

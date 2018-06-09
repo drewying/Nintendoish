@@ -45,7 +45,7 @@
 		108EE7A620C766EA00E5049E /* Zelda.nes in Resources */ = {isa = PBXBuildFile; fileRef = 108EE7A520C766EA00E5049E /* Zelda.nes */; };
 		10969B5420C6F91E00895FC1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10969B5320C6F91E00895FC1 /* AppDelegate.swift */; };
 		10969B5720C6F91E00895FC1 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10969B5620C6F91E00895FC1 /* Renderer.swift */; };
-		10969B5920C6F91E00895FC1 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10969B5820C6F91E00895FC1 /* GameViewController.swift */; };
+		10969B5920C6F91E00895FC1 /* NESViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10969B5820C6F91E00895FC1 /* NESViewController.swift */; };
 		10969B5B20C6F91E00895FC1 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 10969B5A20C6F91E00895FC1 /* Shaders.metal */; };
 		10969B5E20C6F91E00895FC1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 10969B5C20C6F91E00895FC1 /* Main.storyboard */; };
 		10969B6020C6F91F00895FC1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 10969B5F20C6F91F00895FC1 /* Assets.xcassets */; };
@@ -122,7 +122,7 @@
 		10969B5120C6F91E00895FC1 /* Nintendoish-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Nintendoish-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		10969B5320C6F91E00895FC1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		10969B5620C6F91E00895FC1 /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
-		10969B5820C6F91E00895FC1 /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
+		10969B5820C6F91E00895FC1 /* NESViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NESViewController.swift; sourceTree = "<group>"; };
 		10969B5A20C6F91E00895FC1 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		10969B5D20C6F91E00895FC1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		10969B5F20C6F91F00895FC1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -312,7 +312,7 @@
 				10969B6920C6F99400895FC1 /* NESBridge.mm */,
 				10969B5320C6F91E00895FC1 /* AppDelegate.swift */,
 				10969B5620C6F91E00895FC1 /* Renderer.swift */,
-				10969B5820C6F91E00895FC1 /* GameViewController.swift */,
+				10969B5820C6F91E00895FC1 /* NESViewController.swift */,
 				10969B5A20C6F91E00895FC1 /* Shaders.metal */,
 				10969B5C20C6F91E00895FC1 /* Main.storyboard */,
 				10969B5F20C6F91F00895FC1 /* Assets.xcassets */,
@@ -528,7 +528,7 @@
 				10969B9B20C70AA400895FC1 /* PPUMemory.cpp in Sources */,
 				10969B5B20C6F91E00895FC1 /* Shaders.metal in Sources */,
 				10969B5720C6F91E00895FC1 /* Renderer.swift in Sources */,
-				10969B5920C6F91E00895FC1 /* GameViewController.swift in Sources */,
+				10969B5920C6F91E00895FC1 /* NESViewController.swift in Sources */,
 				10969B5420C6F91E00895FC1 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
