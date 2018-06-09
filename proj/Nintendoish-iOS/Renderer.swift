@@ -28,7 +28,8 @@ class Renderer: NSObject, MTKViewDelegate {
     var dynamicUniformBuffer: MTLBuffer
     var pipelineState: MTLRenderPipelineState
     var depthState: MTLDepthStencilState
-    var colorMap: MTLTexture
+    var displayTexture: MTLTexture
+    var displayBuffer: MTLBuffer
     
     let inFlightSemaphore = DispatchSemaphore(value: maxBuffersInFlight)
     
@@ -59,7 +60,7 @@ class Renderer: NSObject, MTKViewDelegate {
         uniforms = UnsafeMutableRawPointer(dynamicUniformBuffer.contents()).bindMemory(to:Uniforms.self, capacity:1)
         
         metalKitView.depthStencilPixelFormat = MTLPixelFormat.depth32Float_stencil8
-        metalKitView.colorPixelFormat = MTLPixelFormat.bgra8Unorm_srgb
+        metalKitView.colorPixelFormat = MTLPixelFormat.bgra8Unorm
         metalKitView.sampleCount = 1
         
         let mtlVertexDescriptor = Renderer.buildMetalVertexDescriptor()
@@ -87,7 +88,8 @@ class Renderer: NSObject, MTKViewDelegate {
         }
         
         do {
-            colorMap = try Renderer.loadTexture(device: device, textureName: "ColorMap")
+            displayBuffer = try Renderer.loadBuffer(device: device)
+            displayTexture = try Renderer.loadTexture(buffer: displayBuffer)
         } catch {
             print("Unable to load texture. Error info: \(error)")
             return nil
@@ -171,22 +173,15 @@ class Renderer: NSObject, MTKViewDelegate {
         return try MTKMesh(mesh:mdlMesh, device:device)
     }
     
-    class func loadTexture(device: MTLDevice,
-                           textureName: String) throws -> MTLTexture {
-        /// Load texture data with optimal parameters for sampling
+    class func loadBuffer(device: MTLDevice) throws -> MTLBuffer {
+        let bufferSize:Int = Int(NESBridge.sharedNES()!.getDisplayBufferSize()) * 4
+        return device.makeBuffer(bytesNoCopy: NESBridge.sharedNES()!.getDisplayBuffer(), length: bufferSize, options: [.storageModeShared], deallocator: nil)!
         
-        let textureLoader = MTKTextureLoader(device: device)
-        
-        let textureLoaderOptions = [
-            MTKTextureLoader.Option.textureUsage: NSNumber(value: MTLTextureUsage.shaderRead.rawValue),
-            MTKTextureLoader.Option.textureStorageMode: NSNumber(value: MTLStorageMode.`private`.rawValue)
-        ]
-        
-        return try textureLoader.newTexture(name: textureName,
-                                            scaleFactor: 1.0,
-                                            bundle: nil,
-                                            options: textureLoaderOptions)
-        
+    }
+    
+    class func loadTexture(buffer: MTLBuffer) throws -> MTLTexture {
+        let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba8Uint, width: 256, height: 240, mipmapped: false)
+        return buffer.makeTexture(descriptor: descriptor, offset: 0, bytesPerRow: 256 * 4)!
     }
     
     private func updateDynamicBufferState() {
@@ -208,7 +203,8 @@ class Renderer: NSObject, MTKViewDelegate {
         let modelMatrix = matrix4x4_rotation(radians: rotation, axis: rotationAxis)
         let viewMatrix = matrix4x4_translation(0.0, 0.0, -8.0)
         uniforms[0].modelViewMatrix = simd_mul(viewMatrix, modelMatrix)
-        rotation += 0.01
+        
+        NESBridge.sharedNES()?.stepFrame()
     }
     
     func draw(in view: MTKView) {
@@ -260,7 +256,7 @@ class Renderer: NSObject, MTKViewDelegate {
                     }
                 }
                 
-                renderEncoder.setFragmentTexture(colorMap, index: TextureIndex.color.rawValue)
+                renderEncoder.setFragmentTexture(displayTexture, index: TextureIndex.color.rawValue)
                 
                 for submesh in mesh.submeshes {
                     renderEncoder.drawIndexedPrimitives(type: submesh.primitiveType,

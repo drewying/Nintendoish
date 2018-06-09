@@ -45,8 +45,7 @@ namespace NES {
         unsigned int audioBufferLength = 0x0;
         float audioBuffer[AUDIO_BUFFER_SIZE] = { 0 };
         
-        unsigned int displayBuffer[DISPLAY_BUFFER_SIZE] = { 0 };
-        
+        alignas(4096) uint32_t displayBuffer[DISPLAY_BUFFER_SIZE] = { 0 };
         
         Console();
         ~Console();
