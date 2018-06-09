@@ -11,15 +11,12 @@
 #include <metal_stdlib>
 #include <simd/simd.h>
 
-// Including header shared between this Metal shader code and Swift/C code executing Metal API commands
-#import "ShaderTypes.h"
-
 using namespace metal;
 
 typedef struct
 {
-    float3 position [[attribute(VertexAttributePosition)]];
-    float2 texCoord [[attribute(VertexAttributeTexcoord)]];
+    float2 position;
+    float2 texturePosition;
 } Vertex;
 
 typedef struct
@@ -28,24 +25,21 @@ typedef struct
     float2 texCoord;
 } ColorInOut;
 
-vertex ColorInOut vertexShader(Vertex in [[stage_in]],
-                               constant Uniforms & uniforms [[ buffer(BufferIndexUniforms) ]])
+vertex ColorInOut vertexShader(uint vertexID [[ vertex_id ]],
+                               constant Vertex *vertexArray [[ buffer(0) ]])
 {
     ColorInOut out;
 
-    float4 position = float4(in.position, 1.0);
-    out.position = uniforms.projectionMatrix * uniforms.modelViewMatrix * position;
-    out.texCoord = in.texCoord;
-
+    float2 position = vertexArray[vertexID].position.xy;
+    out.position = float4(position.x, position.y, 0.0, 1.0);
+    out.texCoord = vertexArray[vertexID].texturePosition;
     return out;
 }
 
 fragment float4 fragmentShader(ColorInOut in [[stage_in]],
-                               constant Uniforms & uniforms [[ buffer(BufferIndexUniforms) ]],
-                               texture2d<uint> colorMap     [[ texture(TextureIndexColor) ]])
+                               texture2d<uint> colorMap [[ texture(0) ]])
 {
-    constexpr sampler colorSampler(mip_filter::linear,
-                                   mag_filter::linear,
+    constexpr sampler colorSampler(mag_filter::linear,
                                    min_filter::linear);
 
     uint4 colorSample = colorMap.sample(colorSampler, in.texCoord.xy);

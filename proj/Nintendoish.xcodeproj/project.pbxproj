@@ -121,7 +121,6 @@
 		108EE7A520C766EA00E5049E /* Zelda.nes */ = {isa = PBXFileReference; lastKnownFileType = file; name = Zelda.nes; path = ../../roms/Zelda.nes; sourceTree = "<group>"; };
 		10969B5120C6F91E00895FC1 /* Nintendoish-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Nintendoish-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		10969B5320C6F91E00895FC1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		10969B5520C6F91E00895FC1 /* ShaderTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderTypes.h; sourceTree = "<group>"; };
 		10969B5620C6F91E00895FC1 /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
 		10969B5820C6F91E00895FC1 /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 		10969B5A20C6F91E00895FC1 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
@@ -162,6 +161,7 @@
 		10E2D593205F2E4D009AC3C2 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		10E2D59C206047BA009AC3C2 /* Mapper4.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mapper4.cpp; sourceTree = "<group>"; };
 		10E2D59F2060E327009AC3C2 /* Mapper9.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mapper9.cpp; sourceTree = "<group>"; };
+		10F4199520CBA90A00828E6B /* ShaderTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShaderTypes.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -310,7 +310,6 @@
 				108EE7A520C766EA00E5049E /* Zelda.nes */,
 				10969B6820C6F99400895FC1 /* NESBridge.h */,
 				10969B6920C6F99400895FC1 /* NESBridge.mm */,
-				10969B5520C6F91E00895FC1 /* ShaderTypes.h */,
 				10969B5320C6F91E00895FC1 /* AppDelegate.swift */,
 				10969B5620C6F91E00895FC1 /* Renderer.swift */,
 				10969B5820C6F91E00895FC1 /* GameViewController.swift */,
@@ -319,6 +318,7 @@
 				10969B5F20C6F91F00895FC1 /* Assets.xcassets */,
 				10969B6120C6F91F00895FC1 /* LaunchScreen.storyboard */,
 				10969B6420C6F91F00895FC1 /* Info.plist */,
+				10F4199520CBA90A00828E6B /* ShaderTypes.h */,
 				108EE7A420C7426600E5049E /* BridgingHeader.h */,
 			);
 			path = "Nintendoish-iOS";
@@ -394,7 +394,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0940;
-				LastUpgradeCheck = 0940;
+				LastUpgradeCheck = 1000;
 				ORGANIZATIONNAME = "Ingebretsen, Andrew (HBO)";
 				TargetAttributes = {
 					1060B1091F43737D00C9EFF5 = {
@@ -732,7 +732,6 @@
 		10969B6620C6F91F00895FC1 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_ENABLE_OBJC_WEAK = YES;
@@ -763,7 +762,6 @@
 		10969B6720C6F91F00895FC1 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_ENABLE_OBJC_WEAK = YES;
