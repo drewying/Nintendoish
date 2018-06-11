@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface NESBridge : NSObject
+@interface NESConsole : NSObject
 
 typedef NS_ENUM(NSInteger, NESButton) {
     A,
@@ -21,9 +21,6 @@ typedef NS_ENUM(NSInteger, NESButton) {
     RIGHT
 };
 
-+(NESBridge*)sharedNES;
-
--(void)initializeConsole;
 -(BOOL)loadRom:(NSString*)romPath;
 -(void)stepFrame;
 -(unsigned int)getDisplayBufferSize;

@@ -33,7 +33,7 @@
 		10FFD5AC20CDF40900910B40 /* APU.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD58720CDF3D000910B40 /* APU.cpp */; };
 		10FFD5AD20CDF40900910B40 /* CPU.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD58920CDF3D000910B40 /* CPU.cpp */; };
 		10FFD5AE20CDF40900910B40 /* Mapper9.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD58A20CDF3D000910B40 /* Mapper9.cpp */; };
-		10FFD5AF20CDF48200910B40 /* NESBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD55E20CDF3D000910B40 /* NESBridge.mm */; };
+		10FFD5AF20CDF48200910B40 /* NESConsole.mm in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD55E20CDF3D000910B40 /* NESConsole.mm */; };
 		10FFD5B020CDF48200910B40 /* NESViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD56620CDF3D000910B40 /* NESViewController.swift */; };
 		10FFD5B120CDF48200910B40 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD56720CDF3D000910B40 /* AppDelegate.swift */; };
 		10FFD5B220CDF48200910B40 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD56920CDF3D000910B40 /* Renderer.swift */; };
@@ -90,8 +90,8 @@
 		10E2D593205F2E4D009AC3C2 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		10FFD55C20CDF3D000910B40 /* BridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgingHeader.h; sourceTree = "<group>"; };
 		10FFD55D20CDF3D000910B40 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		10FFD55E20CDF3D000910B40 /* NESBridge.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = NESBridge.mm; sourceTree = "<group>"; };
-		10FFD55F20CDF3D000910B40 /* NESBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NESBridge.h; sourceTree = "<group>"; };
+		10FFD55E20CDF3D000910B40 /* NESConsole.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = NESConsole.mm; sourceTree = "<group>"; };
+		10FFD55F20CDF3D000910B40 /* NESConsole.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NESConsole.h; sourceTree = "<group>"; };
 		10FFD56020CDF3D000910B40 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		10FFD56220CDF3D000910B40 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		10FFD56420CDF3D000910B40 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -226,19 +226,19 @@
 		10FFD55B20CDF3D000910B40 /* iOS */ = {
 			isa = PBXGroup;
 			children = (
+				10FFD56720CDF3D000910B40 /* AppDelegate.swift */,
+				10FFD55F20CDF3D000910B40 /* NESConsole.h */,
+				10FFD55E20CDF3D000910B40 /* NESConsole.mm */,
+				10FFD56620CDF3D000910B40 /* NESViewController.swift */,
+				10FFD56920CDF3D000910B40 /* Renderer.swift */,
 				10FFD55C20CDF3D000910B40 /* BridgingHeader.h */,
 				10FFD55D20CDF3D000910B40 /* Assets.xcassets */,
-				10FFD55E20CDF3D000910B40 /* NESBridge.mm */,
 				10FFD5D520CDF66F00910B40 /* Zelda.nes */,
-				10FFD55F20CDF3D000910B40 /* NESBridge.h */,
 				10FFD56020CDF3D000910B40 /* Shaders.metal */,
 				10FFD56120CDF3D000910B40 /* LaunchScreen.storyboard */,
 				10FFD56320CDF3D000910B40 /* Main.storyboard */,
 				10FFD56520CDF3D000910B40 /* ShaderTypes.h */,
-				10FFD56620CDF3D000910B40 /* NESViewController.swift */,
-				10FFD56720CDF3D000910B40 /* AppDelegate.swift */,
 				10FFD56820CDF3D000910B40 /* Info.plist */,
-				10FFD56920CDF3D000910B40 /* Renderer.swift */,
 			);
 			name = iOS;
 			path = src/iOS;
@@ -386,6 +386,7 @@
 					10969B5020C6F91E00895FC1 = {
 						CreatedOnToolsVersion = 9.4;
 						DevelopmentTeam = 4DCQ4JU9B3;
+						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -454,7 +455,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				10FFD5D420CDF64A00910B40 /* Shaders.metal in Sources */,
-				10FFD5AF20CDF48200910B40 /* NESBridge.mm in Sources */,
+				10FFD5AF20CDF48200910B40 /* NESConsole.mm in Sources */,
 				10FFD5B020CDF48200910B40 /* NESViewController.swift in Sources */,
 				10FFD5B120CDF48200910B40 /* AppDelegate.swift in Sources */,
 				10FFD5B220CDF48200910B40 /* Renderer.swift in Sources */,
@@ -655,7 +656,7 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/src/iOS/ShaderTypes.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "../src/**";
 				VALID_ARCHS = arm64;
@@ -684,7 +685,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/src/iOS/ShaderTypes.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "../src/**";
 				VALIDATE_PRODUCT = YES;

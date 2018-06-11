@@ -7,23 +7,23 @@
 //
 
 #import <Foundation/Foundation.h>
-#include "NESBridge.h"
 #include "NES.h"
+#include "NESConsole.h"
 
-@interface NESBridge()
+
+@interface NESConsole()
 @property NES::Console *nes;
 @end
 
-@implementation NESBridge
+@implementation NESConsole
 
-+(NESBridge*)sharedNES {
-    static NESBridge *shared;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        shared = [NESBridge new];
-        [shared initializeConsole];
-    });
-    return shared;
+
+-(instancetype)init {
+    self = [super init];
+    if (self) {
+        [self initializeConsole];
+    }
+    return self;
 }
 
 -(void)initializeConsole {

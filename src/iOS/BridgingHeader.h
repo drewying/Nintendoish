@@ -9,6 +9,6 @@
 #ifndef BridgingHeader_h
 #define BridgingHeader_h
 
-#include "NESBridge.h"
+#include "NESConsole.h"
 
 #endif /* BridgingHeader_h */

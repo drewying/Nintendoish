@@ -23,27 +23,28 @@ class Renderer: NSObject, MTKViewDelegate {
         
     }
     
-    
     public let device: MTLDevice
+    public let nes:NESConsole
     let commandQueue: MTLCommandQueue
-    var pipelineState: MTLRenderPipelineState
-    var renderTexture: MTLTexture
-    var textureBuffer: MTLBuffer
-    var vertexBuffer: MTLBuffer
+    var pipelineState: MTLRenderPipelineState!
+    var renderTexture: MTLTexture!
+    var textureBuffer: MTLBuffer!
+    var vertexBuffer: MTLBuffer!
     
     let inFlightSemaphore = DispatchSemaphore(value: maxBuffersInFlight)
     
-    init?(metalKitView: MTKView) {
+    init?(metalKitView: MTKView, nes: NESConsole) {
         self.device = metalKitView.device!
         guard let queue = self.device.makeCommandQueue() else { return nil }
         self.commandQueue = queue
-        
+        self.nes = nes;
     
         metalKitView.colorPixelFormat = MTLPixelFormat.bgra8Unorm
-    
+        
+        super.init()
+        
         do {
-            pipelineState = try Renderer.buildRenderPipelineWithDevice(device: device,
-                                                                       metalKitView: metalKitView)
+            pipelineState = try buildRenderPipelineWithDevice(device: device, metalKitView: metalKitView)
         } catch {
             print("Unable to compile render pipeline state.  Error info: \(error)")
             return nil
@@ -55,19 +56,16 @@ class Renderer: NSObject, MTKViewDelegate {
         
         
         do {
-            vertexBuffer  = try Renderer.loadVertexBuffer(device: device)
-            textureBuffer = try Renderer.loadTextureBuffer(device: device)
-            renderTexture = try Renderer.loadTexture(buffer: textureBuffer)
+            vertexBuffer  = try loadVertexBuffer(device: device)
+            textureBuffer = try loadTextureBuffer(device: device)
+            renderTexture = try loadTexture(buffer: textureBuffer)
         } catch {
             print("Unable to load texture. Error info: \(error)")
             return nil
         }
-        
-        super.init()
-        
     }
     
-    class func buildRenderPipelineWithDevice(device: MTLDevice, metalKitView: MTKView) throws -> MTLRenderPipelineState {
+    func buildRenderPipelineWithDevice(device: MTLDevice, metalKitView: MTKView) throws -> MTLRenderPipelineState {
         /// Build a render state pipeline object
         
         let library = device.makeDefaultLibrary()
@@ -84,7 +82,7 @@ class Renderer: NSObject, MTKViewDelegate {
         return try device.makeRenderPipelineState(descriptor: pipelineDescriptor)
     }
     
-    class func loadVertexBuffer(device: MTLDevice) throws -> MTLBuffer {
+    func loadVertexBuffer(device: MTLDevice) throws -> MTLBuffer {
         let vertexData:[vector_float2] = [
             vector2( 1.0, -1.0), vector2(1.0, 1.0),
             vector2(-1.0, -1.0), vector2(0.0, 1.0),
@@ -99,20 +97,20 @@ class Renderer: NSObject, MTKViewDelegate {
         
     }
     
-    class func loadTextureBuffer(device: MTLDevice) throws -> MTLBuffer {
-        let bufferSize:Int = Int(NESBridge.sharedNES()!.getDisplayBufferSize()) * 4
-        return device.makeBuffer(bytesNoCopy: NESBridge.sharedNES()!.getDisplayBuffer(), length: bufferSize, options: [.storageModeShared], deallocator: nil)!
+    func loadTextureBuffer(device: MTLDevice) throws -> MTLBuffer {
+        
+        let bufferSize:Int = Int(nes.getDisplayBufferSize()) * 4
+        return device.makeBuffer(bytesNoCopy: nes.getDisplayBuffer(), length: bufferSize, options: [.storageModeShared], deallocator: nil)!
         
     }
     
-    class func loadTexture(buffer: MTLBuffer) throws -> MTLTexture {
+    func loadTexture(buffer: MTLBuffer) throws -> MTLTexture {
         let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba8Uint, width: 256, height: 240, mipmapped: false)
         return buffer.makeTexture(descriptor: descriptor, offset: 0, bytesPerRow: 256 * 4)!
     }
     
     private func updateGameState() {
-        
-        NESBridge.sharedNES()?.stepFrame()
+        nes.stepFrame()
     }
     
     func draw(in view: MTKView) {

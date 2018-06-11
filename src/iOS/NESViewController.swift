@@ -14,7 +14,8 @@ class NESViewController: UIViewController {
 
     var renderer: Renderer!
     @IBOutlet weak var metalView: MTKView!
-    var nes: NESBridge!
+
+    var nes: NESConsole!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,8 +28,10 @@ class NESViewController: UIViewController {
         
         metalView.device = defaultDevice
         metalView.backgroundColor = UIColor.black
-
-        guard let newRenderer = Renderer(metalKitView: metalView) else {
+        nes = NESConsole()
+        nes.loadRom(Bundle.main.path(forResource: "Zelda", ofType: "nes"))
+        
+        guard let newRenderer = Renderer(metalKitView: metalView, nes: nes) else {
             print("Renderer cannot be initialized")
             return
         }
@@ -39,32 +42,31 @@ class NESViewController: UIViewController {
 
         metalView.delegate = renderer
         
-        NESBridge.sharedNES().loadRom(Bundle.main.path(forResource: "Zelda", ofType: "nes"))
     }
     @IBAction func AButtonTouchDown(_ sender: Any) {
-        NESBridge.sharedNES()?.press(.A)
+        nes.press(.A)
     }
     @IBAction func AButtonTouchUpInside(_ sender: Any) {
-        NESBridge.sharedNES()?.release(.A)
+        nes.release(.A)
     }
     
     @IBAction func BButtonTouchDown(_ sender: Any) {
-        NESBridge.sharedNES()?.press(.B)
+        nes.press(.B)
     }
     @IBAction func BButtonTouchUpInside(_ sender: Any) {
-        NESBridge.sharedNES()?.release(.B)
+        nes.release(.B)
     }
     @IBAction func startButtonTouchDown(_ sender: Any) {
-        NESBridge.sharedNES()?.press(.START)
+        nes.press(.START)
     }
     @IBAction func startButtonTouchUpInside(_ sender: Any) {
-        NESBridge.sharedNES()?.release(.START)
+        nes.release(.START)
     }
     @IBAction func selectButtonTouchDown(_ sender: Any) {
-        NESBridge.sharedNES()?.press(.SELECT)
+        nes.press(.SELECT)
     }
     @IBAction func selectButtonTouchUpInside(_ sender: Any) {
-        NESBridge.sharedNES()?.release(.SELECT)
+        nes.release(.SELECT)
     }
     
 }
