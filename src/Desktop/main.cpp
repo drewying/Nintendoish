@@ -11,9 +11,8 @@
 #include "glfw3.h"
 #include "portaudio.h"
 #include "Display.h"
-#include "CHIP8/Chip8.h"
-#include "NES/NES.h"
-#include "NES/PPU.h"
+#include "../Core/NES.h"
+#include "../Core/PPU.h"
 
 
 using namespace std::chrono;
@@ -211,7 +210,7 @@ int main(int argc, char** argv) {
     //nes->loadProgram("../roms/1-clocking.nes");
     //nes->loadProgram("../roms/PunchOut.nes");
     //nes->loadProgram("../roms/test/scanline.nes");
-    nes->loadProgram("../roms/Battletoads.nes");
+    nes->loadProgram("roms/Battletoads.nes");
     //nes->loadProgram("../roms/Gradius.nes");
     //nes->loadProgram("../roms/Contra.nes");
     //nes->loadProgram("../roms/Metroid.nes");

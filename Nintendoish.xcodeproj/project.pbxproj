@@ -1,0 +1,728 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1060B1241F4373F200C9EFF5 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1060B1231F4373F200C9EFF5 /* OpenGL.framework */; };
+		10D7FF3A209458700070569F /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10D7FF39209458700070569F /* CoreAudio.framework */; };
+		10D7FF3C2094587B0070569F /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10D7FF3B2094587B0070569F /* AudioToolbox.framework */; };
+		10D7FF3E209458830070569F /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10D7FF3D209458830070569F /* AudioUnit.framework */; };
+		10D7FF402094588D0070569F /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10D7FF3F2094588D0070569F /* CoreServices.framework */; };
+		10D7FF42209458950070569F /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10D7FF41209458950070569F /* Carbon.framework */; };
+		10E2D590205F2E39009AC3C2 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10E2D58F205F2E39009AC3C2 /* IOKit.framework */; };
+		10E2D592205F2E45009AC3C2 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10E2D591205F2E45009AC3C2 /* Cocoa.framework */; };
+		10E2D594205F2E4D009AC3C2 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10E2D593205F2E4D009AC3C2 /* CoreVideo.framework */; };
+		10FFD59E20CDF40900910B40 /* Mapper4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD56B20CDF3D000910B40 /* Mapper4.cpp */; };
+		10FFD59F20CDF40900910B40 /* Memory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD56C20CDF3D000910B40 /* Memory.cpp */; };
+		10FFD5A020CDF40900910B40 /* PPU.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD56D20CDF3D000910B40 /* PPU.cpp */; };
+		10FFD5A120CDF40900910B40 /* Mapper1.h in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD56E20CDF3D000910B40 /* Mapper1.h */; };
+		10FFD5A220CDF40900910B40 /* Mapper7.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD56F20CDF3D000910B40 /* Mapper7.cpp */; };
+		10FFD5A320CDF40900910B40 /* Mapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD57020CDF3D000910B40 /* Mapper.cpp */; };
+		10FFD5A420CDF40900910B40 /* Mapper2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD57120CDF3D000910B40 /* Mapper2.cpp */; };
+		10FFD5A520CDF40900910B40 /* Mapper3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD57220CDF3D000910B40 /* Mapper3.cpp */; };
+		10FFD5A620CDF40900910B40 /* PPUMemory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD57320CDF3D000910B40 /* PPUMemory.cpp */; };
+		10FFD5A720CDF40900910B40 /* Cartridge.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD57420CDF3D000910B40 /* Cartridge.cpp */; };
+		10FFD5A820CDF40900910B40 /* Mapper1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD57520CDF3D000910B40 /* Mapper1.cpp */; };
+		10FFD5A920CDF40900910B40 /* Mapper0.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD57620CDF3D000910B40 /* Mapper0.cpp */; };
+		10FFD5AA20CDF40900910B40 /* NES.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD57820CDF3D000910B40 /* NES.cpp */; };
+		10FFD5AB20CDF40900910B40 /* Controller.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD58520CDF3D000910B40 /* Controller.cpp */; };
+		10FFD5AC20CDF40900910B40 /* APU.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD58720CDF3D000910B40 /* APU.cpp */; };
+		10FFD5AD20CDF40900910B40 /* CPU.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD58920CDF3D000910B40 /* CPU.cpp */; };
+		10FFD5AE20CDF40900910B40 /* Mapper9.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD58A20CDF3D000910B40 /* Mapper9.cpp */; };
+		10FFD5AF20CDF48200910B40 /* NESBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD55E20CDF3D000910B40 /* NESBridge.mm */; };
+		10FFD5B020CDF48200910B40 /* NESViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD56620CDF3D000910B40 /* NESViewController.swift */; };
+		10FFD5B120CDF48200910B40 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD56720CDF3D000910B40 /* AppDelegate.swift */; };
+		10FFD5B220CDF48200910B40 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD56920CDF3D000910B40 /* Renderer.swift */; };
+		10FFD5B320CDF5C700910B40 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 10FFD56120CDF3D000910B40 /* LaunchScreen.storyboard */; };
+		10FFD5B420CDF5C700910B40 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 10FFD56320CDF3D000910B40 /* Main.storyboard */; };
+		10FFD5D320CDF5E900910B40 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 10FFD55D20CDF3D000910B40 /* Assets.xcassets */; };
+		10FFD5D420CDF64A00910B40 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD56020CDF3D000910B40 /* Shaders.metal */; };
+		10FFD5D620CDF66F00910B40 /* Zelda.nes in Resources */ = {isa = PBXBuildFile; fileRef = 10FFD5D520CDF66F00910B40 /* Zelda.nes */; };
+		10FFD5E620CDF6A500910B40 /* libportaudio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 10FFD5DE20CDF6A500910B40 /* libportaudio.a */; };
+		10FFD5E720CDF6A500910B40 /* libglfw3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 10FFD5E420CDF6A500910B40 /* libglfw3.a */; };
+		10FFD5E920CDF76100910B40 /* Mapper4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD56B20CDF3D000910B40 /* Mapper4.cpp */; };
+		10FFD5EA20CDF76100910B40 /* Memory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD56C20CDF3D000910B40 /* Memory.cpp */; };
+		10FFD5EB20CDF76100910B40 /* PPU.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD56D20CDF3D000910B40 /* PPU.cpp */; };
+		10FFD5EC20CDF76100910B40 /* Mapper7.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD56F20CDF3D000910B40 /* Mapper7.cpp */; };
+		10FFD5ED20CDF76100910B40 /* Mapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD57020CDF3D000910B40 /* Mapper.cpp */; };
+		10FFD5EE20CDF76100910B40 /* Mapper2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD57120CDF3D000910B40 /* Mapper2.cpp */; };
+		10FFD5EF20CDF76100910B40 /* Mapper3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD57220CDF3D000910B40 /* Mapper3.cpp */; };
+		10FFD5F020CDF76100910B40 /* PPUMemory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD57320CDF3D000910B40 /* PPUMemory.cpp */; };
+		10FFD5F120CDF76100910B40 /* Cartridge.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD57420CDF3D000910B40 /* Cartridge.cpp */; };
+		10FFD5F220CDF76100910B40 /* Mapper1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD57520CDF3D000910B40 /* Mapper1.cpp */; };
+		10FFD5F320CDF76100910B40 /* Mapper0.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD57620CDF3D000910B40 /* Mapper0.cpp */; };
+		10FFD5F420CDF76100910B40 /* NES.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD57820CDF3D000910B40 /* NES.cpp */; };
+		10FFD5F520CDF76100910B40 /* Controller.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD58520CDF3D000910B40 /* Controller.cpp */; };
+		10FFD5F620CDF76100910B40 /* APU.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD58720CDF3D000910B40 /* APU.cpp */; };
+		10FFD5F720CDF76100910B40 /* CPU.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD58920CDF3D000910B40 /* CPU.cpp */; };
+		10FFD5F820CDF76100910B40 /* Mapper9.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD58A20CDF3D000910B40 /* Mapper9.cpp */; };
+		10FFD5F920CDF76100910B40 /* Display.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD58C20CDF3D000910B40 /* Display.cpp */; };
+		10FFD5FA20CDF76100910B40 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD59D20CDF3D000910B40 /* main.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		1060B1081F43737D00C9EFF5 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 12;
+			dstPath = "";
+			dstSubfolderSpec = 6;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		1060B10A1F43737D00C9EFF5 /* Nintendoish */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Nintendoish; sourceTree = BUILT_PRODUCTS_DIR; };
+		1060B1231F4373F200C9EFF5 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		10969B5120C6F91E00895FC1 /* Nintendoish-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Nintendoish-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		10D7FF39209458700070569F /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
+		10D7FF3B2094587B0070569F /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		10D7FF3D209458830070569F /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
+		10D7FF3F2094588D0070569F /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
+		10D7FF41209458950070569F /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
+		10E2D58F205F2E39009AC3C2 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		10E2D591205F2E45009AC3C2 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		10E2D593205F2E4D009AC3C2 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		10FFD55C20CDF3D000910B40 /* BridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgingHeader.h; sourceTree = "<group>"; };
+		10FFD55D20CDF3D000910B40 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		10FFD55E20CDF3D000910B40 /* NESBridge.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = NESBridge.mm; sourceTree = "<group>"; };
+		10FFD55F20CDF3D000910B40 /* NESBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NESBridge.h; sourceTree = "<group>"; };
+		10FFD56020CDF3D000910B40 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
+		10FFD56220CDF3D000910B40 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		10FFD56420CDF3D000910B40 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		10FFD56520CDF3D000910B40 /* ShaderTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderTypes.h; sourceTree = "<group>"; };
+		10FFD56620CDF3D000910B40 /* NESViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NESViewController.swift; sourceTree = "<group>"; };
+		10FFD56720CDF3D000910B40 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		10FFD56820CDF3D000910B40 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		10FFD56920CDF3D000910B40 /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
+		10FFD56B20CDF3D000910B40 /* Mapper4.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Mapper4.cpp; sourceTree = "<group>"; };
+		10FFD56C20CDF3D000910B40 /* Memory.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Memory.cpp; sourceTree = "<group>"; };
+		10FFD56D20CDF3D000910B40 /* PPU.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PPU.cpp; sourceTree = "<group>"; };
+		10FFD56E20CDF3D000910B40 /* Mapper1.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Mapper1.h; sourceTree = "<group>"; };
+		10FFD56F20CDF3D000910B40 /* Mapper7.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Mapper7.cpp; sourceTree = "<group>"; };
+		10FFD57020CDF3D000910B40 /* Mapper.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Mapper.cpp; sourceTree = "<group>"; };
+		10FFD57120CDF3D000910B40 /* Mapper2.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Mapper2.cpp; sourceTree = "<group>"; };
+		10FFD57220CDF3D000910B40 /* Mapper3.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Mapper3.cpp; sourceTree = "<group>"; };
+		10FFD57320CDF3D000910B40 /* PPUMemory.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PPUMemory.cpp; sourceTree = "<group>"; };
+		10FFD57420CDF3D000910B40 /* Cartridge.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Cartridge.cpp; sourceTree = "<group>"; };
+		10FFD57520CDF3D000910B40 /* Mapper1.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Mapper1.cpp; sourceTree = "<group>"; };
+		10FFD57620CDF3D000910B40 /* Mapper0.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Mapper0.cpp; sourceTree = "<group>"; };
+		10FFD57720CDF3D000910B40 /* PPUMemory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PPUMemory.h; sourceTree = "<group>"; };
+		10FFD57820CDF3D000910B40 /* NES.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = NES.cpp; sourceTree = "<group>"; };
+		10FFD57920CDF3D000910B40 /* Mapper2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Mapper2.h; sourceTree = "<group>"; };
+		10FFD57A20CDF3D000910B40 /* Mapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Mapper.h; sourceTree = "<group>"; };
+		10FFD57B20CDF3D000910B40 /* NES.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NES.h; sourceTree = "<group>"; };
+		10FFD57C20CDF3D000910B40 /* Controller.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Controller.h; sourceTree = "<group>"; };
+		10FFD57D20CDF3D000910B40 /* Mapper7.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Mapper7.h; sourceTree = "<group>"; };
+		10FFD57E20CDF3D000910B40 /* PPU.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PPU.h; sourceTree = "<group>"; };
+		10FFD57F20CDF3D000910B40 /* Mapper3.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Mapper3.h; sourceTree = "<group>"; };
+		10FFD58020CDF3D000910B40 /* Mapper9.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Mapper9.h; sourceTree = "<group>"; };
+		10FFD58120CDF3D000910B40 /* Cartridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Cartridge.h; sourceTree = "<group>"; };
+		10FFD58220CDF3D000910B40 /* CPU.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CPU.h; sourceTree = "<group>"; };
+		10FFD58320CDF3D000910B40 /* APU.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = APU.h; sourceTree = "<group>"; };
+		10FFD58420CDF3D000910B40 /* Memory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Memory.h; sourceTree = "<group>"; };
+		10FFD58520CDF3D000910B40 /* Controller.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Controller.cpp; sourceTree = "<group>"; };
+		10FFD58620CDF3D000910B40 /* Mapper4.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Mapper4.h; sourceTree = "<group>"; };
+		10FFD58720CDF3D000910B40 /* APU.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = APU.cpp; sourceTree = "<group>"; };
+		10FFD58820CDF3D000910B40 /* Mapper0.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Mapper0.h; sourceTree = "<group>"; };
+		10FFD58920CDF3D000910B40 /* CPU.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CPU.cpp; sourceTree = "<group>"; };
+		10FFD58A20CDF3D000910B40 /* Mapper9.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Mapper9.cpp; sourceTree = "<group>"; };
+		10FFD58C20CDF3D000910B40 /* Display.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Display.cpp; sourceTree = "<group>"; };
+		10FFD58D20CDF3D000910B40 /* Display.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Display.h; sourceTree = "<group>"; };
+		10FFD59D20CDF3D000910B40 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		10FFD5D520CDF66F00910B40 /* Zelda.nes */ = {isa = PBXFileReference; lastKnownFileType = file; name = Zelda.nes; path = roms/Zelda.nes; sourceTree = SOURCE_ROOT; };
+		10FFD5D820CDF6A500910B40 /* wavefile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wavefile.h; sourceTree = "<group>"; };
+		10FFD5DA20CDF6A500910B40 /* pa_win_ds.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pa_win_ds.h; sourceTree = "<group>"; };
+		10FFD5DB20CDF6A500910B40 /* pa_win_waveformat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pa_win_waveformat.h; sourceTree = "<group>"; };
+		10FFD5DC20CDF6A500910B40 /* pa_win_wmme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pa_win_wmme.h; sourceTree = "<group>"; };
+		10FFD5DD20CDF6A500910B40 /* portaudio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = portaudio.h; sourceTree = "<group>"; };
+		10FFD5DE20CDF6A500910B40 /* libportaudio.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libportaudio.a; sourceTree = "<group>"; };
+		10FFD5DF20CDF6A500910B40 /* pa_asio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pa_asio.h; sourceTree = "<group>"; };
+		10FFD5E020CDF6A500910B40 /* pa_win_wasapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pa_win_wasapi.h; sourceTree = "<group>"; };
+		10FFD5E120CDF6A500910B40 /* pa_win_wdmks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pa_win_wdmks.h; sourceTree = "<group>"; };
+		10FFD5E320CDF6A500910B40 /* glfw3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glfw3.h; sourceTree = "<group>"; };
+		10FFD5E420CDF6A500910B40 /* libglfw3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libglfw3.a; sourceTree = "<group>"; };
+		10FFD5E520CDF6A500910B40 /* libglfw.3.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libglfw.3.3.dylib; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		1060B1071F43737D00C9EFF5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				10D7FF42209458950070569F /* Carbon.framework in Frameworks */,
+				10D7FF402094588D0070569F /* CoreServices.framework in Frameworks */,
+				10D7FF3E209458830070569F /* AudioUnit.framework in Frameworks */,
+				10D7FF3C2094587B0070569F /* AudioToolbox.framework in Frameworks */,
+				10D7FF3A209458700070569F /* CoreAudio.framework in Frameworks */,
+				10FFD5E720CDF6A500910B40 /* libglfw3.a in Frameworks */,
+				10E2D594205F2E4D009AC3C2 /* CoreVideo.framework in Frameworks */,
+				10E2D592205F2E45009AC3C2 /* Cocoa.framework in Frameworks */,
+				10FFD5E620CDF6A500910B40 /* libportaudio.a in Frameworks */,
+				10E2D590205F2E39009AC3C2 /* IOKit.framework in Frameworks */,
+				1060B1241F4373F200C9EFF5 /* OpenGL.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		10969B4E20C6F91E00895FC1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		102EDAD8205EF179005F0475 /* Nintendoish */ = {
+			isa = PBXGroup;
+			children = (
+				10FFD56A20CDF3D000910B40 /* Core */,
+				10FFD58B20CDF3D000910B40 /* Desktop */,
+				10FFD55B20CDF3D000910B40 /* iOS */,
+			);
+			name = Nintendoish;
+			sourceTree = "<group>";
+		};
+		1060B1011F43737D00C9EFF5 = {
+			isa = PBXGroup;
+			children = (
+				102EDAD8205EF179005F0475 /* Nintendoish */,
+				1060B10B1F43737D00C9EFF5 /* Products */,
+				1060B1221F4373F200C9EFF5 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		1060B10B1F43737D00C9EFF5 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1060B10A1F43737D00C9EFF5 /* Nintendoish */,
+				10969B5120C6F91E00895FC1 /* Nintendoish-iOS.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		1060B1221F4373F200C9EFF5 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				10D7FF41209458950070569F /* Carbon.framework */,
+				10D7FF3F2094588D0070569F /* CoreServices.framework */,
+				10D7FF3D209458830070569F /* AudioUnit.framework */,
+				10D7FF3B2094587B0070569F /* AudioToolbox.framework */,
+				10D7FF39209458700070569F /* CoreAudio.framework */,
+				10E2D593205F2E4D009AC3C2 /* CoreVideo.framework */,
+				10E2D591205F2E45009AC3C2 /* Cocoa.framework */,
+				10E2D58F205F2E39009AC3C2 /* IOKit.framework */,
+				1060B1231F4373F200C9EFF5 /* OpenGL.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		10FFD55B20CDF3D000910B40 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				10FFD55C20CDF3D000910B40 /* BridgingHeader.h */,
+				10FFD55D20CDF3D000910B40 /* Assets.xcassets */,
+				10FFD55E20CDF3D000910B40 /* NESBridge.mm */,
+				10FFD5D520CDF66F00910B40 /* Zelda.nes */,
+				10FFD55F20CDF3D000910B40 /* NESBridge.h */,
+				10FFD56020CDF3D000910B40 /* Shaders.metal */,
+				10FFD56120CDF3D000910B40 /* LaunchScreen.storyboard */,
+				10FFD56320CDF3D000910B40 /* Main.storyboard */,
+				10FFD56520CDF3D000910B40 /* ShaderTypes.h */,
+				10FFD56620CDF3D000910B40 /* NESViewController.swift */,
+				10FFD56720CDF3D000910B40 /* AppDelegate.swift */,
+				10FFD56820CDF3D000910B40 /* Info.plist */,
+				10FFD56920CDF3D000910B40 /* Renderer.swift */,
+			);
+			name = iOS;
+			path = src/iOS;
+			sourceTree = "<group>";
+		};
+		10FFD56A20CDF3D000910B40 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				10FFD56B20CDF3D000910B40 /* Mapper4.cpp */,
+				10FFD56C20CDF3D000910B40 /* Memory.cpp */,
+				10FFD56D20CDF3D000910B40 /* PPU.cpp */,
+				10FFD56E20CDF3D000910B40 /* Mapper1.h */,
+				10FFD56F20CDF3D000910B40 /* Mapper7.cpp */,
+				10FFD57020CDF3D000910B40 /* Mapper.cpp */,
+				10FFD57120CDF3D000910B40 /* Mapper2.cpp */,
+				10FFD57220CDF3D000910B40 /* Mapper3.cpp */,
+				10FFD57320CDF3D000910B40 /* PPUMemory.cpp */,
+				10FFD57420CDF3D000910B40 /* Cartridge.cpp */,
+				10FFD57520CDF3D000910B40 /* Mapper1.cpp */,
+				10FFD57620CDF3D000910B40 /* Mapper0.cpp */,
+				10FFD57720CDF3D000910B40 /* PPUMemory.h */,
+				10FFD57820CDF3D000910B40 /* NES.cpp */,
+				10FFD57920CDF3D000910B40 /* Mapper2.h */,
+				10FFD57A20CDF3D000910B40 /* Mapper.h */,
+				10FFD57B20CDF3D000910B40 /* NES.h */,
+				10FFD57C20CDF3D000910B40 /* Controller.h */,
+				10FFD57D20CDF3D000910B40 /* Mapper7.h */,
+				10FFD57E20CDF3D000910B40 /* PPU.h */,
+				10FFD57F20CDF3D000910B40 /* Mapper3.h */,
+				10FFD58020CDF3D000910B40 /* Mapper9.h */,
+				10FFD58120CDF3D000910B40 /* Cartridge.h */,
+				10FFD58220CDF3D000910B40 /* CPU.h */,
+				10FFD58320CDF3D000910B40 /* APU.h */,
+				10FFD58420CDF3D000910B40 /* Memory.h */,
+				10FFD58520CDF3D000910B40 /* Controller.cpp */,
+				10FFD58620CDF3D000910B40 /* Mapper4.h */,
+				10FFD58720CDF3D000910B40 /* APU.cpp */,
+				10FFD58820CDF3D000910B40 /* Mapper0.h */,
+				10FFD58920CDF3D000910B40 /* CPU.cpp */,
+				10FFD58A20CDF3D000910B40 /* Mapper9.cpp */,
+			);
+			name = Core;
+			path = src/Core;
+			sourceTree = "<group>";
+		};
+		10FFD58B20CDF3D000910B40 /* Desktop */ = {
+			isa = PBXGroup;
+			children = (
+				10FFD5D720CDF6A500910B40 /* lib */,
+				10FFD58C20CDF3D000910B40 /* Display.cpp */,
+				10FFD58D20CDF3D000910B40 /* Display.h */,
+				10FFD59D20CDF3D000910B40 /* main.cpp */,
+			);
+			name = Desktop;
+			path = src/Desktop;
+			sourceTree = "<group>";
+		};
+		10FFD5D720CDF6A500910B40 /* lib */ = {
+			isa = PBXGroup;
+			children = (
+				10FFD5D820CDF6A500910B40 /* wavefile.h */,
+				10FFD5D920CDF6A500910B40 /* PortAudio */,
+				10FFD5E220CDF6A500910B40 /* GLFW */,
+			);
+			path = lib;
+			sourceTree = "<group>";
+		};
+		10FFD5D920CDF6A500910B40 /* PortAudio */ = {
+			isa = PBXGroup;
+			children = (
+				10FFD5DA20CDF6A500910B40 /* pa_win_ds.h */,
+				10FFD5DB20CDF6A500910B40 /* pa_win_waveformat.h */,
+				10FFD5DC20CDF6A500910B40 /* pa_win_wmme.h */,
+				10FFD5DD20CDF6A500910B40 /* portaudio.h */,
+				10FFD5DE20CDF6A500910B40 /* libportaudio.a */,
+				10FFD5DF20CDF6A500910B40 /* pa_asio.h */,
+				10FFD5E020CDF6A500910B40 /* pa_win_wasapi.h */,
+				10FFD5E120CDF6A500910B40 /* pa_win_wdmks.h */,
+			);
+			path = PortAudio;
+			sourceTree = "<group>";
+		};
+		10FFD5E220CDF6A500910B40 /* GLFW */ = {
+			isa = PBXGroup;
+			children = (
+				10FFD5E320CDF6A500910B40 /* glfw3.h */,
+				10FFD5E420CDF6A500910B40 /* libglfw3.a */,
+				10FFD5E520CDF6A500910B40 /* libglfw.3.3.dylib */,
+			);
+			path = GLFW;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		1060B1091F43737D00C9EFF5 /* Nintendoish */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1060B1111F43737D00C9EFF5 /* Build configuration list for PBXNativeTarget "Nintendoish" */;
+			buildPhases = (
+				1060B1061F43737D00C9EFF5 /* Sources */,
+				1060B1071F43737D00C9EFF5 /* Frameworks */,
+				1060B1081F43737D00C9EFF5 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Nintendoish;
+			productName = Gameboyish;
+			productReference = 1060B10A1F43737D00C9EFF5 /* Nintendoish */;
+			productType = "com.apple.product-type.tool";
+		};
+		10969B5020C6F91E00895FC1 /* Nintendoish-iOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 10969B6520C6F91F00895FC1 /* Build configuration list for PBXNativeTarget "Nintendoish-iOS" */;
+			buildPhases = (
+				10969B4D20C6F91E00895FC1 /* Sources */,
+				10969B4F20C6F91E00895FC1 /* Resources */,
+				10969B4E20C6F91E00895FC1 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Nintendoish-iOS";
+			productName = "Nintendoish-iOS";
+			productReference = 10969B5120C6F91E00895FC1 /* Nintendoish-iOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		1060B1021F43737D00C9EFF5 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0940;
+				LastUpgradeCheck = 1000;
+				ORGANIZATIONNAME = "Ingebretsen, Andrew (HBO)";
+				TargetAttributes = {
+					1060B1091F43737D00C9EFF5 = {
+						CreatedOnToolsVersion = 8.3.3;
+						DevelopmentTeam = Q8ZUCZJ2K4;
+						ProvisioningStyle = Automatic;
+					};
+					10969B5020C6F91E00895FC1 = {
+						CreatedOnToolsVersion = 9.4;
+						DevelopmentTeam = 4DCQ4JU9B3;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 1060B1051F43737D00C9EFF5 /* Build configuration list for PBXProject "Nintendoish" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 1060B1011F43737D00C9EFF5;
+			productRefGroup = 1060B10B1F43737D00C9EFF5 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				1060B1091F43737D00C9EFF5 /* Nintendoish */,
+				10969B5020C6F91E00895FC1 /* Nintendoish-iOS */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		10969B4F20C6F91E00895FC1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				10FFD5D320CDF5E900910B40 /* Assets.xcassets in Resources */,
+				10FFD5D620CDF66F00910B40 /* Zelda.nes in Resources */,
+				10FFD5B320CDF5C700910B40 /* LaunchScreen.storyboard in Resources */,
+				10FFD5B420CDF5C700910B40 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1060B1061F43737D00C9EFF5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				10FFD5E920CDF76100910B40 /* Mapper4.cpp in Sources */,
+				10FFD5EA20CDF76100910B40 /* Memory.cpp in Sources */,
+				10FFD5EB20CDF76100910B40 /* PPU.cpp in Sources */,
+				10FFD5EC20CDF76100910B40 /* Mapper7.cpp in Sources */,
+				10FFD5ED20CDF76100910B40 /* Mapper.cpp in Sources */,
+				10FFD5EE20CDF76100910B40 /* Mapper2.cpp in Sources */,
+				10FFD5EF20CDF76100910B40 /* Mapper3.cpp in Sources */,
+				10FFD5F020CDF76100910B40 /* PPUMemory.cpp in Sources */,
+				10FFD5F120CDF76100910B40 /* Cartridge.cpp in Sources */,
+				10FFD5F220CDF76100910B40 /* Mapper1.cpp in Sources */,
+				10FFD5F320CDF76100910B40 /* Mapper0.cpp in Sources */,
+				10FFD5F420CDF76100910B40 /* NES.cpp in Sources */,
+				10FFD5F520CDF76100910B40 /* Controller.cpp in Sources */,
+				10FFD5F620CDF76100910B40 /* APU.cpp in Sources */,
+				10FFD5F720CDF76100910B40 /* CPU.cpp in Sources */,
+				10FFD5F820CDF76100910B40 /* Mapper9.cpp in Sources */,
+				10FFD5F920CDF76100910B40 /* Display.cpp in Sources */,
+				10FFD5FA20CDF76100910B40 /* main.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		10969B4D20C6F91E00895FC1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				10FFD5D420CDF64A00910B40 /* Shaders.metal in Sources */,
+				10FFD5AF20CDF48200910B40 /* NESBridge.mm in Sources */,
+				10FFD5B020CDF48200910B40 /* NESViewController.swift in Sources */,
+				10FFD5B120CDF48200910B40 /* AppDelegate.swift in Sources */,
+				10FFD5B220CDF48200910B40 /* Renderer.swift in Sources */,
+				10FFD59E20CDF40900910B40 /* Mapper4.cpp in Sources */,
+				10FFD59F20CDF40900910B40 /* Memory.cpp in Sources */,
+				10FFD5A020CDF40900910B40 /* PPU.cpp in Sources */,
+				10FFD5A120CDF40900910B40 /* Mapper1.h in Sources */,
+				10FFD5A220CDF40900910B40 /* Mapper7.cpp in Sources */,
+				10FFD5A320CDF40900910B40 /* Mapper.cpp in Sources */,
+				10FFD5A420CDF40900910B40 /* Mapper2.cpp in Sources */,
+				10FFD5A520CDF40900910B40 /* Mapper3.cpp in Sources */,
+				10FFD5A620CDF40900910B40 /* PPUMemory.cpp in Sources */,
+				10FFD5A720CDF40900910B40 /* Cartridge.cpp in Sources */,
+				10FFD5A820CDF40900910B40 /* Mapper1.cpp in Sources */,
+				10FFD5A920CDF40900910B40 /* Mapper0.cpp in Sources */,
+				10FFD5AA20CDF40900910B40 /* NES.cpp in Sources */,
+				10FFD5AB20CDF40900910B40 /* Controller.cpp in Sources */,
+				10FFD5AC20CDF40900910B40 /* APU.cpp in Sources */,
+				10FFD5AD20CDF40900910B40 /* CPU.cpp in Sources */,
+				10FFD5AE20CDF40900910B40 /* Mapper9.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		10FFD56120CDF3D000910B40 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				10FFD56220CDF3D000910B40 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		10FFD56320CDF3D000910B40 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				10FFD56420CDF3D000910B40 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		1060B10F1F43737D00C9EFF5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		1060B1101F43737D00C9EFF5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		1060B1121F43737D00C9EFF5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEVELOPMENT_TEAM = Q8ZUCZJ2K4;
+				LIBRARY_SEARCH_PATHS = (
+					"../lib/**",
+					"$(PROJECT_DIR)/src/Desktop/lib/PortAudio",
+					"$(PROJECT_DIR)/src/Desktop/lib/GLFW",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		1060B1131F43737D00C9EFF5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEVELOPMENT_TEAM = Q8ZUCZJ2K4;
+				LIBRARY_SEARCH_PATHS = (
+					"../lib/**",
+					"$(PROJECT_DIR)/src/Desktop/lib/PortAudio",
+					"$(PROJECT_DIR)/src/Desktop/lib/GLFW",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		10969B6620C6F91F00895FC1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 4DCQ4JU9B3;
+				FRAMEWORK_SEARCH_PATHS = "";
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = "$(SRCROOT)/src/iOS/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.peopletech.Nintendoish-iOS";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/src/iOS/ShaderTypes.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = "../src/**";
+				VALID_ARCHS = arm64;
+			};
+			name = Debug;
+		};
+		10969B6720C6F91F00895FC1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 4DCQ4JU9B3;
+				FRAMEWORK_SEARCH_PATHS = "";
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = "$(SRCROOT)/src/iOS/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.peopletech.Nintendoish-iOS";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/src/iOS/ShaderTypes.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = "../src/**";
+				VALIDATE_PRODUCT = YES;
+				VALID_ARCHS = arm64;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1060B1051F43737D00C9EFF5 /* Build configuration list for PBXProject "Nintendoish" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1060B10F1F43737D00C9EFF5 /* Debug */,
+				1060B1101F43737D00C9EFF5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1060B1111F43737D00C9EFF5 /* Build configuration list for PBXNativeTarget "Nintendoish" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1060B1121F43737D00C9EFF5 /* Debug */,
+				1060B1131F43737D00C9EFF5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		10969B6520C6F91F00895FC1 /* Build configuration list for PBXNativeTarget "Nintendoish-iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				10969B6620C6F91F00895FC1 /* Debug */,
+				10969B6720C6F91F00895FC1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 1060B1021F43737D00C9EFF5 /* Project object */;
+}

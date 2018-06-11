@@ -10,6 +10,17 @@
 
 @interface NESBridge : NSObject
 
+typedef NS_ENUM(NSInteger, NESButton) {
+    A,
+    B,
+    START,
+    SELECT,
+    UP,
+    DOWN,
+    LEFT,
+    RIGHT
+};
+
 +(NESBridge*)sharedNES;
 
 -(void)initializeConsole;
@@ -18,5 +29,8 @@
 -(unsigned int)getDisplayBufferSize;
 -(unsigned int*)getDisplayBuffer;
 -(void)getAudioBuffer;
+-(void)pressButton:(NESButton)button;
+-(void)releaseButton:(NESButton)button;
+
 
 @end

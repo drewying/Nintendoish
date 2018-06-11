@@ -41,4 +41,30 @@ class NESViewController: UIViewController {
         
         NESBridge.sharedNES().loadRom(Bundle.main.path(forResource: "Zelda", ofType: "nes"))
     }
+    @IBAction func AButtonTouchDown(_ sender: Any) {
+        NESBridge.sharedNES()?.press(.A)
+    }
+    @IBAction func AButtonTouchUpInside(_ sender: Any) {
+        NESBridge.sharedNES()?.release(.A)
+    }
+    
+    @IBAction func BButtonTouchDown(_ sender: Any) {
+        NESBridge.sharedNES()?.press(.B)
+    }
+    @IBAction func BButtonTouchUpInside(_ sender: Any) {
+        NESBridge.sharedNES()?.release(.B)
+    }
+    @IBAction func startButtonTouchDown(_ sender: Any) {
+        NESBridge.sharedNES()?.press(.START)
+    }
+    @IBAction func startButtonTouchUpInside(_ sender: Any) {
+        NESBridge.sharedNES()?.release(.START)
+    }
+    @IBAction func selectButtonTouchDown(_ sender: Any) {
+        NESBridge.sharedNES()?.press(.SELECT)
+    }
+    @IBAction func selectButtonTouchUpInside(_ sender: Any) {
+        NESBridge.sharedNES()?.release(.SELECT)
+    }
+    
 }
