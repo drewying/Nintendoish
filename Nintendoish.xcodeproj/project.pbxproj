@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		105CD0F120D1021400B67406 /* RomBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 105CD0EF20D1020F00B67406 /* RomBrowserViewController.swift */; };
+		105CD0F720D1059F00B67406 /* RomBrowserTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 105CD0F520D104E300B67406 /* RomBrowserTableViewCell.swift */; };
+		105CD0F820D1068600B67406 /* Pixel_NES.otf in Resources */ = {isa = PBXBuildFile; fileRef = 105CD0F420D1038500B67406 /* Pixel_NES.otf */; };
+		105CD0FB20D116B900B67406 /* GameLibrary.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 105CD0F920D116B900B67406 /* GameLibrary.xcdatamodeld */; };
 		1060B1241F4373F200C9EFF5 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1060B1231F4373F200C9EFF5 /* OpenGL.framework */; };
 		10D7FF3A209458700070569F /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10D7FF39209458700070569F /* CoreAudio.framework */; };
 		10D7FF3C2094587B0070569F /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10D7FF3B2094587B0070569F /* AudioToolbox.framework */; };
@@ -77,6 +81,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		105CD0EF20D1020F00B67406 /* RomBrowserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RomBrowserViewController.swift; sourceTree = "<group>"; };
+		105CD0F420D1038500B67406 /* Pixel_NES.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = Pixel_NES.otf; path = ../../../../../Downloads/Pixel_NES/Pixel_NES.otf; sourceTree = "<group>"; };
+		105CD0F520D104E300B67406 /* RomBrowserTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RomBrowserTableViewCell.swift; path = src/iOS/RomBrowserTableViewCell.swift; sourceTree = SOURCE_ROOT; };
+		105CD0FA20D116B900B67406 /* DataStore.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DataStore.xcdatamodel; sourceTree = "<group>"; };
 		1060B10A1F43737D00C9EFF5 /* Nintendoish */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Nintendoish; sourceTree = BUILT_PRODUCTS_DIR; };
 		1060B1231F4373F200C9EFF5 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		10969B5120C6F91E00895FC1 /* Nintendoish-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Nintendoish-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -189,6 +197,16 @@
 			name = Nintendoish;
 			sourceTree = "<group>";
 		};
+		105CD0F320D1023300B67406 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				10FFD56620CDF3D000910B40 /* NESViewController.swift */,
+				105CD0EF20D1020F00B67406 /* RomBrowserViewController.swift */,
+				105CD0F520D104E300B67406 /* RomBrowserTableViewCell.swift */,
+			);
+			path = ViewControllers;
+			sourceTree = "<group>";
+		};
 		1060B1011F43737D00C9EFF5 = {
 			isa = PBXGroup;
 			children = (
@@ -229,12 +247,14 @@
 				10FFD56720CDF3D000910B40 /* AppDelegate.swift */,
 				10FFD55F20CDF3D000910B40 /* NESConsole.h */,
 				10FFD55E20CDF3D000910B40 /* NESConsole.mm */,
-				10FFD56620CDF3D000910B40 /* NESViewController.swift */,
 				10FFD56920CDF3D000910B40 /* Renderer.swift */,
+				105CD0F320D1023300B67406 /* ViewControllers */,
 				10FFD55C20CDF3D000910B40 /* BridgingHeader.h */,
+				105CD0F920D116B900B67406 /* GameLibrary.xcdatamodeld */,
 				10FFD55D20CDF3D000910B40 /* Assets.xcassets */,
 				10FFD5D520CDF66F00910B40 /* Zelda.nes */,
 				10FFD56020CDF3D000910B40 /* Shaders.metal */,
+				105CD0F420D1038500B67406 /* Pixel_NES.otf */,
 				10FFD56120CDF3D000910B40 /* LaunchScreen.storyboard */,
 				10FFD56320CDF3D000910B40 /* Main.storyboard */,
 				10FFD56520CDF3D000910B40 /* ShaderTypes.h */,
@@ -381,6 +401,7 @@
 					1060B1091F43737D00C9EFF5 = {
 						CreatedOnToolsVersion = 8.3.3;
 						DevelopmentTeam = Q8ZUCZJ2K4;
+						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 					};
 					10969B5020C6F91E00895FC1 = {
@@ -416,6 +437,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				10FFD5D320CDF5E900910B40 /* Assets.xcassets in Resources */,
+				105CD0F820D1068600B67406 /* Pixel_NES.otf in Resources */,
 				10FFD5D620CDF66F00910B40 /* Zelda.nes in Resources */,
 				10FFD5B320CDF5C700910B40 /* LaunchScreen.storyboard in Resources */,
 				10FFD5B420CDF5C700910B40 /* Main.storyboard in Resources */,
@@ -433,6 +455,7 @@
 				10FFD5EA20CDF76100910B40 /* Memory.cpp in Sources */,
 				10FFD5EB20CDF76100910B40 /* PPU.cpp in Sources */,
 				10FFD5EC20CDF76100910B40 /* Mapper7.cpp in Sources */,
+				105CD0FB20D116B900B67406 /* GameLibrary.xcdatamodeld in Sources */,
 				10FFD5ED20CDF76100910B40 /* Mapper.cpp in Sources */,
 				10FFD5EE20CDF76100910B40 /* Mapper2.cpp in Sources */,
 				10FFD5EF20CDF76100910B40 /* Mapper3.cpp in Sources */,
@@ -460,12 +483,14 @@
 				10FFD5B120CDF48200910B40 /* AppDelegate.swift in Sources */,
 				10FFD5B220CDF48200910B40 /* Renderer.swift in Sources */,
 				10FFD59E20CDF40900910B40 /* Mapper4.cpp in Sources */,
+				105CD0F120D1021400B67406 /* RomBrowserViewController.swift in Sources */,
 				10FFD59F20CDF40900910B40 /* Memory.cpp in Sources */,
 				10FFD5A020CDF40900910B40 /* PPU.cpp in Sources */,
 				10FFD5A120CDF40900910B40 /* Mapper1.h in Sources */,
 				10FFD5A220CDF40900910B40 /* Mapper7.cpp in Sources */,
 				10FFD5A320CDF40900910B40 /* Mapper.cpp in Sources */,
 				10FFD5A420CDF40900910B40 /* Mapper2.cpp in Sources */,
+				105CD0F720D1059F00B67406 /* RomBrowserTableViewCell.swift in Sources */,
 				10FFD5A520CDF40900910B40 /* Mapper3.cpp in Sources */,
 				10FFD5A620CDF40900910B40 /* PPUMemory.cpp in Sources */,
 				10FFD5A720CDF40900910B40 /* Cartridge.cpp in Sources */,
@@ -610,26 +635,33 @@
 		1060B1121F43737D00C9EFF5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = Q8ZUCZJ2K4;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"../lib/**",
 					"$(PROJECT_DIR)/src/Desktop/lib/PortAudio",
 					"$(PROJECT_DIR)/src/Desktop/lib/GLFW",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.2;
 			};
 			name = Debug;
 		};
 		1060B1131F43737D00C9EFF5 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = Q8ZUCZJ2K4;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"../lib/**",
 					"$(PROJECT_DIR)/src/Desktop/lib/PortAudio",
 					"$(PROJECT_DIR)/src/Desktop/lib/GLFW",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
 			};
 			name = Release;
 		};
@@ -724,6 +756,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		105CD0F920D116B900B67406 /* GameLibrary.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				105CD0FA20D116B900B67406 /* DataStore.xcdatamodel */,
+			);
+			currentVersion = 105CD0FA20D116B900B67406 /* DataStore.xcdatamodel */;
+			path = GameLibrary.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 1060B1021F43737D00C9EFF5 /* Project object */;
 }

@@ -11,14 +11,13 @@ import MetalKit
 
 // Our iOS specific view controller
 class NESViewController: UIViewController {
-
-    var renderer: Renderer!
-    @IBOutlet weak var metalView: MTKView!
-
-    var nes: NESConsole!
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
+     @IBOutlet weak var metalView: MTKView!
+    var renderer: Renderer!
+    var nes: NESConsole = NESConsole()
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         
         // Select the device to render with.  We choose the default device
         guard let defaultDevice = MTLCreateSystemDefaultDevice() else {
@@ -28,8 +27,6 @@ class NESViewController: UIViewController {
         
         metalView.device = defaultDevice
         metalView.backgroundColor = UIColor.black
-        nes = NESConsole()
-        nes.loadRom(Bundle.main.path(forResource: "Zelda", ofType: "nes"))
         
         guard let newRenderer = Renderer(metalKitView: metalView, nes: nes) else {
             print("Renderer cannot be initialized")
@@ -42,6 +39,10 @@ class NESViewController: UIViewController {
 
         metalView.delegate = renderer
         
+    }
+    
+    public func loadRom(path:String) {
+        nes.loadRom(path)
     }
     
     @IBAction func AButtonTouchDown(_ sender: UIButton) {
