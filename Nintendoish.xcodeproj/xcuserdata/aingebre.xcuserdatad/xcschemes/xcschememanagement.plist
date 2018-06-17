@@ -9,14 +9,19 @@
 			<key>orderHint</key>
 			<integer>1</integer>
 		</dict>
-		<key>Nintendoish.xcscheme</key>
+		<key>Nintendoish-macOS.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>0</integer>
+			<integer>2</integer>
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>100F275220D259800048F68B</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>1060B1091F43737D00C9EFF5</key>
 		<dict>
 			<key>primary</key>

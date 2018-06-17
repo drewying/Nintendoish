@@ -10,6 +10,7 @@ import UIKit
 
 class RomBrowserTableViewCell: UITableViewCell {
 
+    @IBOutlet weak var coverImage: UIImageView!
     @IBOutlet weak var titleLabel: UILabel!
     
     override func awakeFromNib() {

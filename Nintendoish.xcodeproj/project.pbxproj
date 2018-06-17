@@ -7,10 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1003FB9620D377BD0059A18B /* GameLibraryPersistentContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1003FB9520D377BD0059A18B /* GameLibraryPersistentContainer.swift */; };
+		1016180C20D61B7B00DDD2B5 /* Data+MD5.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1016180B20D61B7B00DDD2B5 /* Data+MD5.swift */; };
+		10164BE420D6289300F13ED2 /* Game+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10164BD920D6287F00F13ED2 /* Game+CoreDataProperties.swift */; };
+		10164BE620D6289700F13ED2 /* Game+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10164BD820D6287F00F13ED2 /* Game+CoreDataClass.swift */; };
+		10164BE720D6289B00F13ED2 /* Rom+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10164BDA20D6287F00F13ED2 /* Rom+CoreDataClass.swift */; };
+		10164BE820D6289F00F13ED2 /* Rom+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10164BDB20D6287F00F13ED2 /* Rom+CoreDataProperties.swift */; };
+		10164BE920D628A200F13ED2 /* HashEntry+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10164BDC20D6287F00F13ED2 /* HashEntry+CoreDataClass.swift */; };
+		10164BEA20D628A500F13ED2 /* HashEntry+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10164BDD20D6287F00F13ED2 /* HashEntry+CoreDataProperties.swift */; };
+		10164BEC20D6407400F13ED2 /* GameLibrary.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 10164BEB20D6407400F13ED2 /* GameLibrary.sqlite */; };
 		105CD0F120D1021400B67406 /* RomBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 105CD0EF20D1020F00B67406 /* RomBrowserViewController.swift */; };
 		105CD0F720D1059F00B67406 /* RomBrowserTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 105CD0F520D104E300B67406 /* RomBrowserTableViewCell.swift */; };
 		105CD0F820D1068600B67406 /* Pixel_NES.otf in Resources */ = {isa = PBXBuildFile; fileRef = 105CD0F420D1038500B67406 /* Pixel_NES.otf */; };
-		105CD0FB20D116B900B67406 /* GameLibrary.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 105CD0F920D116B900B67406 /* GameLibrary.xcdatamodeld */; };
 		1060B1241F4373F200C9EFF5 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1060B1231F4373F200C9EFF5 /* OpenGL.framework */; };
 		10D7FF3A209458700070569F /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10D7FF39209458700070569F /* CoreAudio.framework */; };
 		10D7FF3C2094587B0070569F /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10D7FF3B2094587B0070569F /* AudioToolbox.framework */; };
@@ -20,6 +28,7 @@
 		10E2D590205F2E39009AC3C2 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10E2D58F205F2E39009AC3C2 /* IOKit.framework */; };
 		10E2D592205F2E45009AC3C2 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10E2D591205F2E45009AC3C2 /* Cocoa.framework */; };
 		10E2D594205F2E4D009AC3C2 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10E2D593205F2E4D009AC3C2 /* CoreVideo.framework */; };
+		10FF3D3E20D6254700B92AE1 /* GameLibrary.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 10FF3D3820D6228400B92AE1 /* GameLibrary.xcdatamodeld */; };
 		10FFD59E20CDF40900910B40 /* Mapper4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD56B20CDF3D000910B40 /* Mapper4.cpp */; };
 		10FFD59F20CDF40900910B40 /* Memory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD56C20CDF3D000910B40 /* Memory.cpp */; };
 		10FFD5A020CDF40900910B40 /* PPU.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD56D20CDF3D000910B40 /* PPU.cpp */; };
@@ -45,7 +54,6 @@
 		10FFD5B420CDF5C700910B40 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 10FFD56320CDF3D000910B40 /* Main.storyboard */; };
 		10FFD5D320CDF5E900910B40 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 10FFD55D20CDF3D000910B40 /* Assets.xcassets */; };
 		10FFD5D420CDF64A00910B40 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD56020CDF3D000910B40 /* Shaders.metal */; };
-		10FFD5D620CDF66F00910B40 /* Zelda.nes in Resources */ = {isa = PBXBuildFile; fileRef = 10FFD5D520CDF66F00910B40 /* Zelda.nes */; };
 		10FFD5E620CDF6A500910B40 /* libportaudio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 10FFD5DE20CDF6A500910B40 /* libportaudio.a */; };
 		10FFD5E720CDF6A500910B40 /* libglfw3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 10FFD5E420CDF6A500910B40 /* libglfw3.a */; };
 		10FFD5E920CDF76100910B40 /* Mapper4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD56B20CDF3D000910B40 /* Mapper4.cpp */; };
@@ -81,11 +89,20 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1003FB9520D377BD0059A18B /* GameLibraryPersistentContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameLibraryPersistentContainer.swift; sourceTree = "<group>"; };
+		1016180620D617D800DDD2B5 /* GameDatabaseBuilder.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; name = GameDatabaseBuilder.playground; path = src/iOS/GameDatabaseBuilder.playground; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		1016180B20D61B7B00DDD2B5 /* Data+MD5.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+MD5.swift"; sourceTree = "<group>"; };
+		10164BD820D6287F00F13ED2 /* Game+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Game+CoreDataClass.swift"; sourceTree = "<group>"; };
+		10164BD920D6287F00F13ED2 /* Game+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Game+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		10164BDA20D6287F00F13ED2 /* Rom+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Rom+CoreDataClass.swift"; sourceTree = "<group>"; };
+		10164BDB20D6287F00F13ED2 /* Rom+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Rom+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		10164BDC20D6287F00F13ED2 /* HashEntry+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HashEntry+CoreDataClass.swift"; sourceTree = "<group>"; };
+		10164BDD20D6287F00F13ED2 /* HashEntry+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HashEntry+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		10164BEB20D6407400F13ED2 /* GameLibrary.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = GameLibrary.sqlite; sourceTree = "<group>"; };
 		105CD0EF20D1020F00B67406 /* RomBrowserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RomBrowserViewController.swift; sourceTree = "<group>"; };
 		105CD0F420D1038500B67406 /* Pixel_NES.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = Pixel_NES.otf; path = ../../../../../Downloads/Pixel_NES/Pixel_NES.otf; sourceTree = "<group>"; };
 		105CD0F520D104E300B67406 /* RomBrowserTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RomBrowserTableViewCell.swift; path = src/iOS/RomBrowserTableViewCell.swift; sourceTree = SOURCE_ROOT; };
-		105CD0FA20D116B900B67406 /* DataStore.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DataStore.xcdatamodel; sourceTree = "<group>"; };
-		1060B10A1F43737D00C9EFF5 /* Nintendoish */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Nintendoish; sourceTree = BUILT_PRODUCTS_DIR; };
+		1060B10A1F43737D00C9EFF5 /* Nintendoish-macOS */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Nintendoish-macOS"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1060B1231F4373F200C9EFF5 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		10969B5120C6F91E00895FC1 /* Nintendoish-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Nintendoish-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		10D7FF39209458700070569F /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
@@ -96,6 +113,7 @@
 		10E2D58F205F2E39009AC3C2 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		10E2D591205F2E45009AC3C2 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		10E2D593205F2E4D009AC3C2 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		10FF3D3920D6228400B92AE1 /* DataStore.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DataStore.xcdatamodel; sourceTree = "<group>"; };
 		10FFD55C20CDF3D000910B40 /* BridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgingHeader.h; sourceTree = "<group>"; };
 		10FFD55D20CDF3D000910B40 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		10FFD55E20CDF3D000910B40 /* NESConsole.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = NESConsole.mm; sourceTree = "<group>"; };
@@ -143,7 +161,6 @@
 		10FFD58C20CDF3D000910B40 /* Display.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Display.cpp; sourceTree = "<group>"; };
 		10FFD58D20CDF3D000910B40 /* Display.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Display.h; sourceTree = "<group>"; };
 		10FFD59D20CDF3D000910B40 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		10FFD5D520CDF66F00910B40 /* Zelda.nes */ = {isa = PBXFileReference; lastKnownFileType = file; name = Zelda.nes; path = roms/Zelda.nes; sourceTree = SOURCE_ROOT; };
 		10FFD5D820CDF6A500910B40 /* wavefile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wavefile.h; sourceTree = "<group>"; };
 		10FFD5DA20CDF6A500910B40 /* pa_win_ds.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pa_win_ds.h; sourceTree = "<group>"; };
 		10FFD5DB20CDF6A500910B40 /* pa_win_waveformat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pa_win_waveformat.h; sourceTree = "<group>"; };
@@ -219,7 +236,7 @@
 		1060B10B1F43737D00C9EFF5 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1060B10A1F43737D00C9EFF5 /* Nintendoish */,
+				1060B10A1F43737D00C9EFF5 /* Nintendoish-macOS */,
 				10969B5120C6F91E00895FC1 /* Nintendoish-iOS.app */,
 			);
 			name = Products;
@@ -245,14 +262,23 @@
 			isa = PBXGroup;
 			children = (
 				10FFD56720CDF3D000910B40 /* AppDelegate.swift */,
+				1016180B20D61B7B00DDD2B5 /* Data+MD5.swift */,
+				10164BD820D6287F00F13ED2 /* Game+CoreDataClass.swift */,
+				10164BD920D6287F00F13ED2 /* Game+CoreDataProperties.swift */,
+				10164BDA20D6287F00F13ED2 /* Rom+CoreDataClass.swift */,
+				10164BDB20D6287F00F13ED2 /* Rom+CoreDataProperties.swift */,
+				10164BDC20D6287F00F13ED2 /* HashEntry+CoreDataClass.swift */,
+				10164BDD20D6287F00F13ED2 /* HashEntry+CoreDataProperties.swift */,
+				1003FB9520D377BD0059A18B /* GameLibraryPersistentContainer.swift */,
 				10FFD55F20CDF3D000910B40 /* NESConsole.h */,
 				10FFD55E20CDF3D000910B40 /* NESConsole.mm */,
 				10FFD56920CDF3D000910B40 /* Renderer.swift */,
+				10164BEB20D6407400F13ED2 /* GameLibrary.sqlite */,
+				10FF3D3820D6228400B92AE1 /* GameLibrary.xcdatamodeld */,
+				1016180620D617D800DDD2B5 /* GameDatabaseBuilder.playground */,
 				105CD0F320D1023300B67406 /* ViewControllers */,
 				10FFD55C20CDF3D000910B40 /* BridgingHeader.h */,
-				105CD0F920D116B900B67406 /* GameLibrary.xcdatamodeld */,
 				10FFD55D20CDF3D000910B40 /* Assets.xcassets */,
-				10FFD5D520CDF66F00910B40 /* Zelda.nes */,
 				10FFD56020CDF3D000910B40 /* Shaders.metal */,
 				105CD0F420D1038500B67406 /* Pixel_NES.otf */,
 				10FFD56120CDF3D000910B40 /* LaunchScreen.storyboard */,
@@ -354,9 +380,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		1060B1091F43737D00C9EFF5 /* Nintendoish */ = {
+		1060B1091F43737D00C9EFF5 /* Nintendoish-macOS */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1060B1111F43737D00C9EFF5 /* Build configuration list for PBXNativeTarget "Nintendoish" */;
+			buildConfigurationList = 1060B1111F43737D00C9EFF5 /* Build configuration list for PBXNativeTarget "Nintendoish-macOS" */;
 			buildPhases = (
 				1060B1061F43737D00C9EFF5 /* Sources */,
 				1060B1071F43737D00C9EFF5 /* Frameworks */,
@@ -366,9 +392,9 @@
 			);
 			dependencies = (
 			);
-			name = Nintendoish;
+			name = "Nintendoish-macOS";
 			productName = Gameboyish;
-			productReference = 1060B10A1F43737D00C9EFF5 /* Nintendoish */;
+			productReference = 1060B10A1F43737D00C9EFF5 /* Nintendoish-macOS */;
 			productType = "com.apple.product-type.tool";
 		};
 		10969B5020C6F91E00895FC1 /* Nintendoish-iOS */ = {
@@ -394,7 +420,7 @@
 		1060B1021F43737D00C9EFF5 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0940;
+				LastSwiftUpdateCheck = 1000;
 				LastUpgradeCheck = 1000;
 				ORGANIZATIONNAME = "Ingebretsen, Andrew (HBO)";
 				TargetAttributes = {
@@ -425,7 +451,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				1060B1091F43737D00C9EFF5 /* Nintendoish */,
+				1060B1091F43737D00C9EFF5 /* Nintendoish-macOS */,
 				10969B5020C6F91E00895FC1 /* Nintendoish-iOS */,
 			);
 		};
@@ -438,7 +464,7 @@
 			files = (
 				10FFD5D320CDF5E900910B40 /* Assets.xcassets in Resources */,
 				105CD0F820D1068600B67406 /* Pixel_NES.otf in Resources */,
-				10FFD5D620CDF66F00910B40 /* Zelda.nes in Resources */,
+				10164BEC20D6407400F13ED2 /* GameLibrary.sqlite in Resources */,
 				10FFD5B320CDF5C700910B40 /* LaunchScreen.storyboard in Resources */,
 				10FFD5B420CDF5C700910B40 /* Main.storyboard in Resources */,
 			);
@@ -455,7 +481,6 @@
 				10FFD5EA20CDF76100910B40 /* Memory.cpp in Sources */,
 				10FFD5EB20CDF76100910B40 /* PPU.cpp in Sources */,
 				10FFD5EC20CDF76100910B40 /* Mapper7.cpp in Sources */,
-				105CD0FB20D116B900B67406 /* GameLibrary.xcdatamodeld in Sources */,
 				10FFD5ED20CDF76100910B40 /* Mapper.cpp in Sources */,
 				10FFD5EE20CDF76100910B40 /* Mapper2.cpp in Sources */,
 				10FFD5EF20CDF76100910B40 /* Mapper3.cpp in Sources */,
@@ -487,18 +512,27 @@
 				10FFD59F20CDF40900910B40 /* Memory.cpp in Sources */,
 				10FFD5A020CDF40900910B40 /* PPU.cpp in Sources */,
 				10FFD5A120CDF40900910B40 /* Mapper1.h in Sources */,
+				10164BE820D6289F00F13ED2 /* Rom+CoreDataProperties.swift in Sources */,
+				10FF3D3E20D6254700B92AE1 /* GameLibrary.xcdatamodeld in Sources */,
 				10FFD5A220CDF40900910B40 /* Mapper7.cpp in Sources */,
 				10FFD5A320CDF40900910B40 /* Mapper.cpp in Sources */,
+				1016180C20D61B7B00DDD2B5 /* Data+MD5.swift in Sources */,
 				10FFD5A420CDF40900910B40 /* Mapper2.cpp in Sources */,
 				105CD0F720D1059F00B67406 /* RomBrowserTableViewCell.swift in Sources */,
 				10FFD5A520CDF40900910B40 /* Mapper3.cpp in Sources */,
+				10164BE920D628A200F13ED2 /* HashEntry+CoreDataClass.swift in Sources */,
 				10FFD5A620CDF40900910B40 /* PPUMemory.cpp in Sources */,
 				10FFD5A720CDF40900910B40 /* Cartridge.cpp in Sources */,
 				10FFD5A820CDF40900910B40 /* Mapper1.cpp in Sources */,
+				1003FB9620D377BD0059A18B /* GameLibraryPersistentContainer.swift in Sources */,
+				10164BE420D6289300F13ED2 /* Game+CoreDataProperties.swift in Sources */,
+				10164BE720D6289B00F13ED2 /* Rom+CoreDataClass.swift in Sources */,
 				10FFD5A920CDF40900910B40 /* Mapper0.cpp in Sources */,
 				10FFD5AA20CDF40900910B40 /* NES.cpp in Sources */,
+				10164BEA20D628A500F13ED2 /* HashEntry+CoreDataProperties.swift in Sources */,
 				10FFD5AB20CDF40900910B40 /* Controller.cpp in Sources */,
 				10FFD5AC20CDF40900910B40 /* APU.cpp in Sources */,
+				10164BE620D6289700F13ED2 /* Game+CoreDataClass.swift in Sources */,
 				10FFD5AD20CDF40900910B40 /* CPU.cpp in Sources */,
 				10FFD5AE20CDF40900910B40 /* Mapper9.cpp in Sources */,
 			);
@@ -689,7 +723,7 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/src/iOS/ShaderTypes.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.2;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				USER_HEADER_SEARCH_PATHS = "../src/**";
 				VALID_ARCHS = arm64;
 			};
@@ -718,7 +752,7 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/src/iOS/ShaderTypes.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 4.2;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				USER_HEADER_SEARCH_PATHS = "../src/**";
 				VALIDATE_PRODUCT = YES;
 				VALID_ARCHS = arm64;
@@ -737,7 +771,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		1060B1111F43737D00C9EFF5 /* Build configuration list for PBXNativeTarget "Nintendoish" */ = {
+		1060B1111F43737D00C9EFF5 /* Build configuration list for PBXNativeTarget "Nintendoish-macOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1060B1121F43737D00C9EFF5 /* Debug */,
@@ -758,12 +792,12 @@
 /* End XCConfigurationList section */
 
 /* Begin XCVersionGroup section */
-		105CD0F920D116B900B67406 /* GameLibrary.xcdatamodeld */ = {
+		10FF3D3820D6228400B92AE1 /* GameLibrary.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
-				105CD0FA20D116B900B67406 /* DataStore.xcdatamodel */,
+				10FF3D3920D6228400B92AE1 /* DataStore.xcdatamodel */,
 			);
-			currentVersion = 105CD0FA20D116B900B67406 /* DataStore.xcdatamodel */;
+			currentVersion = 10FF3D3920D6228400B92AE1 /* DataStore.xcdatamodel */;
 			path = GameLibrary.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

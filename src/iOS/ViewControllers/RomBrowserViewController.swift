@@ -7,84 +7,57 @@
 //
 
 import UIKit
+import CoreData
 
-class RomBrowserViewController: UITableViewController, UIDocumentPickerDelegate {
-
+class RomBrowserViewController: UITableViewController, UIDocumentPickerDelegate, NSFetchedResultsControllerDelegate {
+    
+    lazy var persistentContainer: GameLibraryPersistentContainer = {
+        let container = GameLibraryPersistentContainer(name: "GameLibrary")
+        
+        container.loadPersistentStores(completionHandler: { (storeDescription, error) in
+            if let error = error {
+                fatalError("Unresolved error \(error)")
+            }
+        })
+        return container
+    }()
+    
+    var fetchedResultsController:NSFetchedResultsController<Rom>!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
+        let fr = NSFetchRequest<Rom>(entityName: "Rom")
+        fr.sortDescriptors = [NSSortDescriptor(keyPath: \Rom.game.name, ascending: true)]
+        fetchedResultsController = NSFetchedResultsController(fetchRequest: fr, managedObjectContext: persistentContainer.viewContext, sectionNameKeyPath: nil, cacheName: nil)
+        fetchedResultsController.delegate = self
+        try? fetchedResultsController.performFetch()
     }
 
-    // MARK: - Table view data source
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        let rom:Rom = self.fetchedResultsController.object(at: indexPath)
+        performSegue(withIdentifier: "playRom", sender: rom.filePath)
+    }
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
-        return 1
+        let count = fetchedResultsController.sections?.count
+        return count!
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
-        return 30;
+        let count = fetchedResultsController.sections?[section].numberOfObjects
+        return count!
     }
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! RomBrowserTableViewCell
-        cell.titleLabel.text = "The Legend of Zelda"
+        let rom:Rom = self.fetchedResultsController.object(at: indexPath)
         
-
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! RomBrowserTableViewCell
+        cell.titleLabel.text = rom.game.name
+        cell.coverImage.image = UIImage(data: rom.game.image! as Data)
         return cell
     }
-
-    /*
-    // Override to support conditional editing of the table view.
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
-        return true
-    }
-    */
-
-    /*
-    // Override to support editing the table view.
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            // Delete the row from the data source
-            tableView.deleteRows(at: [indexPath], with: .fade)
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
-    }
-    */
-
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-
-    }
-    */
-
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the item to be re-orderable.
-        return true
-    }
-    */
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
     @IBAction func addButton(_ sender: Any) {
         let vc:UIDocumentPickerViewController = UIDocumentPickerViewController.init(documentTypes: ["nintendo.nes"], in: .import)
@@ -95,12 +68,46 @@ class RomBrowserViewController: UITableViewController, UIDocumentPickerDelegate 
     
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         dismiss(animated: true, completion: nil)
-        performSegue(withIdentifier: "playGame", sender: urls.first!.path)
+        do {
+            for url in urls {
+                print("Creating Rom")
+                // Get the md5 hash
+                let md5:String = try Data(contentsOf: url).MD5()
+                
+                // Get the HashEntry from the file
+                let fetchRequest = NSFetchRequest<HashEntry>(entityName: "HashEntry")
+                fetchRequest.predicate = NSPredicate(format: "md5Hash = %@", md5)
+                fetchRequest.fetchLimit = 1
+                if let hashEntry = try self.persistentContainer.viewContext.fetch(fetchRequest).first {
+                    // Copy the file
+                    let documentDirectory = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor:nil, create:false)
+                    let fileURL = documentDirectory.appendingPathComponent(md5 + ".nes")
+                    try FileManager.default.copyItem(at: url, to: fileURL)
+                    
+                    //Create the rom file
+                    let romObj:Rom = NSEntityDescription.insertNewObject(forEntityName: "Rom", into: self.persistentContainer.viewContext) as! Rom
+                    romObj.game = hashEntry.game
+                    romObj.filePath = fileURL.path
+                    print("Created Rom")
+                    
+                    // Save
+                    try self.persistentContainer.viewContext.save()
+                } else {
+                    // Handle hash not found error here
+                }
+            }
+        } catch {
+            print("Error creating entity")
+        }
+    }
+    
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        tableView.reloadData()
     }
     
    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        var path:String = sender as! String
-        var vc:NESViewController = segue.destination as! NESViewController
+    let path:String = sender as! String
+    let vc:NESViewController = segue.destination as! NESViewController
         vc.loadRom(path: path)
     }
     
