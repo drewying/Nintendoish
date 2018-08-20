@@ -27,8 +27,8 @@ namespace NES {
                     Zero:1,
                     Interrupt:1,
                     Decimal:1,
-                    T:1,
-                    T2:1,
+                    Break:1,
+                    Unused:1,
                     Overflow:1,
                     Negative:1;
                 } status;

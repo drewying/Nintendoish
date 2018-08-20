@@ -293,7 +293,7 @@ uint16_t CPU::pullAddress() {
 
 void CPU::NMI() {
     // Non-Maskable Interrupt
-    pushAddress(reg.PC);
+    pushAddress(reg.PC + 1);
     PHP(0x0);
     reg.PC = memory.get(0xFFFB) << 8 | memory.get(0xFFFA);
     reg.P.status.Interrupt = true;
@@ -302,13 +302,12 @@ void CPU::NMI() {
 
 void CPU::IRQ() {
     // IRQe Interrupt
-    pushAddress(reg.PC);
+    pushAddress(reg.PC + 1);
     PHP(0x0);
     reg.PC = memory.get(0xFFFF) << 8 | memory.get(0xFFFE);
     reg.P.status.Interrupt = true;
     totalCycles += 7;
 }
-
 
 void CPU::BCC(uint16_t address) {
     //Branch on Carry Clear
@@ -349,8 +348,8 @@ void CPU::BPL(uint16_t address) {
 }
 
 void CPU::BRK(uint16_t address) {
-    //Force an Interrupt
     reg.P.status.Interrupt = 1;
+    IRQ();
 }
 
 void CPU::BVC(uint16_t address) {

@@ -298,6 +298,7 @@ namespace NES {
 
             bool interruptFlag;
             Divider timer;
+
             uint8_t sample() {
                 return 0;
             }
@@ -305,6 +306,7 @@ namespace NES {
             void stepTimer() {
 
             }
+
             void writeRegister(uint16_t index, uint8_t value) {
                 switch (index) {
                 case 0x4010:
