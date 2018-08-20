@@ -348,7 +348,7 @@ void CPU::BPL(uint16_t address) {
 }
 
 void CPU::BRK(uint16_t address) {
-    reg.P.status.Interrupt = 1;
+    //Force Inturrupt
     IRQ();
 }
 
