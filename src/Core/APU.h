@@ -76,7 +76,7 @@ namespace NES {
             virtual void stepTimer() {};
             virtual void writeRegister(uint16_t index, uint8_t value) {};
             void setLengthCounter(uint8_t value) {
-                lengthCounter = lengthCounterTable[value >> 0x3];
+                lengthCounter = lengthCounterTable[value];
             }
             void stepLengthCounter() {
                 if (haltLengthCounter == false && lengthCounter > 0) {

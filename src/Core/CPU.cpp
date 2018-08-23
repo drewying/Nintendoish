@@ -123,7 +123,7 @@ unsigned int CPU::step()
     }
 
     int currentCycles = totalCycles;
-
+    
     uint8_t hi = 0x0;
     uint8_t lo = 0x0;
     uint16_t loadedAddress = 0x0;
@@ -256,8 +256,7 @@ void CPU::checkInterrurpts() {
     if (requestNMI == true) {
         NMI();
         requestNMI = false;
-    }
-    if (requestIRQ == true) {
+    } else if (requestIRQ == true) {
         if (reg.P.status.Interrupt == false) {
             IRQ();
         }
@@ -296,12 +295,12 @@ void CPU::NMI() {
     pushAddress(reg.PC);
     PHP(0x0);
     reg.PC = memory.get(0xFFFB) << 8 | memory.get(0xFFFA);
-    reg.P.status.Interrupt = true;
+    // reg.P.status.Interrupt = true;
     totalCycles += 7;
 }
 
 void CPU::IRQ() {
-    // IRQe Interrupt
+    // IRQ Interrupt
     pushAddress(reg.PC);
     PHP(0x0);
     reg.PC = memory.get(0xFFFF) << 8 | memory.get(0xFFFE);
@@ -349,6 +348,7 @@ void CPU::BPL(uint16_t address) {
 
 void CPU::BRK(uint16_t address) {
     //Force Inturrupt
+    reg.PC += 1;
     IRQ();
 }
 

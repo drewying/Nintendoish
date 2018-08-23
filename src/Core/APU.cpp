@@ -10,7 +10,8 @@ uint8_t APU::getAPURegister(uint16_t index) {
             bool irqFlag = (frameCounter >> 0x6) & 0x1;
             //Clear inhibitIRQ flag
             frameCounter = frameCounter & 0xBF;
-            return                   (irqFlag << 0x6) |
+            return                       (0x0 << 0x7) |
+                                     (irqFlag << 0x6) |
                                          (0x0 << 0x5) |
                                          (0x0 << 0x4) | //DMC status goes here
                    ((noise.lengthCounter > 0) << 0x3) |
