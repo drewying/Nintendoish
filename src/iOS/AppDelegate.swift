@@ -10,23 +10,9 @@ import UIKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
-
     var window: UIWindow?
-
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        do {
-            if let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-                let path = documentsDirectory.appendingPathComponent("GameLibrary.sqlite", isDirectory: false)
-                if FileManager.default.fileExists(atPath: path.path) == false {
-                    try FileManager.default.copyItem(at: Bundle.main.url(forResource: "GameLibrary", withExtension: "sqlite")!, to: path)
-                }
-            }
-        } catch {
-        
-        }
-        
-        
+        GameLibraryPersistentContainer.initializeDatabase()
         return true
     }
 
@@ -52,6 +38,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
 
-
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        print("Open url:\(url)")
+        return true
+    }
 }
 

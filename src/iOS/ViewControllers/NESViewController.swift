@@ -16,6 +16,8 @@ class NESViewController: UIViewController {
     var renderer: Renderer!
     var nes: NESConsole = NESConsole()
     
+    @IBOutlet weak var actionBar: UIView!
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
@@ -38,11 +40,16 @@ class NESViewController: UIViewController {
         renderer.mtkView(metalView, drawableSizeWillChange: metalView.drawableSize)
 
         metalView.delegate = renderer
-        
+        self.navigationController?.hidesBarsOnTap = true
+        navigationController?.setNavigationBarHidden(true, animated: false)
     }
     
     public func loadRom(path:String) {
         nes.loadRom(path)
+    }
+    
+    @IBAction func exitButton(_ sender: Any) {
+        navigationController?.popViewController(animated: true)
     }
     
     @IBAction func AButtonTouchDown(_ sender: UIButton) {
@@ -166,6 +173,27 @@ class NESViewController: UIViewController {
         let xDist = (point1.x - point2.x)
         let yDist = (point1.y - point2.y)
         return sqrt((xDist * xDist) + (yDist * yDist))
+    }
+    
+    func showActionBar() {
+        if (navigationController?.isNavigationBarHidden == false) {
+            return
+        }
+        navigationController?.setNavigationBarHidden(false, animated: true)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5, execute: {
+            self.hideActionBar()
+        })
+    }
+    
+    @IBAction func tapMainView(_ sender: Any) {
+        showActionBar()
+    }
+    
+    func hideActionBar() {
+        if (navigationController?.isNavigationBarHidden == true) {
+            return
+        }
+        navigationController?.setNavigationBarHidden(true, animated: true)
     }
     
 }

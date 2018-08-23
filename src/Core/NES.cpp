@@ -42,7 +42,7 @@ void NES::Console::reset() {
     cpu->reg.X = 0;
     cpu->reg.Y = 0;
     cpu->reg.S = 0xFD;
-    cpu->reg.P.status.T2 = true;
+    cpu->reg.P.status.Unused = true;
     cpu->reg.P.status.Interrupt = true;
     cpu->reg.S = 0xFD;
 }

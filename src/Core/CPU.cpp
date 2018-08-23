@@ -293,7 +293,7 @@ uint16_t CPU::pullAddress() {
 
 void CPU::NMI() {
     // Non-Maskable Interrupt
-    pushAddress(reg.PC + 1);
+    pushAddress(reg.PC);
     PHP(0x0);
     reg.PC = memory.get(0xFFFB) << 8 | memory.get(0xFFFA);
     reg.P.status.Interrupt = true;
@@ -302,7 +302,7 @@ void CPU::NMI() {
 
 void CPU::IRQ() {
     // IRQe Interrupt
-    pushAddress(reg.PC + 1);
+    pushAddress(reg.PC);
     PHP(0x0);
     reg.PC = memory.get(0xFFFF) << 8 | memory.get(0xFFFE);
     reg.P.status.Interrupt = true;

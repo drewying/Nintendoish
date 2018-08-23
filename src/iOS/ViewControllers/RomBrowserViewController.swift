@@ -67,38 +67,47 @@ class RomBrowserViewController: UITableViewController, UIDocumentPickerDelegate,
     }
     
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-        dismiss(animated: true, completion: nil)
-        do {
-            for url in urls {
-                print("Creating Rom")
-                // Get the md5 hash
-                let md5:String = try Data(contentsOf: url).MD5()
-                
-                // Get the HashEntry from the file
-                let fetchRequest = NSFetchRequest<HashEntry>(entityName: "HashEntry")
-                fetchRequest.predicate = NSPredicate(format: "md5Hash = %@", md5)
-                fetchRequest.fetchLimit = 1
-                if let hashEntry = try self.persistentContainer.viewContext.fetch(fetchRequest).first {
-                    // Copy the file
+        print("Processing \(urls.count) files")
+        persistentContainer.performBackgroundTask({ backgroundContext in
+            do {
+                for url in urls {
+                    // Get the md5 hash
+                    let md5:String = try Data(contentsOf: url).MD5()
+                    
+                    // Get the HashEntry from the file
+                    let fetchRequest = NSFetchRequest<HashEntry>(entityName: "HashEntry")
+                    fetchRequest.predicate = NSPredicate(format: "md5Hash = %@", md5)
+                    fetchRequest.fetchLimit = 1
                     let documentDirectory = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor:nil, create:false)
                     let fileURL = documentDirectory.appendingPathComponent(md5 + ".nes")
-                    try FileManager.default.copyItem(at: url, to: fileURL)
-                    
-                    //Create the rom file
-                    let romObj:Rom = NSEntityDescription.insertNewObject(forEntityName: "Rom", into: self.persistentContainer.viewContext) as! Rom
-                    romObj.game = hashEntry.game
-                    romObj.filePath = fileURL.path
-                    print("Created Rom")
-                    
-                    // Save
-                    try self.persistentContainer.viewContext.save()
-                } else {
-                    // Handle hash not found error here
+                    if FileManager.default.fileExists(atPath: fileURL.path) {
+                        print("File all ready exists at path")
+                    } else if let hashEntry = try backgroundContext.fetch(fetchRequest).first {
+                        print("Creating Rom")
+                        
+                        // Copy the file
+                        try FileManager.default.copyItem(atPath: url.path, toPath: fileURL.path)
+                        
+                        //Create the rom object
+                        let romObj:Rom = NSEntityDescription.insertNewObject(forEntityName: "Rom", into: backgroundContext) as! Rom
+                        romObj.game = hashEntry.game
+                        romObj.filePath = fileURL.path
+                        print("Created Rom")
+                        
+                        // Save
+                        try backgroundContext.save()
+                    } else {
+                        // Handle hash not found error here
+                    }
                 }
+                DispatchQueue.main.async {
+                    try? self.fetchedResultsController.performFetch()
+                    self.tableView.reloadData()
+                }
+            } catch {
+                print("Error creating entity:\(error)")
             }
-        } catch {
-            print("Error creating entity")
-        }
+        })
     }
     
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {

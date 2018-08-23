@@ -6,11 +6,19 @@ using namespace NES;
 
 uint8_t APU::getAPURegister(uint16_t index) {
     switch (index) {
-    case 0x4015:
-        return    ((noise.lengthCounter > 0) << 0x3) | 
-               ((triangle.lengthCounter > 0) << 0x2) | 
-                 ((pulse2.lengthCounter > 0) << 0x1) | 
-                  (pulse1.lengthCounter > 0);
+        case 0x4015: {
+            bool irqFlag = (frameCounter >> 0x6) & 0x1;
+            //Clear inhibitIRQ flag
+            frameCounter = frameCounter & 0xBF;
+            return                   (irqFlag << 0x6) |
+                                         (0x0 << 0x5) |
+                                         (0x0 << 0x4) | //DMC status goes here
+                   ((noise.lengthCounter > 0) << 0x3) |
+                ((triangle.lengthCounter > 0) << 0x2) |
+                  ((pulse2.lengthCounter > 0) << 0x1) |
+                (pulse1.lengthCounter > 0);
+        }
+
         break;
     case 0x4017:
         return frameCounter;
@@ -88,7 +96,7 @@ void APU::stepFrameCounter() {
     noise.stepTimer();
 
     bool sequenceMode = ((frameCounter & 0x80) == 0x80);
-    bool irqEnabled = ((frameCounter & 0x40) == 0x40);
+    bool generateIRQ = ((frameCounter & 0x40) == 0x0);
     
     if (sequenceMode == true) {
         //5-Step Sequence
@@ -119,17 +127,13 @@ void APU::stepFrameCounter() {
         if (currentCycle == 11186) {
             clockQuarterFrame();
         }
-        if (currentCycle == 14914) {
-            //IRQ
-            if (irqEnabled) {
-                printf("Triggering IRQ");
-                console.cpu->requestIRQ = true;
-            }
-        }
-        
         if (currentCycle == 14915) {
             clockHalfFrame();
             clockQuarterFrame();
+            //IRQ
+            if (generateIRQ) {
+                console.cpu->requestIRQ = true;
+            }
             currentCycle = 0;
         }
     }
