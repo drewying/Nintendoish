@@ -66,9 +66,12 @@ namespace NES {
         bool requestNMI = false;
         bool requestIRQ = false;
         
+        bool pageBoundryCross = false;
+        
         unsigned int step();
 
         void setNZStatus(uint8_t value);
+        void checkForPageCross(uint16_t a, uint16_t b);
         void oopsCycle(uint16_t address);
         void checkInterrurpts();
         void branchOnCondition(bool condition, uint16_t address);
