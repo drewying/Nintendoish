@@ -433,9 +433,7 @@ void NES::PPU::step() {
 }
 
 void NES::PPU::vBlankStart() {
-    if (suppressNMI == true) {
-        suppressNMI = false;
-    } else {
+    if (suppressNMI == false) {
         reg.status.flags.VBlankEnabled = true;
         if (reg.control.flags.NMI == true) {
             console.cpu->requestNMI = true;
@@ -446,4 +444,5 @@ void NES::PPU::vBlankStart() {
 void NES::PPU::vBlankEnd() {
     reg.status.flags.VBlankEnabled = false;
     reg.status.flags.Sprite0Hit = false;
+    suppressNMI = false;
 }
