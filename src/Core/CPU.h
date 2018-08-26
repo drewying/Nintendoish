@@ -53,6 +53,9 @@ namespace NES {
         } AddressMode;
         
         AddressMode currentAddressMode;
+        uint8_t loadedInstruction = 0x0;
+        uint16_t loadedAddress = 0x0;
+        bool firstRun = true;
         
         string debugTable[256];
         uint32_t addressTable[256];
