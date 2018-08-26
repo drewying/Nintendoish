@@ -123,7 +123,7 @@ namespace NES {
         int32_t currentCycle    = 0;
         int32_t currentScanline = 241;
         bool oddFrame = false;
-
+        bool suppressNMI = false;
         void step();
         void reset();
         void vBlankStart();

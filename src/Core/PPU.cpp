@@ -9,6 +9,15 @@ uint8_t NES::PPU::getPPURegister(uint16_t index) {
     static uint8_t readBuffer = 0x0;
     switch (index) {
     case 0x2002: //PPU Status Flags
+        // Reading one PPU clock before VBL reads it as clear and never sets the flag or generates NMI for that frame.'
+        if (currentScanline == 241 && currentCycle == 0) {
+            suppressNMI = true;
+        }
+        // Reading on the same PPU clock or one later reads it as set, clears it, and suppresses the NMI for that frame
+        if (currentScanline == 241 && (currentCycle == 1 || currentCycle == 2)) {
+            reg.status.flags.VBlankEnabled = true;
+            console.cpu->requestNMI = false;
+        }
         status = reg.status.byte;
         reg.status.flags.VBlankEnabled = false;
         vramRegister.writeLatch = false;
@@ -39,13 +48,12 @@ uint8_t NES::PPU::getPPURegister(uint16_t index) {
 void NES::PPU::setPPURegister(uint16_t index, uint8_t value) {
     switch (index) {
     case 0x2000: //PPU Control Flags
+        if (reg.control.flags.NMI == false && (value & 0x80) == 0x80 && reg.status.flags.VBlankEnabled == true) {
+            console.cpu->requestNMI = true;
+        }
         reg.control.byte = value;
         vramRegister.t.scroll.nameTableX = (value & 0x1); //t: ...BA.. ........ = d: ......BA
         vramRegister.t.scroll.nameTableY = ((value & 0x2) >> 1);
-
-        if (reg.control.flags.NMI == true && reg.status.flags.VBlankEnabled == true) {
-            //console.cpu->requestNMI = true;
-        }
         break;
     case 0x2001: //PPU Render Flags
         reg.mask.byte = value;
@@ -117,13 +125,8 @@ void NES::PPU::reset() {
 }
 
 void NES::PPU::fetchSprites() {
-    
-    
     for (int i = 0; i < 8; i++) {
-        
-        
         Sprite *sprite;
-        
         if (i < activeSpriteCount) {
             sprite = spr[i];
         } else {
@@ -196,7 +199,6 @@ void NES::PPU::renderPixel() {
     bool backgroundPriority = false;
 
     if (renderBackground == true) {
-
         //Tile
         uint16_t mask = 0x8000 >> vramRegister.fineXScroll;
         uint16_t backgoundColorIndex = (shift.tileHi & mask) >> (14 - vramRegister.fineXScroll) | (shift.tileLo & mask) >> (15 - vramRegister.fineXScroll);
@@ -431,9 +433,13 @@ void NES::PPU::step() {
 }
 
 void NES::PPU::vBlankStart() {
-    reg.status.flags.VBlankEnabled = true;
-    if (reg.control.flags.NMI == true) {
-        console.cpu->requestNMI = true;
+    if (suppressNMI == true) {
+        suppressNMI = false;
+    } else {
+        reg.status.flags.VBlankEnabled = true;
+        if (reg.control.flags.NMI == true) {
+            console.cpu->requestNMI = true;
+        }
     }
 }
 
