@@ -19,30 +19,24 @@ NES::Console::Console() {
     ppu = new PPU(*this);
     ppuMemory = new PPUMemory(*this);
     controllerOne = new Controller();
-    reset();
 }
 
 NES::Console::~Console() {}
 
 int NES::Console::emulateCycle() {
-    for (int i = 0; i < 3; i++) ppu->step();
     cpu->step();
+    for (int i = 0; i < 3; i++) ppu->step();
     apu->step();
     return 0;
 }
 
 void NES::Console::loadProgram(const char* path) {
     cartridge = new Cartridge(*this, path);
-    cpu->reg.PC = memory->resetVector();
+    reset();
     std::cout << "Loaded" << std::endl;
 }
 
 void NES::Console::reset() {
-    cpu->reg.A = 0;
-    cpu->reg.X = 0;
-    cpu->reg.Y = 0;
-    cpu->reg.S = 0xFD;
-    cpu->reg.P.status.Unused = true;
-    cpu->reg.P.status.Interrupt = true;
-    cpu->reg.S = 0xFD;
+    cpu->reset();
+    ppu->reset();
 }

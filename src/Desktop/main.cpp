@@ -206,9 +206,12 @@ int main(int argc, char** argv) {
     glfwSetKeyCallback(display->window, keyCallback);
     nes = new NES::Console();
     
+    nes->loadProgram("roms/05-nmi_timing.nes");
+    //nes->loadProgram("roms/ppu_vbl_nmi.nes");
     //nes->loadProgram("roms/cpu_interrupts.nes");
     //nes->loadProgram("roms/instr_timing.nes");
-    nes->loadProgram("roms/official_only.nes");
+    //nes->loadProgram("roms/official_only.nes");
+    //nes->loadProgram("roms/15-brk.nes");
     //nes->loadProgram("../roms/test/ppu_nmi_timing.nes");
     //nes->loadProgram("../roms/1-clocking.nes");
     //nes->loadProgram("../roms/PunchOut.nes");
@@ -220,7 +223,7 @@ int main(int argc, char** argv) {
     //nes->loadProgram("../roms/IceClimber.nes");
     //nes->loadProgram("roms/Megaman3.nes");
     //nes->loadProgram("../roms/Castlevania.nes");
-    //nes->loadProgram("../roms/Zelda.nes");
+    //nes->loadProgram("roms/Zelda.nes");
     //nes->loadProgram("../roms/SuperMario3.nes");
     //nes->loadProgram("../roms/Mario.nes");
     //nes->loadProgram("../roms/Excitebike.nes");

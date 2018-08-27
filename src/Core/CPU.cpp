@@ -111,125 +111,130 @@ CPU::~CPU()
 {
 }
 
+
 uint8_t CPU::readProgram() {
     return memory.get(reg.PC++);
 }
 
-unsigned int CPU::step()
-{
-    if (stallCycles > 0x0) {
-        totalCycles++;
-        stallCycles--;
-        if (stallCycles == 0x1) {
-            //checkInterrurpts();
-        }
-        return 0;
-    } else {
-        totalCycles++;
-        // stallCycles--;
-        //Execute loaded instruction
-        if (firstRun == false) {
-            (this->*opTable[loadedInstruction])(loadedAddress);
-        } else {
-            firstRun = false;
-        }
-        
-        checkInterrurpts();
-        
-        //Load next instruction
-        loadedInstruction = readProgram();
-        stallCycles += timingTable[loadedInstruction] - 1;
-        
-        //Load next address
-        uint8_t hi = 0x0;
-        uint8_t lo = 0x0;
-        loadedAddress = 0x0;
-        pageBoundryCross = false;
-        currentAddressMode = static_cast<AddressMode>(addressTable[loadedInstruction]);
-        switch (currentAddressMode) {
-            case Accumulator:
-                // The Accumulator is implied as the operand, so no address needs to be specified.
-                break;
-            case Implicit:
-                // The operand is implied, so it does not need to be specified.
-                break;
-            case Immediate:
-                // The operand is used directly to perform the computation.
-                loadedAddress = reg.PC;
-                lo = readProgram();
-                break;
-            case Relative:
-                // Branch instructions(e.g.BEQ, BCS) have a relative addressing mode that
-                // specifies an 8 - bit signed offset relative to the current PC.
-                lo = readProgram();
-                loadedAddress = reg.PC + (int8_t)lo;
-                break;
-            case ZeroPage:
-                // A single byte specifies an address in the first page of memory ($00xx),
-                // also known as the zero page, and the byte at that address is used to perform the computation.
-                lo = readProgram();
-                loadedAddress = lo;
-                break;
-            case ZeroPageIndexX:
-                // The value in X is added to the specified zero page address for a sum address.
-                lo = readProgram();
-                loadedAddress = (lo + reg.X) % 256;
-                break;
-            case ZeroPageIndexY:
-                // The value in Y is added to the specified zero page address for a sum address.
-                lo = readProgram();
-                loadedAddress = (lo + reg.Y) % 256;
-                break;
-            case Indirect:
-                // The JMP instruction has a special indirect addressing mode that can jump to the address stored in a
-                // 16-bit pointer anywhere in memory.
-                lo = readProgram();
-                hi = readProgram();
-                loadedAddress = (uint16_t)(memory.get(hi << 8 | lo) + memory.get((hi << 8 | (uint8_t)(lo + 1))) * 256);
-                break;
-            case Absolute:
-                // A full 16 - bit address is specified and the byte at that address is used to perform the computation.
-                lo = readProgram();
-                hi = readProgram();
-                loadedAddress = hi << 8 | lo;
-                break;
-            case AbsoluteIndexX:
-                // The value in X is added to the specified address for a sum address.
-                lo = readProgram();
-                hi = readProgram();
-                loadedAddress = (hi << 8 | lo) + reg.X;
-                checkForPageCross((hi << 8 | lo), loadedAddress);
-                break;
-            case AbsoluteIndexY:
-                // The value in X is added to the specified address for a sum address.
-                lo = readProgram();
-                hi = readProgram();
-                loadedAddress = (hi << 8 | lo) + reg.Y;
-                checkForPageCross((hi << 8 | lo), loadedAddress);
-                break;
-            case IndexIndirectX:
-                // The value in X is added to the specified zero page address for a sum address.
-                // The little-endian address stored at the two-byte pair of sum address (LSB) and sum address plus one (MSB)
-                // is loaded and the value at that address is used to perform the computation.
-                lo = readProgram();
-                loadedAddress = (uint16_t)(memory.get((lo + reg.X) % 256) + memory.get((lo + reg.X + 1) % 256) * 256);
-                break;
-            case IndirectIndexY:
-                // The value in Y is added to the address at the little-endian address stored at the two-byte pair of the
-                // specified address (LSB) and the specified address plus one (MSB). The value at the sum address is used
-                // to perform the computation. Indeed addressing mode actually repeats exactly the accumulator register's digits.
-                lo = readProgram();
-                loadedAddress = (uint16_t)(memory.get(lo) + memory.get((lo + 1) % 256) * 256 + reg.Y);
-                checkForPageCross(memory.get(lo) + memory.get((lo + 1) % 256) * 256, loadedAddress);
-                break;
-            default:
-                break;
-        }
-        
-        //(this->*opTable[loadedInstruction])(loadedAddress);
-    }
+
+void CPU::executeLoadedInstruction() {
+    (this->*opTable[loadedInstruction])(loadedAddress);
+}
+
+void CPU::loadNextInstruction() {
+    //Load next instruction
+    loadedInstruction = readProgram();
+    stallCycles += timingTable[loadedInstruction];
     
-    return 0;
+    //Load next address
+    uint8_t hi = 0x0;
+    uint8_t lo = 0x0;
+    loadedAddress = 0x0;
+    pageBoundryCross = false;
+    currentAddressMode = static_cast<AddressMode>(addressTable[loadedInstruction]);
+    switch (currentAddressMode) {
+        case Accumulator:
+            // The Accumulator is implied as the operand, so no address needs to be specified.
+            break;
+        case Implicit:
+            // The operand is implied, so it does not need to be specified.
+            break;
+        case Immediate:
+            // The operand is used directly to perform the computation.
+            loadedAddress = reg.PC;
+            lo = readProgram();
+            break;
+        case Relative:
+            // Branch instructions(e.g.BEQ, BCS) have a relative addressing mode that
+            // specifies an 8 - bit signed offset relative to the current PC.
+            lo = readProgram();
+            loadedAddress = reg.PC + (int8_t)lo;
+            break;
+        case ZeroPage:
+            // A single byte specifies an address in the first page of memory ($00xx),
+            // also known as the zero page, and the byte at that address is used to perform the computation.
+            lo = readProgram();
+            loadedAddress = lo;
+            break;
+        case ZeroPageIndexX:
+            // The value in X is added to the specified zero page address for a sum address.
+            lo = readProgram();
+            loadedAddress = (lo + reg.X) % 256;
+            break;
+        case ZeroPageIndexY:
+            // The value in Y is added to the specified zero page address for a sum address.
+            lo = readProgram();
+            loadedAddress = (lo + reg.Y) % 256;
+            break;
+        case Indirect:
+            // The JMP instruction has a special indirect addressing mode that can jump to the address stored in a
+            // 16-bit pointer anywhere in memory.
+            lo = readProgram();
+            hi = readProgram();
+            loadedAddress = (uint16_t)(memory.get(hi << 8 | lo) + memory.get((hi << 8 | (uint8_t)(lo + 1))) * 256);
+            break;
+        case Absolute:
+            // A full 16 - bit address is specified and the byte at that address is used to perform the computation.
+            lo = readProgram();
+            hi = readProgram();
+            loadedAddress = hi << 8 | lo;
+            break;
+        case AbsoluteIndexX:
+            // The value in X is added to the specified address for a sum address.
+            lo = readProgram();
+            hi = readProgram();
+            loadedAddress = (hi << 8 | lo) + reg.X;
+            checkForPageCross((hi << 8 | lo), loadedAddress);
+            break;
+        case AbsoluteIndexY:
+            // The value in X is added to the specified address for a sum address.
+            lo = readProgram();
+            hi = readProgram();
+            loadedAddress = (hi << 8 | lo) + reg.Y;
+            checkForPageCross((hi << 8 | lo), loadedAddress);
+            break;
+        case IndexIndirectX:
+            // The value in X is added to the specified zero page address for a sum address.
+            // The little-endian address stored at the two-byte pair of sum address (LSB) and sum address plus one (MSB)
+            // is loaded and the value at that address is used to perform the computation.
+            lo = readProgram();
+            loadedAddress = (uint16_t)(memory.get((lo + reg.X) % 256) + memory.get((lo + reg.X + 1) % 256) * 256);
+            break;
+        case IndirectIndexY:
+            // The value in Y is added to the address at the little-endian address stored at the two-byte pair of the
+            // specified address (LSB) and the specified address plus one (MSB). The value at the sum address is used
+            // to perform the computation. Indeed addressing mode actually repeats exactly the accumulator register's digits.
+            lo = readProgram();
+            loadedAddress = (uint16_t)(memory.get(lo) + memory.get((lo + 1) % 256) * 256 + reg.Y);
+            checkForPageCross(memory.get(lo) + memory.get((lo + 1) % 256) * 256, loadedAddress);
+            break;
+        default:
+            break;
+    }
+}
+
+void CPU::reset() {
+    reg.A = 0;
+    reg.X = 0;
+    reg.Y = 0;
+    reg.S = 0xFD;
+    reg.P.status.Unused = true;
+    reg.P.status.Interrupt = true;
+    reg.S = 0xFD;
+    reg.PC = memory.resetVector();
+    loadNextInstruction();
+}
+
+void CPU::step() {
+    totalCycles++;
+    stallCycles--;
+    
+    if (stallCycles > 0x1) {
+        return;
+    }
+    executeLoadedInstruction();
+    checkInterrurpts();
+    loadNextInstruction();
 }
 
 void CPU::setNZStatus(uint8_t value) {

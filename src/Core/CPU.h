@@ -64,15 +64,19 @@ namespace NES {
         
         Memory& memory;
         
-        uint32_t totalCycles = 0;
-        uint32_t stallCycles = 0;
+        uint32_t totalCycles = 0x0;
+        uint32_t stallCycles = 0x1;
         bool requestNMI = false;
         bool requestIRQ = false;
         
         bool pageBoundryCross = false;
         
-        unsigned int step();
-
+        void step();
+        void executeLoadedInstruction();
+        void loadNextInstruction();
+        
+        
+        void reset();
         void setNZStatus(uint8_t value);
         void checkForPageCross(uint16_t a, uint16_t b);
         void oopsCycle(uint16_t address);
