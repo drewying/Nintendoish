@@ -16,6 +16,7 @@ uint8_t NES::PPU::getPPURegister(uint16_t index) {
         // Reading on the same PPU clock or one later reads it as set, clears it, and suppresses the NMI for that frame
         if (currentScanline == 241 && (currentCycle == 1 || currentCycle == 2)) {
             reg.status.flags.VBlankEnabled = true;
+            suppressNMI = true;
             console.cpu->requestNMI = false;
         }
         status = reg.status.byte;
@@ -414,7 +415,7 @@ void NES::PPU::step() {
     }
 
     // VBlank Scanlines
-    if (currentScanline == 241 && currentCycle == 1) {
+    if (currentScanline == 241 && currentCycle == 1 + vBlankDelay) {
         vBlankStart();
     }
 

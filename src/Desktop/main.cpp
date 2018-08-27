@@ -206,8 +206,9 @@ int main(int argc, char** argv) {
     glfwSetKeyCallback(display->window, keyCallback);
     nes = new NES::Console();
     
-    nes->loadProgram("roms/05-nmi_timing.nes");
-    //nes->loadProgram("roms/ppu_vbl_nmi.nes");
+    //nes->loadProgram("roms/05-nmi_timing.nes");
+    //nes->loadProgram("roms/04-nmi_control.nes");
+    nes->loadProgram("roms/ppu_vbl_nmi.nes");
     //nes->loadProgram("roms/cpu_interrupts.nes");
     //nes->loadProgram("roms/instr_timing.nes");
     //nes->loadProgram("roms/official_only.nes");

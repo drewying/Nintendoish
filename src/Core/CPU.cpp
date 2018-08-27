@@ -107,8 +107,7 @@ CPU::CPU(NES::Memory &memory):
         reg.P.byte = 0x24;
     }
 
-CPU::~CPU() {
-}
+CPU::~CPU() { }
 
 
 uint8_t CPU::readProgram() {
@@ -228,15 +227,12 @@ void CPU::reset() {
 void CPU::step() {
     totalCycles++;
     stallCycles--;
-    
     if (stallCycles > 0x1) {
-        if (stallCycles == 0x2) {
-            pollInterrurpts();
-        }
         return;
     }
-    
+    pollInterrurpts();
     executeLoadedInstruction();
+    executeInterrurpts();
     loadNextInstruction();
 }
 
@@ -280,13 +276,24 @@ void CPU::oopsCycle(uint16_t address) {
     }
 }
 
+void CPU::executeInterrurpts() {
+    if (doNMI == true) {
+        NMI();
+    }
+    if (doIRQ == true) {
+        IRQ();
+    }
+    doNMI = false;
+    doIRQ = false;
+}
+
 void CPU::pollInterrurpts() {
     if (requestNMI == true) {
-        NMI();
+        doNMI = true;
         requestNMI = false;
     } else if (requestIRQ == true) {
         if (reg.P.status.Interrupt == false) {
-            IRQ();
+            doIRQ = true;
         }
         requestIRQ = false;
     }

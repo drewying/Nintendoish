@@ -126,6 +126,7 @@ namespace NES {
         bool suppressNMI = false;
         void step();
         void reset();
+        uint8_t vBlankDelay = 0x2; //TODO: Investigate why vBlank needs to occur two ticks later to pass timing tests.
         void vBlankStart();
         void vBlankEnd();
 
