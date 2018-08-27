@@ -266,6 +266,8 @@ void CPU::checkForPageCross(uint16_t address) {
     
     if (indexAddress != 0x0 && ((address & 0xFF00) != (indexAddress & 0xFF00))){
         stallCycles++;
+        //Dummy read
+        memory.get(address - 0x100);
     }
 }
 
@@ -451,17 +453,17 @@ void CPU::INY(uint16_t address) {
 void CPU::LDX(uint16_t address) {
     //Load Index X with Memory
     //Flags: N, Z
+    checkForPageCross(address);
     reg.X = memory.get(address);
     setNZStatus(reg.X);
-    checkForPageCross(address);
 }
 
 void CPU::LDY(uint16_t address) {
     //Load Index Y with Memory
     //Flags: N, Z
+    checkForPageCross(address);
     reg.Y = memory.get(address);
     setNZStatus(reg.Y);
-    checkForPageCross(address);
 }
 
 void CPU::JMP(uint16_t address) {
@@ -591,30 +593,31 @@ void CPU::TXS(uint16_t address) {
 void CPU::ORA(uint16_t address) {
     //OR Memory with Accumulator
     //Flags: N, Z
+    checkForPageCross(address);
     reg.A = reg.A | memory.get(address);
     setNZStatus(reg.A);
-    checkForPageCross(address);
 }
 
 void CPU::AND(uint16_t address) {
     //AND Memory with Accumulator
     //Flags: N, Z
+    checkForPageCross(address);
     reg.A = reg.A & memory.get(address);
     setNZStatus(reg.A);
-    checkForPageCross(address);
 }
 
 void CPU::EOR(uint16_t address) {
     //Exclusive-OR Memory with Accumulator
     //Flags: N, Z
+    checkForPageCross(address);
     reg.A = reg.A ^ memory.get(address);
     setNZStatus(reg.A);
-    checkForPageCross(address);
 }
 
 void CPU::ADC(uint16_t address) {
     //Add Memory to Accumulator with Carry
     //Flags: N, V, Z, C
+    checkForPageCross(address);
     uint8_t a = reg.A;
     reg.A = reg.A + memory.get(address) + reg.P.status.Carry;
     
@@ -623,10 +626,12 @@ void CPU::ADC(uint16_t address) {
     ((a ^ reg.A) & 0x80) != 0;
     
     setNZStatus(reg.A);
-    checkForPageCross(address);
 }
 
 void CPU::STA(uint16_t address) {
+    //Dummy Read
+    memory.get(address - 0x100);
+    
     //Store Accumulator in Memory
     memory.set(address, reg.A);
 }
@@ -634,27 +639,26 @@ void CPU::STA(uint16_t address) {
 void CPU::LDA(uint16_t address) {
     //Load Accumulator with Memory
     //Flags: N, Z
+    checkForPageCross(address);
     reg.A = memory.get(address);
     setNZStatus(reg.A);
-    checkForPageCross(address);
 }
 
 void CPU::CMP(uint16_t address) {
     //Compare Memory and Accumulator
-    compareValues(reg.A, memory.get(address));
     checkForPageCross(address);
+    compareValues(reg.A, memory.get(address));
 }
 
 void CPU::SBC(uint16_t address) {
     //Subtract Memory from Accumulator with Borrow
     //Flags: N, V, Z, C
-    
+    checkForPageCross(address);
     uint8_t a = reg.A;
     reg.A = reg.A - memory.get(address) - (1 - reg.P.status.Carry);
     reg.P.status.Carry = ((int)a - (int)memory.get(address) - (int)(1 - reg.P.status.Carry)) >= 0x0;
     reg.P.status.Overflow = ((a ^ memory.get(address)) & 0x80) != 0 && ((a ^ reg.A) & 0x80) != 0;
     setNZStatus(reg.A);
-    checkForPageCross(address);
 }
 
 // RMW
@@ -738,7 +742,7 @@ void CPU::ROL(uint16_t address) {
     else {
         memory.set(address, value);
     }
-
+    
     setNZStatus(value);
 }
 
@@ -783,11 +787,11 @@ void CPU::LAS(uint16_t address) {
     checkForPageCross(address);
 }
 void CPU::LAX(uint16_t address) {
+    checkForPageCross(address);
     reg.A = memory.get(address);
     setNZStatus(reg.A);
     reg.X = memory.get(address);
     setNZStatus(reg.X);
-    checkForPageCross(address);
 }
 void CPU::RLA(uint16_t address) {
     // ROL(address);

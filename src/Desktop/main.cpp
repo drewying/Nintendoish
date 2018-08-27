@@ -218,7 +218,7 @@ int main(int argc, char** argv) {
     //nes->loadProgram("roms/Test/cpu/cpu_interrupts_v2/cpu_interrupts.nes");
     //nes->loadProgram("roms/Test/cpu/cpu_reset/ram_after_reset.nes");
     //nes->loadProgram("roms/Test/cpu/cpu_reset/registers.nes");
-    nes->loadProgram("roms/Test/cpu/instr_misc/instr_misc.nes");
+    //nes->loadProgram("roms/Test/cpu/instr_misc/instr_misc.nes");
     //nes->loadProgram("roms/Test/cpu/instr_test-v5/all_instrs.nes");
     //* nes->loadProgram("roms/Test/cpu/instr_test-v5/official_only.nes");
     //* nes->loadProgram("roms/Test/cpu/instr_timing/instr_timing.nes");
@@ -262,6 +262,8 @@ int main(int argc, char** argv) {
     //nes->loadProgram("../roms/Mario.nes");
     //nes->loadProgram("../roms/Excitebike.nes");
     //nes->loadProgram("../roms/DonkeyKong.nes");
+    
+    nes->loadProgram("roms/Test/cpu/instr_misc/rom_singles/04-dummy_reads_apu.nes");
 
     if (showLog) {
         logLoop();
