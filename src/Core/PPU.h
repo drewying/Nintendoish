@@ -10,51 +10,51 @@ namespace NES {
     class PPU {
     public:
         PPU(Console &console) : console(console) { reset(); };
-
+        
         Console &console;
-
+        
         // Internal Registers
         struct Registers {
             union {
                 struct {
                     unsigned BaseAddressHi : 1,
-                        BaseAddressLo : 1,
-                        VRAMAddressIncrement : 1,
-                        SpriteTableSelect : 1,
-                        BackgroundTableSelect : 1,
-                        TallSprites : 1,
-                        MasterSlave : 1,
-                        NMI : 1;
+                    BaseAddressLo : 1,
+                    VRAMAddressIncrement : 1,
+                    SpriteTableSelect : 1,
+                    BackgroundTableSelect : 1,
+                    TallSprites : 1,
+                    MasterSlave : 1,
+                    NMI : 1;
                 } flags;
                 uint8_t byte;
             } control;
-
+            
             union {
                 struct {
                     unsigned Greyscale : 1,
-                        RenderLeftBackground : 1,
-                        RenderLeftSprites : 1,
-                        RenderBackground : 1,
-                        RenderSprites : 1,
-                        EmphasizeRed : 1,
-                        EmphasizeGreen : 1,
-                        EmphasizeBlue : 1;
+                    RenderLeftBackground : 1,
+                    RenderLeftSprites : 1,
+                    RenderBackground : 1,
+                    RenderSprites : 1,
+                    EmphasizeRed : 1,
+                    EmphasizeGreen : 1,
+                    EmphasizeBlue : 1;
                 } flags;
                 uint8_t byte;
             } mask;
-
+            
             union {
                 struct {
                     unsigned LastWrite : 5,
-                        SpriteOverflow : 1,
-                        Sprite0Hit : 1,
-                        VBlankEnabled : 1;
+                    SpriteOverflow : 1,
+                    Sprite0Hit : 1,
+                    VBlankEnabled : 1;
                 } flags;
                 uint8_t byte;
             } status;
             uint8_t oamAddress;
         } reg;
-
+        
         //Background Registers
         struct {
             uint16_t tileLo = 0x0;
@@ -62,50 +62,50 @@ namespace NES {
             uint16_t attributeTableHi = 0x0;
             uint16_t attributeTableLo = 0x0;
         } shift;
-
+        
         struct {
             uint8_t tileLo = 0x0;
             uint8_t tileHi = 0x0;
             uint8_t attributeTable = 0x0;
             uint8_t nameTable = 0x0;
         } latch;
-
+        
         union Address {
             struct {
                 unsigned lo : 8,
-                    hi : 7;
+                hi : 7;
             } byte;
             struct {
                 unsigned coarseXScroll : 5,
-                    coarseYScroll : 5,
-                    nameTableX : 1,
-                    nameTableY : 1,
-                    fineYScroll : 3;
+                coarseYScroll : 5,
+                nameTableX : 1,
+                nameTableY : 1,
+                fineYScroll : 3;
             } scroll;
             unsigned address : 15;
         };
-
+        
         struct {
             Address v; // Current VRAM Address
             Address t; // Temporary VRAM Address
             unsigned fineXScroll : 3;
             bool writeLatch = false;
         } vramRegister;
-
+        
         //Sprite Memory
         struct Sprite {
             uint8_t yPosition;
             uint8_t tileIndex;
             struct {
                 uint8_t palette : 2,
-                    unused : 3,
-                    priority : 1,
-                    horizontalFlip : 1,
-                    verticalFlip : 1;
+                unused : 3,
+                priority : 1,
+                horizontalFlip : 1,
+                verticalFlip : 1;
             } attributes;
             uint8_t xPosition;
         };
-
+        
         uint8_t activeSpriteCount = 0;
         Sprite* spr[8]            = { 0 };    // Active Sprites
         uint8_t oam[0x100]        = { 0 };    // Object Attribute Memory
@@ -115,8 +115,8 @@ namespace NES {
         uint8_t getPPURegister(uint16_t index);
         void setPPURegister(uint16_t index, uint8_t value);
         void copyDMAMemory(uint8_t index);
-
-  
+        
+        
         // Emulation
         int32_t totalCycles     = 0;
         int32_t totalFrames     = 0;
@@ -129,13 +129,13 @@ namespace NES {
         uint8_t vBlankDelay = 0x2; //TODO: Investigate why vBlank needs to occur two ticks later to pass timing tests.
         void vBlankStart();
         void vBlankEnd();
-
+        
         // Rendering Helpers
         void renderPatternTable();
         void renderTile(int x, int y, int tileIndex);
         void fetchSprites();
         void evaluateSprites();
-        void renderPixel();		
+        void renderPixel();
         
         uint8_t colorTable[0x40][0x3] = {
             {84, 84,  84},
@@ -188,7 +188,7 @@ namespace NES {
             {60,   60,  60},
             { 0,    0,   0},
             { 0,    0,   0},
-
+            
             {236, 238, 236},
             {168, 204, 236},
             {188, 188, 236},
