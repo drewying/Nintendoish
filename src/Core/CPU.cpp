@@ -107,15 +107,13 @@ CPU::CPU(NES::Memory &memory):
         reg.P.byte = 0x24;
     }
 
-CPU::~CPU()
-{
+CPU::~CPU() {
 }
 
 
 uint8_t CPU::readProgram() {
     return memory.get(reg.PC++);
 }
-
 
 void CPU::executeLoadedInstruction() {
     (this->*opTable[loadedInstruction])(loadedAddress);
@@ -222,6 +220,8 @@ void CPU::reset() {
     reg.P.status.Interrupt = true;
     reg.S = 0xFD;
     reg.PC = memory.resetVector();
+    stallCycles = 0x0;
+    totalCycles = 0x0;
     loadNextInstruction();
 }
 
@@ -230,10 +230,13 @@ void CPU::step() {
     stallCycles--;
     
     if (stallCycles > 0x1) {
+        if (stallCycles == 0x2) {
+            pollInterrurpts();
+        }
         return;
     }
+    
     executeLoadedInstruction();
-    checkInterrurpts();
     loadNextInstruction();
 }
 
@@ -277,7 +280,7 @@ void CPU::oopsCycle(uint16_t address) {
     }
 }
 
-void CPU::checkInterrurpts() {
+void CPU::pollInterrurpts() {
     if (requestNMI == true) {
         NMI();
         requestNMI = false;
