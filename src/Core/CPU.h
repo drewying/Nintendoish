@@ -80,8 +80,7 @@ namespace NES {
         
         void reset();
         void setNZStatus(uint8_t value);
-        void checkForPageCross(uint16_t a, uint16_t b);
-        void oopsCycle(uint16_t address);
+        void checkForPageCross(uint16_t address);
         void executeInterrurpts();
         void pollInterrurpts();
         void branchOnCondition(bool condition, uint16_t address);

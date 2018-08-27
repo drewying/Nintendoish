@@ -181,14 +181,12 @@ void CPU::loadNextInstruction() {
             lo = readProgram();
             hi = readProgram();
             loadedAddress = (hi << 8 | lo) + reg.X;
-            checkForPageCross((hi << 8 | lo), loadedAddress);
             break;
         case AbsoluteIndexY:
             // The value in X is added to the specified address for a sum address.
             lo = readProgram();
             hi = readProgram();
             loadedAddress = (hi << 8 | lo) + reg.Y;
-            checkForPageCross((hi << 8 | lo), loadedAddress);
             break;
         case IndexIndirectX:
             // The value in X is added to the specified zero page address for a sum address.
@@ -203,7 +201,6 @@ void CPU::loadNextInstruction() {
             // to perform the computation. Indeed addressing mode actually repeats exactly the accumulator register's digits.
             lo = readProgram();
             loadedAddress = (uint16_t)(memory.get(lo) + memory.get((lo + 1) % 256) * 256 + reg.Y);
-            checkForPageCross(memory.get(lo) + memory.get((lo + 1) % 256) * 256, loadedAddress);
             break;
         default:
             break;
@@ -244,16 +241,12 @@ void CPU::setNZStatus(uint8_t value) {
 void CPU::branchOnCondition(bool condition, uint16_t address) {
     if (condition) {
         stallCycles++;
-        oopsCycle(address);
+        checkForPageCross(address);
         reg.PC = address;
     }
 }
 
-void CPU::checkForPageCross(uint16_t a, uint16_t b) {
-    pageBoundryCross = (a & 0xFF00) != (b & 0xFF00);
-}
-
-void CPU::oopsCycle(uint16_t address) {
+void CPU::checkForPageCross(uint16_t address) {
     uint16_t indexAddress;
     switch (currentAddressMode) {
         case AbsoluteIndexX:
@@ -346,25 +339,16 @@ void CPU::IRQ() {
 void CPU::BCC(uint16_t address) {
     //Branch on Carry Clear
     branchOnCondition(reg.P.status.Carry == 0, address);
-    if (pageBoundryCross) {
-        stallCycles++;
-    }
 }
 
 void CPU::BCS(uint16_t address) {
     //Branch on Carry Set
     branchOnCondition(reg.P.status.Carry == 1, address);
-    if (pageBoundryCross) {
-        stallCycles++;
-    }
 }
 
 void CPU::BEQ(uint16_t address) {
     //Branch on Result Zero
     branchOnCondition(reg.P.status.Zero == 1, address);
-    if (pageBoundryCross) {
-        stallCycles++;
-    }
 }
 
 void CPU::BIT(uint16_t address) {
@@ -378,25 +362,16 @@ void CPU::BIT(uint16_t address) {
 void CPU::BMI(uint16_t address) {
     //Branch on Result Minus
     branchOnCondition(reg.P.status.Negative == 1, address);
-    if (pageBoundryCross) {
-        stallCycles++;
-    }
 }
 
 void CPU::BNE(uint16_t address) {
     //Branch on Result not Zero
     branchOnCondition(reg.P.status.Zero == 0, address);
-    if (pageBoundryCross) {
-        stallCycles++;
-    }
 }
 
 void CPU::BPL(uint16_t address) {
     //Branch on Result Plus
     branchOnCondition(reg.P.status.Negative == 0, address);
-    if (pageBoundryCross) {
-        stallCycles++;
-    }
 }
 
 void CPU::BRK(uint16_t address) {
@@ -408,17 +383,11 @@ void CPU::BRK(uint16_t address) {
 void CPU::BVC(uint16_t address) {
     //Branch on Overflow Clear
     branchOnCondition(reg.P.status.Overflow == 0, address);
-    if (pageBoundryCross) {
-        stallCycles++;
-    }
 }
 
 void CPU::BVS(uint16_t address) {
     //Branch on Overflow Set
     branchOnCondition(reg.P.status.Overflow == 1, address);
-    if (pageBoundryCross) {
-        stallCycles++;
-    }
 }
 
 void CPU::CLC(uint16_t address) {
@@ -484,7 +453,7 @@ void CPU::LDX(uint16_t address) {
     //Flags: N, Z
     reg.X = memory.get(address);
     setNZStatus(reg.X);
-    oopsCycle(address);
+    checkForPageCross(address);
 }
 
 void CPU::LDY(uint16_t address) {
@@ -492,7 +461,7 @@ void CPU::LDY(uint16_t address) {
     //Flags: N, Z
     reg.Y = memory.get(address);
     setNZStatus(reg.Y);
-    oopsCycle(address);
+    checkForPageCross(address);
 }
 
 void CPU::JMP(uint16_t address) {
@@ -508,7 +477,7 @@ void CPU::JSR(uint16_t address) {
 
 void CPU::NOP(uint16_t address) {
     //No Operation
-    oopsCycle(address);
+    checkForPageCross(address);
 }
 
 void CPU::PHA(uint16_t address) {
@@ -624,9 +593,7 @@ void CPU::ORA(uint16_t address) {
     //Flags: N, Z
     reg.A = reg.A | memory.get(address);
     setNZStatus(reg.A);
-    if (pageBoundryCross) {
-        stallCycles++;
-    }
+    checkForPageCross(address);
 }
 
 void CPU::AND(uint16_t address) {
@@ -634,9 +601,7 @@ void CPU::AND(uint16_t address) {
     //Flags: N, Z
     reg.A = reg.A & memory.get(address);
     setNZStatus(reg.A);
-    if (pageBoundryCross) {
-        stallCycles++;
-    }
+    checkForPageCross(address);
 }
 
 void CPU::EOR(uint16_t address) {
@@ -644,9 +609,7 @@ void CPU::EOR(uint16_t address) {
     //Flags: N, Z
     reg.A = reg.A ^ memory.get(address);
     setNZStatus(reg.A);
-    if (pageBoundryCross) {
-        stallCycles++;
-    }
+    checkForPageCross(address);
 }
 
 void CPU::ADC(uint16_t address) {
@@ -660,9 +623,7 @@ void CPU::ADC(uint16_t address) {
     ((a ^ reg.A) & 0x80) != 0;
     
     setNZStatus(reg.A);
-    if (pageBoundryCross) {
-        stallCycles++;
-    }
+    checkForPageCross(address);
 }
 
 void CPU::STA(uint16_t address) {
@@ -675,15 +636,13 @@ void CPU::LDA(uint16_t address) {
     //Flags: N, Z
     reg.A = memory.get(address);
     setNZStatus(reg.A);
-    oopsCycle(address);
+    checkForPageCross(address);
 }
 
 void CPU::CMP(uint16_t address) {
     //Compare Memory and Accumulator
     compareValues(reg.A, memory.get(address));
-    if (pageBoundryCross) {
-        stallCycles++;
-    }
+    checkForPageCross(address);
 }
 
 void CPU::SBC(uint16_t address) {
@@ -695,9 +654,7 @@ void CPU::SBC(uint16_t address) {
     reg.P.status.Carry = ((int)a - (int)memory.get(address) - (int)(1 - reg.P.status.Carry)) >= 0x0;
     reg.P.status.Overflow = ((a ^ memory.get(address)) & 0x80) != 0 && ((a ^ reg.A) & 0x80) != 0;
     setNZStatus(reg.A);
-    if (pageBoundryCross) {
-        stallCycles++;
-    }
+    checkForPageCross(address);
 }
 
 // RMW
@@ -823,16 +780,14 @@ void CPU::ISB(uint16_t address) {
 //    SBC(address);
 }
 void CPU::LAS(uint16_t address) {
-    if (pageBoundryCross) {
-        stallCycles++;
-    }
+    checkForPageCross(address);
 }
 void CPU::LAX(uint16_t address) {
     reg.A = memory.get(address);
     setNZStatus(reg.A);
     reg.X = memory.get(address);
     setNZStatus(reg.X);
-    oopsCycle(address);
+    checkForPageCross(address);
 }
 void CPU::RLA(uint16_t address) {
     // ROL(address);
