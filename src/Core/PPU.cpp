@@ -49,7 +49,10 @@ uint8_t NES::PPU::getPPURegister(uint16_t index) {
 void NES::PPU::setPPURegister(uint16_t index, uint8_t value) {
     switch (index) {
     case 0x2000: //PPU Control Flags
-        if (reg.control.flags.NMI == false && (value & 0x80) == 0x80 && reg.status.flags.VBlankEnabled == true) {
+        if (reg.control.flags.NMI == false &&
+            (value & 0x80) == 0x80 &&
+            reg.status.flags.VBlankEnabled == true &&
+            ((currentScanline == -1 && (currentCycle == 0 || currentScanline == 1)) == false)) {
             console.cpu->requestNMI = true;
         }
         reg.control.byte = value;
@@ -132,7 +135,6 @@ void NES::PPU::fetchSprites() {
             sprite = spr[i];
         } else {
             //For the first empty sprite slot, we will read sprite #63's Y-coordinate followed by 3 $FF bytes; for subsequent empty sprite slots, we will read four $FF bytes
-            
             Sprite defaultSprite = Sprite{0xFF, 0xFF, 0x3, 0x7, 0x1, 0x1, 0x1, 0xFF};
             if (i == activeSpriteCount) defaultSprite.yPosition = oam[252];
             sprite = &defaultSprite;
