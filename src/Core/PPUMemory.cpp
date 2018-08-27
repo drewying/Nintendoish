@@ -15,8 +15,12 @@ uint8_t PPUMemory::get(uint16_t index) {
         return vram[mirrorIndex(index - 0x1000)];
     } else  if (index < 0x4000) {
         // Palette Access
-        if (index >= 0x3F10 && (index - 0x3F10) % 4 == 0) index -= 0x10; // Palette Mirroring
-        return pal[index - 0x3F00];
+        index -= 0x3F00;
+        index %= 0x20; // Palette Mirroring
+        if (index >= 0x10 && index % 0x4 == 0) {
+            index -=0x10;
+        }
+        return pal[index];
     }
     return 0x0;
 }
@@ -33,8 +37,12 @@ void PPUMemory::set(uint16_t index, uint8_t value) {
         vram[mirrorIndex(index - 0x1000)] = value;
     } else if (index < 0x4000) {
         // Palette Access
-        if (index >= 0x3F10 && (index - 0x3F10) % 0x4 == 0) index -= 0x10; // Pallette Mirroring
-        pal[index - 0x3F00] = value;
+        index -= 0x3F00;
+        index %= 0x20; // Palette Mirroring
+        if (index >= 0x10 && index % 0x4 == 0) {
+            index -=0x10;
+        }
+        pal[index] = value;
     }
 }
 
