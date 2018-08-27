@@ -206,6 +206,10 @@ int main(int argc, char** argv) {
     glfwSetKeyCallback(display->window, keyCallback);
     nes = new NES::Console();
     
+    //nes->loadProgram("roms/10-even_odd_timing.nes");
+    //nes->loadProgram("roms/09-even_odd_frames.nes");
+    //nes->loadProgram("roms/08-nmi_off_timing.nes");
+    //nes->loadProgram("roms/07-nmi_on_timing.nes");
     //nes->loadProgram("roms/05-nmi_timing.nes");
     //nes->loadProgram("roms/04-nmi_control.nes");
     nes->loadProgram("roms/ppu_vbl_nmi.nes");

@@ -290,13 +290,15 @@ void NES::PPU::step() {
     totalCycles += 1;
     currentCycle += 1;
     
+    if (currentCycle == 338 && currentScanline == -1 && oddFrame && reg.mask.flags.RenderBackground) {
+        // Skip 0,0 on odd frames.
+        // TODO Test roms that test this behavior only passes if we skip cycle 338. Investigate why.
+        currentCycle++;
+    }
+    
     if (currentCycle == 341) { // Next Scanline
         currentCycle = 0;
         currentScanline++;
-        if (currentScanline == 0 && oddFrame && reg.mask.flags.RenderBackground) {
-            // Skip 0,0 on odd frames.
-            currentCycle++;
-        }
         
         if (currentScanline == 261) { // Next Frame
             totalFrames++;
