@@ -76,7 +76,9 @@ namespace NES {
             virtual void stepTimer() {};
             virtual void writeRegister(uint16_t index, uint8_t value) {};
             void setLengthCounter(uint8_t value) {
-                lengthCounter = lengthCounterTable[value];
+                if (enabled == true) {
+                    lengthCounter = lengthCounterTable[value];
+                }
             }
             void stepLengthCounter() {
                 if (haltLengthCounter == false && lengthCounter > 0) {
@@ -218,7 +220,7 @@ namespace NES {
                 case 0x4008:
                     linearCounterEnabled = ((value & 0x80) == 0x80);
                     linearCounter.period = (value & 0x7F);
-                    haltLengthCounter = !linearCounterEnabled;
+                    haltLengthCounter = linearCounterEnabled;
                     break;
                 case 0x400A:
                     timer.period = (timer.period & 0xFF00) | value;
@@ -332,8 +334,8 @@ namespace NES {
         uint32_t totalCycles = 0;
         uint32_t currentCycle = 0;
         uint8_t frameCounter;
-
-
+        bool frameIRQ = false;
+        bool processFrameCounterWrite = false;
         uint8_t getAPURegister(uint16_t index);
         void setAPURegister(uint16_t index, uint8_t value);
 

@@ -7,9 +7,9 @@ using namespace NES;
 uint8_t APU::getAPURegister(uint16_t index) {
     switch (index) {
         case 0x4015: {
-            bool irqFlag = (frameCounter >> 0x6) & 0x1;
-            //Clear inhibitIRQ flag
-            frameCounter = frameCounter & 0xBF;
+            bool irqFlag = frameIRQ;
+            //Clear IRQfLAG
+            frameIRQ = false;
             return                       (0x0 << 0x7) |
                                      (irqFlag << 0x6) |
                                          (0x0 << 0x5) |
@@ -17,7 +17,7 @@ uint8_t APU::getAPURegister(uint16_t index) {
                    ((noise.lengthCounter > 0) << 0x3) |
                 ((triangle.lengthCounter > 0) << 0x2) |
                   ((pulse2.lengthCounter > 0) << 0x1) |
-                (pulse1.lengthCounter > 0);
+                   (pulse1.lengthCounter > 0);
         }
 
         break;
@@ -38,12 +38,8 @@ void APU::setAPURegister(uint16_t index, uint8_t value) {
     if (index >= 0x4010 && index <= 0x4013) processDMC(index, value);
     if (index == 0x4015) processControl(index, value);
     if (index == 0x4017) {
-        currentCycle = 0;
         frameCounter = value;
-        if ((frameCounter & 0x80) == 0x80) {
-            clockHalfFrame();
-            clockQuarterFrame();
-        }
+        processFrameCounterWrite = true;
     }
 }
 
@@ -89,16 +85,27 @@ void APU::step() {
 }
 
 void APU::stepFrameCounter() {
-    
     currentCycle++;
 
+    if (processFrameCounterWrite) {
+        processFrameCounterWrite = false;
+        currentCycle = 0;
+        if ((frameCounter & 0x80) == 0x80) {
+            clockHalfFrame();
+            clockQuarterFrame();
+        }
+        if ((frameCounter & 0x40) == 0x40) {
+            frameIRQ = false;
+        }
+    }
+   
     pulse1.stepTimer();
     pulse2.stepTimer();
     noise.stepTimer();
 
     bool sequenceMode = ((frameCounter & 0x80) == 0x80);
-    bool generateIRQ = ((frameCounter & 0x40) == 0x0);
-    
+    bool interruptInhibit = ((frameCounter & 0x40) == 0x40);
+
     if (sequenceMode == true) {
         //5-Step Sequence
         if (currentCycle == 3729) {
@@ -132,7 +139,8 @@ void APU::stepFrameCounter() {
             clockHalfFrame();
             clockQuarterFrame();
             //IRQ
-            if (generateIRQ) {
+            if (interruptInhibit == false) {
+                frameIRQ = true;
                 console.cpu->requestIRQ = true;
             }
             currentCycle = 0;
