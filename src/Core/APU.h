@@ -69,7 +69,7 @@ namespace NES {
 
             bool enabled = false;
             bool haltLengthCounter = false;
-            uint16_t lengthCounter;
+            uint16_t lengthCounter = 0x0;
             uint8_t duty;
             virtual uint8_t sample() { return 0x0; };
             virtual void stepEnvelope() {};
@@ -330,6 +330,7 @@ namespace NES {
         Pulse pulse2 = Pulse();
         Triangle triangle = Triangle();
         Noise noise = Noise();
+        DMC dmc = DMC();
 
         uint32_t totalCycles = 0;
         uint32_t currentCycle = 0;
@@ -348,7 +349,7 @@ namespace NES {
         void clockHalfFrame();
         void processDMC(uint16_t index, uint8_t value);
         void processControl(uint16_t index, uint8_t value);
-        
+        void reset();
     };
 };
  

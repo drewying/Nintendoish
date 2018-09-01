@@ -224,10 +224,14 @@ void CPU::reset() {
 void CPU::step() {
     totalCycles++;
     stallCycles--;
-    if (stallCycles > 0x1) {
+    if (stallCycles > 0x2) {
         return;
     }
-    pollInterrurpts();
+    if (stallCycles == 0x2) {
+        pollInterrurpts();
+        return;
+    }
+    
     executeLoadedInstruction();
     executeInterrurpts();
     loadNextInstruction();

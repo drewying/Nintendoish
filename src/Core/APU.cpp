@@ -43,6 +43,14 @@ void APU::setAPURegister(uint16_t index, uint8_t value) {
     }
 }
 
+void APU::reset() {
+    pulse1.lengthCounter = 0x0;
+    pulse2.lengthCounter = 0x0;
+    triangle.lengthCounter = 0x0;
+    noise.lengthCounter = 0x0;
+    dmc.lengthCounter = 0x0;
+    frameIRQ = 0x0;
+}
 void APU::processDMC(uint16_t index, uint8_t value) {
 
 }

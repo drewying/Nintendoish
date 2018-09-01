@@ -38,5 +38,6 @@ void NES::Console::loadProgram(const char* path) {
 
 void NES::Console::reset() {
     cpu->reset();
+    apu->reset();
     ppu->reset();
 }

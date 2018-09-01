@@ -232,7 +232,14 @@ void NES::PPU::renderPixel() {
                 backgroundPriority = sprite->attributes.priority == 1;
                 
                 //Check for sprite 0 hit.
-                reg.status.flags.Sprite0Hit |= (sprite == (Sprite*)oam && spriteColor != 0x0 && backgoundColor != 0x0 && x != 255 && sprite->yPosition < 239);
+                reg.status.flags.Sprite0Hit |= (
+                    sprite == (Sprite*)oam && 
+                    spriteColor != 0x0 && 
+                    backgoundColor != 0x0 && 
+                    x != 255 &&
+                    (x > 7 || reg.mask.flags.RenderLeftSprites == true) &&
+                    (x > 7 || reg.mask.flags.RenderLeftBackground == true) &&
+                    sprite->yPosition < 239);
                 if (spriteColor != 0x0) break;
             }
         }
