@@ -633,9 +633,6 @@ void CPU::ADC(uint16_t address) {
 }
 
 void CPU::STA(uint16_t address) {
-    //Dummy Read
-    memory.get(address - 0x100);
-    
     //Store Accumulator in Memory
     memory.set(address, reg.A);
 }
