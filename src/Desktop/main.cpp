@@ -227,7 +227,7 @@ int main(int argc, char** argv) {
     //PPU
     //* nes->loadProgram("roms/test/ppu/blargg_ppu_tests_2005.09.15b/palette_ram.nes");
     //nes->loadProgram("roms/test/ppu/blargg_ppu_tests_2005.09.15b/power_up_palette.nes");
-    nes->loadProgram("roms/test/ppu/blargg_ppu_tests_2005.09.15b/sprite_ram.nes");
+    //nes->loadProgram("roms/test/ppu/blargg_ppu_tests_2005.09.15b/sprite_ram.nes");
     //* nes->loadProgram("roms/test/ppu/blargg_ppu_tests_2005.09.15b/vbl_clear_time.nes");
     //* nes->loadProgram("roms/test/ppu/blargg_ppu_tests_2005.09.15b/vram_access.nes");
     //nes->loadProgram("roms/test/ppu/full_palette/full_palette.nes");
@@ -238,20 +238,20 @@ int main(int argc, char** argv) {
     //nes->loadProgram("roms/test/ppu/ppu_open_bus/ppu_open_bus.nes");
     //nes->loadProgram("roms/test/ppu/ppu_sprite_hit/ppu_sprite_hit.nes");
     //nes->loadProgram("roms/test/ppu/ppu_sprite_overflow/ppu_sprite_overflow.nes");
-    //* nes->loadProgram("roms/test/ppu/ppu_vbl_nmi/ppu_vbl_nmi.nes");
+    //nes->loadProgram("roms/test/ppu/ppu_vbl_nmi/ppu_vbl_nmi.nes");
     //nes->loadProgram("roms/test/ppu/sprdma_and_dmc_dma/sprdma_and_dmc_dma.nes");
     //nes->loadProgram("roms/test/ppu/sprdma_and_dmc_dma/sprdma_and_dmc_dma_512.nes");
     
     //Games
     //nes->loadProgram("../roms/PunchOut.nes");
-    //nes->loadProgram("roms/Battletoads.nes");
+    nes->loadProgram("roms/games/Battletoads.nes");
     //nes->loadProgram("../roms/Gradius.nes");
     //nes->loadProgram("../roms/Contra.nes");
     //nes->loadProgram("../roms/Metroid.nes");
     //nes->loadProgram("../roms/IceClimber.nes");
     //nes->loadProgram("../roms/Megaman3.nes");
-    //nes->loadProgram("../roms/Castlevania.nes");
-    //nes->loadProgram("roms/Zelda.nes");
+    //nes->loadProgram("roms/games/Castlevania2.nes");
+    //nes->loadProgram("roms/games/Zelda.nes");
     //nes->loadProgram("../roms/SuperMario3.nes");
     //nes->loadProgram("../roms/Mario.nes");
     //nes->loadProgram("../roms/Excitebike.nes");

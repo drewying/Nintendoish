@@ -230,21 +230,33 @@ void NES::PPU::renderPixel() {
                 if (spriteColorIndex != 0x0) spriteColor = spritePalette * 4 + spriteColorIndex;
                 
                 backgroundPriority = sprite->attributes.priority == 1;
-                
-                //Check for sprite 0 hit.
-                reg.status.flags.Sprite0Hit |= (
-                    sprite == (Sprite*)oam && 
-                    spriteColor != 0x0 && 
-                    backgoundColor != 0x0 && 
-                    x != 255 &&
-                    (x > 7 || reg.mask.flags.RenderLeftSprites == true) &&
-                    (x > 7 || reg.mask.flags.RenderLeftBackground == true) &&
-                    sprite->yPosition < 239);
+
+                if (i == 0) {
+                    //Check for sprite 0 hit.
+                    uint8_t spriteHeight = reg.control.flags.TallSprites ? 16 : 8;
+                    Sprite* spriteZero = (Sprite*)oam;
+                    reg.status.flags.Sprite0Hit |= (
+                        x >= spriteZero->xPosition &&
+                        x  < (spriteZero->xPosition + 8) &&
+                        (currentScanline - 1) >= spriteZero->yPosition &&
+                        (currentScanline - 1) < spriteZero->yPosition + spriteHeight &&
+                        spriteColor != 0x0 &&
+                        backgoundColor != 0x0 &&
+                        currentCycle >= 1 &&
+                        x != 255 &&
+                        (x > 7 || reg.mask.flags.RenderLeftSprites == true) &&
+                        (x > 7 || reg.mask.flags.RenderLeftBackground == true) &&
+                        reg.mask.flags.RenderBackground == true &&
+                        reg.mask.flags.RenderSprites == true &&
+                        spriteZero->yPosition < 239
+                        );
+                }
+
                 if (spriteColor != 0x0) break;
             }
         }
     }
-    
+
     uint8_t* finalColor = colorTable[console.ppuMemory->get(0x3F00)]; //Default Color
     if (backgoundColor != 0x0) finalColor = colorTable[console.ppuMemory->get(0x3F00 | backgoundColor)];
     if (spriteColor != 0x0 && (backgroundPriority == false || backgoundColor == 0x0)) finalColor = colorTable[console.ppuMemory->get(0x3F00 | spriteColor)];
@@ -299,7 +311,7 @@ void NES::PPU::step() {
     
     if (currentCycle == 338 && currentScanline == -1 && oddFrame && reg.mask.flags.RenderBackground) {
         // Skip 0,0 on odd frames.
-        // TODO Test roms that test this behavior only passes if we skip cycle 338. Investigate why.
+        // TODO Test roms that test this behavior only passes if we skip cycle 338 instead of 339. Investigate why.
         currentCycle++;
     }
     
@@ -455,6 +467,6 @@ void NES::PPU::vBlankStart() {
 
 void NES::PPU::vBlankEnd() {
     reg.status.flags.VBlankEnabled = false;
-    reg.status.flags.Sprite0Hit = false;
     suppressNMI = false;
+    reg.status.flags.Sprite0Hit = false;
 }
