@@ -91,25 +91,29 @@ namespace NES {
             unsigned fineXScroll : 3;
             bool writeLatch = false;
         } vramRegister;
+
+        struct SpriteAttributes {
+            uint8_t palette : 2,
+            unused : 3,
+            priority : 1,
+            horizontalFlip : 1,
+            verticalFlip : 1;
+        };
         
         //Sprite Memory
         struct Sprite {
             uint8_t yPosition;
             uint8_t tileIndex;
-            struct {
-                uint8_t palette : 2,
-                unused : 3,
-                priority : 1,
-                horizontalFlip : 1,
-                verticalFlip : 1;
-            } attributes;
+            SpriteAttributes attributes;
             uint8_t xPosition;
         };
         
         uint8_t activeSpriteCount = 0;
-        Sprite* spr[8]            = { 0 };    // Active Sprites
+        Sprite* spr[0x8]          = { 0 };    // Active Sprites/Secondary OAM
         uint8_t oam[0x100]        = { 0 };    // Object Attribute Memory
         uint8_t sprTiles[0x10]    = { 0 };    // Sprite Tiles
+        uint8_t sprX[0x8] = { 0 };
+        SpriteAttributes sprAttributes[0x8] = { 0 }; 
         
         //PPU Access Methods
         uint8_t getPPURegister(uint16_t index);
@@ -126,15 +130,17 @@ namespace NES {
         bool suppressNMI = false;
         void step();
         void reset();
-        uint8_t vBlankDelay = 0x2; //TODO: Investigate why vBlank needs to occur two ticks later to pass timing tests.
+        
+        uint8_t vBlankDelay = 0x0; //TODO: Investigate why vBlank needs to occur two ticks later to pass timing tests.
         void vBlankStart();
         void vBlankEnd();
         
         // Rendering Helpers
         void renderPatternTable();
         void renderTile(int x, int y, int tileIndex);
-        void fetchSprites();
         void evaluateSprites();
+        void fetchSprites();
+        void clearSprites();
         void renderPixel();
         
         uint8_t colorTable[0x40][0x3] = {

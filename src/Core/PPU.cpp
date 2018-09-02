@@ -128,30 +128,52 @@ void NES::PPU::reset() {
     vramRegister.writeLatch = false;
 }
 
+void NES::PPU::clearSprites() {
+    std::fill_n(spr, 0x8, (Sprite*)0xFF);
+}
+
+void NES::PPU::evaluateSprites() {
+    Sprite* sprite = (Sprite*)oam;
+    activeSpriteCount = 0;
+    unsigned int oamIndex = 0;
+    
+    uint8_t spriteHeight = reg.control.flags.TallSprites ? 16 : 8;
+    while (activeSpriteCount < 8 && oamIndex < 64) {
+        if (currentScanline >= sprite->yPosition &&
+            currentScanline  < sprite->yPosition + spriteHeight)
+        {
+            spr[activeSpriteCount] = sprite;
+            activeSpriteCount++;
+        }
+        sprite++; // Pointer arithmatic FTW!
+        oamIndex++;
+    }
+}
+
 void NES::PPU::fetchSprites() {
     for (int i = 0; i < 8; i++) {
         Sprite *sprite;
         if (i < activeSpriteCount) {
             sprite = spr[i];
-        } else {
+        }
+        else {
             //For the first empty sprite slot, we will read sprite #63's Y-coordinate followed by 3 $FF bytes; for subsequent empty sprite slots, we will read four $FF bytes
-            Sprite defaultSprite = Sprite{0xFF, 0xFF, 0x3, 0x7, 0x1, 0x1, 0x1, 0xFF};
+            Sprite defaultSprite = Sprite{ 0xFF, 0xFF, 0x3, 0x7, 0x1, 0x1, 0x1, 0xFF };
             if (i == activeSpriteCount) defaultSprite.yPosition = oam[252];
             sprite = &defaultSprite;
         }
-        
+
         uint8_t spriteHeight = reg.control.flags.TallSprites ? 16 : 8;
         uint16_t tileIndex = sprite->tileIndex;
         uint8_t spriteY = currentScanline - sprite->yPosition;
         spriteY = sprite->attributes.verticalFlip ? spriteHeight - spriteY - 1 : spriteY;
-        
-        //if (i >= activeSpriteCount) spriteY = 0x8;
-        
+
         if (spriteHeight == 8) {
             // 8x8 Sprite
             tileIndex *= 0x10;
             tileIndex += (reg.control.flags.SpriteTableSelect ? 0x1000 : 0x0);
-        } else {
+        }
+        else {
             // 8x16 Sprite
             bool tileBank = tileIndex & 0x1;
             tileIndex &= 0xFE;
@@ -163,29 +185,13 @@ void NES::PPU::fetchSprites() {
                 spriteY -= 8;
             }
         }
-        
+
         tileIndex += (spriteY % 0x8);
-        
+
         sprTiles[i * 2] = console.ppuMemory->get(tileIndex);
         sprTiles[(i * 2) + 1] = console.ppuMemory->get(tileIndex + 8);
-    }
-}
-
-void NES::PPU::evaluateSprites() {
-    Sprite* sprite = (Sprite*)oam;
-    activeSpriteCount = 0;
-    unsigned int oamIndex = 0;
-    std::fill_n(spr, 8, nullptr);
-    uint8_t spriteHeight = reg.control.flags.TallSprites ? 16 : 8;
-    while (activeSpriteCount < 8 && oamIndex < 64) {
-        if (currentScanline >= sprite->yPosition &&
-            currentScanline  < sprite->yPosition + spriteHeight)
-        {
-            spr[activeSpriteCount] = sprite;
-            activeSpriteCount++;
-        }
-        sprite++; // Pointer arithmatic FTW!
-        oamIndex++;
+        sprAttributes[i] = sprite->attributes;
+        sprX[i] = sprite->xPosition;
     }
 }
 
@@ -211,25 +217,24 @@ void NES::PPU::renderPixel() {
     
     if (renderSprites == true) {
         for (int i = 0; i < activeSpriteCount; i++) {
-            Sprite* sprite = spr[i];
             
-            if (sprite != nullptr &&
-                x >= sprite->xPosition &&
-                x  < (sprite->xPosition + 8))
+            if (x >= sprX[i] &&
+                x  < (sprX[i] + 8))
             {
-                uint8_t spriteX = x - sprite->xPosition;
-                
+                uint8_t spriteX = x - sprX[i];
+                SpriteAttributes attributes = sprAttributes[i];
+
                 uint8_t tileSliceA = sprTiles[i * 2];
                 uint8_t tileSliceB = sprTiles[(i * 2) + 1];
                 
-                tileSliceA = tileSliceA >> (sprite->attributes.horizontalFlip ? spriteX : 7 - spriteX);
-                tileSliceB = tileSliceB >> (sprite->attributes.horizontalFlip ? spriteX : 7 - spriteX);
+                tileSliceA = tileSliceA >> (attributes.horizontalFlip ? spriteX : 7 - spriteX);
+                tileSliceB = tileSliceB >> (attributes.horizontalFlip ? spriteX : 7 - spriteX);
                 
                 uint16_t spriteColorIndex = (tileSliceB & 0x1) << 1 | (tileSliceA & 0x1);
-                uint16_t spritePalette = sprite->attributes.palette + 0x4;
+                uint16_t spritePalette = attributes.palette + 0x4;
                 if (spriteColorIndex != 0x0) spriteColor = spritePalette * 4 + spriteColorIndex;
                 
-                backgroundPriority = sprite->attributes.priority == 1;
+                backgroundPriority = attributes.priority == 1;
 
                 if (i == 0) {
                     //Check for sprite 0 hit.
@@ -238,8 +243,8 @@ void NES::PPU::renderPixel() {
                     reg.status.flags.Sprite0Hit |= (
                         x >= spriteZero->xPosition &&
                         x  < (spriteZero->xPosition + 8) &&
-                        (currentScanline - 1) >= spriteZero->yPosition &&
-                        (currentScanline - 1) < spriteZero->yPosition + spriteHeight &&
+                        currentScanline >= spriteZero->yPosition &&
+                        currentScanline < spriteZero->yPosition + spriteHeight &&
                         spriteColor != 0x0 &&
                         backgoundColor != 0x0 &&
                         currentCycle >= 1 &&
@@ -334,8 +339,8 @@ void NES::PPU::step() {
     bool preRenderCycle = (currentCycle >= 321 && currentCycle <= 336);
     
     // Prepare Sprites
-    if (visibleScanline && currentCycle == 259) evaluateSprites(); //TODO This should be happening at 65 for next scanline
-    if (renderingEnabled && renderScanline && currentCycle == 260) fetchSprites();
+    if (visibleScanline && currentCycle == 65) evaluateSprites();
+    if (renderingEnabled && renderScanline && currentCycle == 257) fetchSprites();
     
     if (renderingEnabled && renderScanline) {
         if (visibleCycle || preRenderCycle) {
@@ -443,7 +448,7 @@ void NES::PPU::step() {
     }
     
     if (preRenderScanline) {
-        if (currentCycle == 1 + vBlankDelay) {
+        if (currentCycle == 1) {
             vBlankEnd();
         }
         
