@@ -431,7 +431,7 @@ void NES::PPU::step() {
     }
     
     if (preRenderScanline) {
-        if (currentCycle == 1) {
+        if (currentCycle == 1 + vBlankDelay) {
             vBlankEnd();
         }
         
