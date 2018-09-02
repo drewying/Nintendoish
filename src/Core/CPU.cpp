@@ -228,10 +228,10 @@ void CPU::step() {
         return;
     }
     if (stallCycles == 0x2) {
-        pollInterrurpts();
+        
         return;
     }
-    
+    pollInterrurpts();
     executeLoadedInstruction();
     executeInterrurpts();
     loadNextInstruction();
