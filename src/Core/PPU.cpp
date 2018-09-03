@@ -463,6 +463,9 @@ void NES::PPU::step() {
     }
     
     if (preRenderScanline) {
+        if (currentCycle == 0) {
+            reg.status.flags.Sprite0Hit = false; //TODO this should be happening on cycle 1
+        }
         if (currentCycle == 1) {
             vBlankEnd();
         }
@@ -488,5 +491,4 @@ void NES::PPU::vBlankStart() {
 void NES::PPU::vBlankEnd() {
     reg.status.flags.VBlankEnabled = false;
     suppressNMI = false;
-    reg.status.flags.Sprite0Hit = false;
 }
