@@ -24,7 +24,8 @@ static NES::Console *nes;
 bool pause = false;
 bool showLog = false;
 bool timeSync = false;
-int debugStartLineNumber = 2000;
+string compareFile = "cli_latency.log";
+int debugStartLineNumber = 64000;
 int lineNumber = 0x0;
 
 const double audioSamplesPerSecond = 44100;
@@ -90,46 +91,72 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
     }
 }
 
+string getLogLine() {
+    std::stringstream ss;
+
+    uint8_t loadedInstruction = nes->cpu->loadedInstruction;
+
+    ss << uppercase << setfill('0') << setw(4) << hex << nes->cpu->reg.PC << "  " << uppercase << setfill('0') << setw(2) << hex << (uint16_t)loadedInstruction;
+    /*if (reg.PC - startingPC > 1) {
+    debugBuffer << " " << uppercase << setfill('0') << setw(2) << hex << (uint16_t)lo;
+    }
+    else {
+    debugBuffer << "   ";
+    }
+    if (reg.PC - startingPC > 2) {
+    debugBuffer << " " << uppercase << setfill('0') << setw(2) << hex << (uint16_t)hi;
+    }
+    else {
+    debugBuffer << "   ";
+    }*/
+    ss << "      ";
+    ss << "  " << nes->cpu->debugTable[loadedInstruction];
+    ss << "                             A:" << uppercase << setfill('0') << setw(2) << hex << (uint16_t)nes->cpu->reg.A;
+    ss << " X:" << uppercase << setfill('0') << setw(2) << hex << (uint16_t)nes->cpu->reg.X;
+    ss << " Y:" << uppercase << setfill('0') << setw(2) << hex << (uint16_t)nes->cpu->reg.Y;
+    ss << " P:" << uppercase << setfill('0') << setw(2) << hex << (uint16_t)nes->cpu->reg.P.byte;
+    ss << " SP:" << uppercase << setfill('0') << setw(2) << hex << (uint16_t)nes->cpu->reg.S;
+    ss << " CYC:" << setfill(' ') << dec << setw(3) << nes->ppu->currentCycle << " SL:" << nes->ppu->currentScanline;
+    return ss.str();
+}
+
+void compareLogsLoop() {
+    string logEmuLine;
+    ifstream logFile(compareFile);
+    while (!glfwWindowShouldClose(display->window)) {
+        if (!pause) {
+            if (nes->cpu->stallCycles <= 0x2) {
+                lineNumber++;
+                getline(logFile, logEmuLine);
+                string myEmuLine = getLogLine();
+                string myInstruction = myEmuLine.substr(16, 3);
+                string logInstruction = logEmuLine.substr(16, 3);
+                if (myInstruction != logInstruction || lineNumber > debugStartLineNumber) {
+                    cout << myEmuLine << endl;
+                    cout << logEmuLine << endl << endl;
+                    if (myInstruction != logInstruction) {
+                        cout << "Instructions Differ" << endl;
+                    }
+                }
+            }
+            int currentFrame = nes->ppu->totalFrames;
+            nes->emulateCycle();
+            if (nes->ppu->totalFrames != currentFrame) updateDisplay();
+        }
+        glfwPollEvents();
+    }
+    glfwTerminate();
+}
+
 void logLoop() {
     while (!glfwWindowShouldClose(display->window)) {
         if (!pause) {
-            if (nes->cpu->stallCycles == 0x0) {
-                
-                std::stringstream ss;
-                
-                uint8_t nextInstruction = nes->memory->get(nes->cpu->reg.PC);
-                
-                ss << uppercase << setfill('0') << setw(4) << hex << nes->cpu->reg.PC << "  " << uppercase << setfill('0') << setw(2) << hex << (uint16_t)nextInstruction;
-                /*if (reg.PC - startingPC > 1) {
-                 debugBuffer << " " << uppercase << setfill('0') << setw(2) << hex << (uint16_t)lo;
-                 }
-                 else {
-                 debugBuffer << "   ";
-                 }
-                 if (reg.PC - startingPC > 2) {
-                 debugBuffer << " " << uppercase << setfill('0') << setw(2) << hex << (uint16_t)hi;
-                 }
-                 else {
-                 debugBuffer << "   ";
-                 }*/
-                ss << "      ";
-                ss << "  " << nes->cpu->debugTable[nextInstruction];
-                ss << "                             A:" << uppercase << setfill('0') << setw(2) << hex << (uint16_t)nes->cpu->reg.A;
-                ss << " X:" << uppercase << setfill('0') << setw(2) << hex << (uint16_t)nes->cpu->reg.X;
-                ss << " Y:" << uppercase << setfill('0') << setw(2) << hex << (uint16_t)nes->cpu->reg.Y;
-                ss << " P:" << uppercase << setfill('0') << setw(2) << hex << (uint16_t)nes->cpu->reg.P.byte;
-                ss << " SP:" << uppercase << setfill('0') << setw(2) << hex << (uint16_t)nes->cpu->reg.S;
-                ss << " CYC:" << setfill(' ') << dec << setw(3) << nes->ppu->currentCycle << " SL:" << nes->ppu->currentScanline;
-                
+            if (nes->cpu->stallCycles == 0x2) {
                 lineNumber++;
-                
-                string emuLine = ss.str();
-                if (lineNumber >= debugStartLineNumber) {
-                    cout << lineNumber << " " << emuLine << endl;
-                }
-                
+                if (lineNumber > debugStartLineNumber) {
+                    cout << lineNumber << " " << getLogLine() << endl;
+                }   
             }
-            
             int currentFrame = nes->ppu->totalFrames;
             nes->emulateCycle();
             if (nes->ppu->totalFrames != currentFrame) updateDisplay();
@@ -215,7 +242,7 @@ int main(int argc, char** argv) {
     //* nes->loadProgram("roms/test/cpu/branch_timing_tests/1.Branch_Basics.nes");
     //* nes->loadProgram("roms/test/cpu/branch_timing_tests/2.Backward_Branch.nes");
     //* nes->loadProgram("roms/test/cpu/branch_timing_tests/3.Forward_Branch.nes");
-    nes->loadProgram("roms/test/cpu/cpu_interrupts_v2/cpu_interrupts.nes");
+    //nes->loadProgram("roms/test/cpu/cpu_interrupts_v2/cpu_interrupts.nes");
     //nes->loadProgram("roms/test/cpu/cpu_reset/ram_after_reset.nes");
     //nes->loadProgram("roms/test/cpu/cpu_reset/registers.nes");
     //* nes->loadProgram("roms/test/cpu/cpu_timing_test6/cpu_timing_test.nes");
@@ -282,7 +309,7 @@ int main(int argc, char** argv) {
 
     //Games
     //nes->loadProgram("../roms/PunchOut.nes");
-    //nes->loadProgram("roms/games/Battletoads.nes");
+    nes->loadProgram("roms/games/Battletoads.nes");
     //nes->loadProgram("../roms/Gradius.nes");
     //nes->loadProgram("../roms/Contra.nes");
     //nes->loadProgram("../roms/Metroid.nes");
@@ -295,7 +322,11 @@ int main(int argc, char** argv) {
     //nes->loadProgram("../roms/Excitebike.nes");
     //nes->loadProgram("../roms/DonkeyKong.nes");
     
-    if (showLog) {
+    //nes->loadProgram("roms/test/cpu/cpu_interrupts_v2/rom_singles/1-cli_latency.nes");
+
+    if (compareFile.length() > 0 && showLog) {
+        compareLogsLoop();
+    } else if (showLog) {
         logLoop();
     } else {
         gameLoop();

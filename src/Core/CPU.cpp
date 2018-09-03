@@ -224,11 +224,7 @@ void CPU::reset() {
 void CPU::step() {
     totalCycles++;
     stallCycles--;
-    if (stallCycles > 0x2) {
-        return;
-    }
-    if (stallCycles == 0x2) {
-        
+    if (stallCycles > 0x1) {
         return;
     }
     pollInterrurpts();
@@ -294,7 +290,6 @@ void CPU::pollInterrurpts() {
         if (reg.P.status.Interrupt == false) {
             doIRQ = true;
         }
-        requestIRQ = false;
     }
 }
 

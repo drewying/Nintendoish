@@ -7,9 +7,9 @@ using namespace NES;
 uint8_t APU::getAPURegister(uint16_t index) {
     switch (index) {
         case 0x4015: {
-            bool irqFlag = frameIRQ;
+            bool irqFlag = console.cpu->requestIRQ;
             //Clear IRQfLAG
-            frameIRQ = false;
+            console.cpu->requestIRQ = false;
             return                       (0x0 << 0x7) |
                                      (irqFlag << 0x6) |
                                          (0x0 << 0x5) |
@@ -49,10 +49,9 @@ void APU::reset() {
     triangle.lengthCounter = 0x0;
     noise.lengthCounter = 0x0;
     dmc.lengthCounter = 0x0;
-    frameIRQ = 0x0;
 }
 void APU::processDMC(uint16_t index, uint8_t value) {
-
+    printf("DMC Not Implemented");
 }
 
 void APU::processControl(uint16_t index, uint8_t value) {
@@ -103,7 +102,7 @@ void APU::stepFrameCounter() {
             clockQuarterFrame();
         }
         if ((frameCounter & 0x40) == 0x40) {
-            frameIRQ = false;
+            console.cpu->requestIRQ = false;
         }
     }
    
@@ -148,7 +147,6 @@ void APU::stepFrameCounter() {
             clockQuarterFrame();
             //IRQ
             if (interruptInhibit == false) {
-                frameIRQ = true;
                 console.cpu->requestIRQ = true;
             }
             currentCycle = 0;

@@ -335,7 +335,6 @@ namespace NES {
         uint32_t totalCycles = 0;
         uint32_t currentCycle = 0;
         uint8_t frameCounter;
-        bool frameIRQ = false;
         bool processFrameCounterWrite = false;
         uint8_t getAPURegister(uint16_t index);
         void setAPURegister(uint16_t index, uint8_t value);
