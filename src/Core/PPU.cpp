@@ -135,15 +135,14 @@ void NES::PPU::clearSprites() {
 void NES::PPU::evaluateSprites() {
     Sprite* sprite = (Sprite*)oam;
     activeSpriteCount = 0;
-    unsigned int oamIndex = 0;
-    
+    uint8_t oamIndex = 0;
     uint8_t spriteHeight = reg.control.flags.TallSprites ? 16 : 8;
+
     while (activeSpriteCount < 8 && oamIndex < 64) {
         if (currentScanline >= sprite->yPosition &&
             currentScanline  < sprite->yPosition + spriteHeight)
         {
-            spr[activeSpriteCount] = sprite;
-            activeSpriteCount++;
+            spr[activeSpriteCount++] = sprite;
         }
         sprite++; // Pointer arithmatic FTW!
         oamIndex++;
@@ -186,10 +185,23 @@ void NES::PPU::fetchSprites() {
             }
         }
 
+
         tileIndex += (spriteY % 0x8);
 
-        sprTiles[i * 2] = console.ppuMemory->get(tileIndex);
-        sprTiles[(i * 2) + 1] = console.ppuMemory->get(tileIndex + 8);
+        uint8_t tile1 = console.ppuMemory->get(tileIndex);
+        uint8_t tile2 = console.ppuMemory->get(tileIndex + 8);
+        if (sprite->attributes.horizontalFlip == false) {
+            tile1 = tile1 >> 4 | tile1 << 4;
+            tile1 = (tile1 >> 2) & 0x33 | (tile1 & 0x33) << 2;
+            tile1 = (tile1 >> 1) & 0x55 | (tile1 & 0x55) << 1;
+
+            tile2 = tile2 >> 4 | tile2 << 4;
+            tile2 = (tile2 >> 2) & 0x33 | (tile2 & 0x33) << 2;
+            tile2 = (tile2 >> 1) & 0x55 | (tile2 & 0x55) << 1;
+        }
+
+        sprTiles[i * 2] = tile1;
+        sprTiles[(i * 2) + 1] = tile2;
         sprAttributes[i] = sprite->attributes;
         sprX[i] = sprite->xPosition;
     }
@@ -216,35 +228,28 @@ void NES::PPU::renderPixel() {
     }
     
     if (renderSprites == true) {
-        for (int i = 0; i < activeSpriteCount; i++) {
-            
-            if (x >= sprX[i] &&
-                x  < (sprX[i] + 8))
-            {
-                uint8_t spriteX = x - sprX[i];
+        for (int i = 0; i < 8; i++) {
+            if (sprX[i] == 0) {
                 SpriteAttributes attributes = sprAttributes[i];
 
                 uint8_t tileSliceA = sprTiles[i * 2];
                 uint8_t tileSliceB = sprTiles[(i * 2) + 1];
-                
-                tileSliceA = tileSliceA >> (attributes.horizontalFlip ? spriteX : 7 - spriteX);
-                tileSliceB = tileSliceB >> (attributes.horizontalFlip ? spriteX : 7 - spriteX);
-                
+
                 uint16_t spriteColorIndex = (tileSliceB & 0x1) << 1 | (tileSliceA & 0x1);
                 uint16_t spritePalette = attributes.palette + 0x4;
                 if (spriteColorIndex != 0x0) spriteColor = spritePalette * 4 + spriteColorIndex;
-                
+
                 backgroundPriority = attributes.priority == 1;
 
-                if (i == 0) {
+                if (i == 0 && reg.status.flags.Sprite0Hit == false) {
                     //Check for sprite 0 hit.
                     uint8_t spriteHeight = reg.control.flags.TallSprites ? 16 : 8;
                     Sprite* spriteZero = (Sprite*)oam;
-                    reg.status.flags.Sprite0Hit |= (
+                    reg.status.flags.Sprite0Hit = (
                         x >= spriteZero->xPosition &&
-                        x  < (spriteZero->xPosition + 8) &&
-                        currentScanline >= spriteZero->yPosition &&
-                        currentScanline < spriteZero->yPosition + spriteHeight &&
+                        x < (spriteZero->xPosition + 8) &&
+                        (currentScanline - 1) >= spriteZero->yPosition &&
+                        (currentScanline - 1) < spriteZero->yPosition + spriteHeight &&
                         spriteColor != 0x0 &&
                         backgoundColor != 0x0 &&
                         currentCycle >= 1 &&
@@ -256,9 +261,18 @@ void NES::PPU::renderPixel() {
                         spriteZero->yPosition < 239
                         );
                 }
-
                 if (spriteColor != 0x0) break;
             }
+        }
+    }
+
+    for (int i = 0; i < 8; i++) {
+        if (sprX[i] == 0) {
+            sprTiles[i * 2] >>= 1;
+            sprTiles[(i * 2) + 1] >>= 1;
+        }
+        if (sprX[i] > 0) {
+            sprX[i] -= 1;
         }
     }
 
@@ -339,6 +353,7 @@ void NES::PPU::step() {
     bool preRenderCycle = (currentCycle >= 321 && currentCycle <= 336);
     
     // Prepare Sprites
+    if (visibleScanline && currentCycle == 1) clearSprites();
     if (visibleScanline && currentCycle == 65) evaluateSprites();
     if (renderingEnabled && renderScanline && currentCycle == 257) fetchSprites();
     
