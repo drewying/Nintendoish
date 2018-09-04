@@ -77,13 +77,12 @@ namespace NES {
         void executeLoadedInstruction();
         void loadNextInstruction();
         
-        
         void reset();
         void setNZStatus(uint8_t value);
-        void checkForPageCross(uint16_t address);
         void executeInterrurpts();
         void pollInterrurpts();
         void branchOnCondition(bool condition, uint16_t address);
+        bool checkForPageCross(uint16_t address, bool includeCyclePenalty);
         void compareValues(uint8_t a, uint8_t b);
         void push(uint8_t byte);
         void pushAddress(uint16_t address);

@@ -241,12 +241,12 @@ void CPU::setNZStatus(uint8_t value) {
 void CPU::branchOnCondition(bool condition, uint16_t address) {
     if (condition) {
         stallCycles++;
-        checkForPageCross(address);
+        checkForPageCross(address, true);
         reg.PC = address;
     }
 }
 
-void CPU::checkForPageCross(uint16_t address) {
+bool CPU::checkForPageCross(uint16_t address, bool includeCyclePenalty) {
     uint16_t indexAddress;
     switch (currentAddressMode) {
         case AbsoluteIndexX:
@@ -265,9 +265,16 @@ void CPU::checkForPageCross(uint16_t address) {
     }
     
     if (indexAddress != 0x0 && ((address & 0xFF00) != (indexAddress & 0xFF00))){
-        stallCycles++;
+        if (includeCyclePenalty) {
+            stallCycles++;
+        }
+        
         //Dummy read
         memory.get(address - 0x100);
+
+        return true;
+    } else {
+        return false;
     }
 }
 
@@ -286,10 +293,8 @@ void CPU::pollInterrurpts() {
     if (requestNMI == true) {
         doNMI = true;
         requestNMI = false;
-    } else if (requestIRQ == true) {
-        if (reg.P.status.Interrupt == false) {
-            doIRQ = true;
-        }
+    } else if (requestIRQ == true && reg.P.status.Interrupt == false) {
+        doIRQ = true;
     }
 }
 
@@ -452,7 +457,7 @@ void CPU::INY(uint16_t address) {
 void CPU::LDX(uint16_t address) {
     //Load Index X with Memory
     //Flags: N, Z
-    checkForPageCross(address);
+    checkForPageCross(address, true);
     reg.X = memory.get(address);
     setNZStatus(reg.X);
 }
@@ -460,7 +465,7 @@ void CPU::LDX(uint16_t address) {
 void CPU::LDY(uint16_t address) {
     //Load Index Y with Memory
     //Flags: N, Z
-    checkForPageCross(address);
+    checkForPageCross(address, true);
     reg.Y = memory.get(address);
     setNZStatus(reg.Y);
 }
@@ -478,7 +483,7 @@ void CPU::JSR(uint16_t address) {
 
 void CPU::NOP(uint16_t address) {
     //No Operation
-    checkForPageCross(address);
+    checkForPageCross(address, true);
 }
 
 void CPU::PHA(uint16_t address) {
@@ -515,6 +520,7 @@ void CPU::RTI(uint16_t address) {
     //Return from interrupt
     //Flags: all
     reg.P.byte = ((pull() & 0xEF) | 0x20);
+    doIRQ = false;
     reg.PC = pullAddress();
 }
 
@@ -592,7 +598,7 @@ void CPU::TXS(uint16_t address) {
 void CPU::ORA(uint16_t address) {
     //OR Memory with Accumulator
     //Flags: N, Z
-    checkForPageCross(address);
+    checkForPageCross(address, true);
     reg.A = reg.A | memory.get(address);
     setNZStatus(reg.A);
 }
@@ -600,7 +606,7 @@ void CPU::ORA(uint16_t address) {
 void CPU::AND(uint16_t address) {
     //AND Memory with Accumulator
     //Flags: N, Z
-    checkForPageCross(address);
+    checkForPageCross(address, true);
     reg.A = reg.A & memory.get(address);
     setNZStatus(reg.A);
 }
@@ -608,7 +614,7 @@ void CPU::AND(uint16_t address) {
 void CPU::EOR(uint16_t address) {
     //Exclusive-OR Memory with Accumulator
     //Flags: N, Z
-    checkForPageCross(address);
+    checkForPageCross(address, true);
     reg.A = reg.A ^ memory.get(address);
     setNZStatus(reg.A);
 }
@@ -616,7 +622,7 @@ void CPU::EOR(uint16_t address) {
 void CPU::ADC(uint16_t address) {
     //Add Memory to Accumulator with Carry
     //Flags: N, V, Z, C
-    checkForPageCross(address);
+    checkForPageCross(address, true);
     uint8_t a = reg.A;
     reg.A = reg.A + memory.get(address) + reg.P.status.Carry;
     
@@ -628,6 +634,7 @@ void CPU::ADC(uint16_t address) {
 }
 
 void CPU::STA(uint16_t address) {
+    checkForPageCross(address, false);
     //Store Accumulator in Memory
     memory.set(address, reg.A);
 }
@@ -635,21 +642,21 @@ void CPU::STA(uint16_t address) {
 void CPU::LDA(uint16_t address) {
     //Load Accumulator with Memory
     //Flags: N, Z
-    checkForPageCross(address);
+    checkForPageCross(address, true);
     reg.A = memory.get(address);
     setNZStatus(reg.A);
 }
 
 void CPU::CMP(uint16_t address) {
     //Compare Memory and Accumulator
-    checkForPageCross(address);
+    checkForPageCross(address, true);
     compareValues(reg.A, memory.get(address));
 }
 
 void CPU::SBC(uint16_t address) {
     //Subtract Memory from Accumulator with Borrow
     //Flags: N, V, Z, C
-    checkForPageCross(address);
+    checkForPageCross(address, true);
     uint8_t a = reg.A;
     reg.A = reg.A - memory.get(address) - (1 - reg.P.status.Carry);
     reg.P.status.Carry = ((int)a - (int)memory.get(address) - (int)(1 - reg.P.status.Carry)) >= 0x0;
@@ -662,10 +669,21 @@ void CPU::ASL(uint16_t address) {
     //Arithmetic Shift Left One Bit
     //Flags: N, Z, C
     uint8_t value;
-    if (currentAddressMode == Accumulator) {
+    switch (currentAddressMode) {
+    case Accumulator:
         value = reg.A;
-    } else {
+        break;
+    case AbsoluteIndexX:
+    case AbsoluteIndexY:
+    case IndexIndirectX:
+    case Relative:
+        if (checkForPageCross(address, false) == false) {
+            // Perform a Double read
+            memory.get(address);
+        }
+    default:
         value = memory.get(address);
+        break;
     }
     
     reg.P.status.Carry = (value >> 7) & 1;
@@ -684,6 +702,7 @@ void CPU::ASL(uint16_t address) {
 void CPU::DEC(uint16_t address) {
     //Decrement Memory by One
     //Flags: N, Z
+    checkForPageCross(address, false);
     memory.set(address, memory.get(address) - 1);
     setNZStatus(memory.get(address));
 }
@@ -691,6 +710,7 @@ void CPU::DEC(uint16_t address) {
 void CPU::INC(uint16_t address) {
     //Increment Memory by One
     //Flags: N, Z
+    checkForPageCross(address, false);
     memory.set(address, memory.get(address) + 1);
     setNZStatus(memory.get(address));
 }
@@ -699,10 +719,21 @@ void CPU::LSR(uint16_t address) {
     //Logical Shift Right One Bit
     //Flags: N, Z, C
     uint8_t value;
-    if (currentAddressMode == Accumulator) {
+    switch (currentAddressMode) {
+    case Accumulator:
         value = reg.A;
-    } else {
+        break;
+    case AbsoluteIndexX:
+    case AbsoluteIndexY:
+    case IndexIndirectX:
+    case Relative:
+        if (checkForPageCross(address, false) == false) {
+            // Perform a Double read
+            memory.get(address);
+        }
+    default:
         value = memory.get(address);
+        break;
     }
     
     reg.P.status.Carry = value & 0x1;
@@ -718,24 +749,34 @@ void CPU::LSR(uint16_t address) {
     setNZStatus(value);
 }
 
-void CPU::ROL(uint16_t address) {
+void CPU::ROL(uint16_t address) { 
     //Rotate Left One Bit
     //Flags: N, Z, C
     uint8_t value;
-    if (currentAddressMode == Accumulator) {
+    switch (currentAddressMode){
+    case Accumulator:
         value = reg.A;
-    } else {
+        break;
+    case AbsoluteIndexX:
+    case AbsoluteIndexY:
+    case IndexIndirectX:
+    case Relative:
+        if (checkForPageCross(address, false) == false) {
+            // Perform a Double read
+            memory.get(address);
+        }
+    default:
         value = memory.get(address);
+        break;
     }
-    
+
     char c = reg.P.status.Carry;
     reg.P.status.Carry = (value >> 0x7) & 0x1;
     value = (value << 0x1) | c;
 
     if (currentAddressMode == Accumulator) {
         reg.A = value;
-    }
-    else {
+    } else {
         memory.set(address, value);
     }
     
@@ -746,10 +787,21 @@ void CPU::ROR(uint16_t address) {
     //Rotate Right One Bit
     //Flags: N, Z, C
     uint8_t value;
-    if (currentAddressMode == Accumulator) {
+    switch (currentAddressMode) {
+    case Accumulator:
         value = reg.A;
-    } else {
+        break;
+    case AbsoluteIndexX:
+    case AbsoluteIndexY:
+    case IndexIndirectX:
+    case Relative:
+        if (checkForPageCross(address, false) == false) {
+            // Perform a Double read
+            memory.get(address);
+        }
+    default:
         value = memory.get(address);
+        break;
     }
     
     uint8_t c = reg.P.status.Carry;
@@ -780,10 +832,10 @@ void CPU::ISB(uint16_t address) {
 //    SBC(address);
 }
 void CPU::LAS(uint16_t address) {
-    checkForPageCross(address);
+    checkForPageCross(address, true);
 }
 void CPU::LAX(uint16_t address) {
-    checkForPageCross(address);
+    checkForPageCross(address, true);
     reg.A = memory.get(address);
     setNZStatus(reg.A);
     reg.X = memory.get(address);
