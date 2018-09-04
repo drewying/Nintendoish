@@ -51,7 +51,7 @@ void APU::reset() {
     dmc.lengthCounter = 0x0;
 }
 void APU::processDMC(uint16_t index, uint8_t value) {
-    printf("DMC Not Implemented");
+    printf("DMC Not Implemented\n");
 }
 
 void APU::processControl(uint16_t index, uint8_t value) {

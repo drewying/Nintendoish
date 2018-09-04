@@ -625,7 +625,6 @@ void CPU::ADC(uint16_t address) {
     checkForPageCross(address, true);
     uint8_t a = reg.A;
     reg.A = reg.A + memory.get(address) + reg.P.status.Carry;
-    
     reg.P.status.Carry = ((int)a + (int)memory.get(address) + (int)reg.P.status.Carry) > 0xFF;
     reg.P.status.Overflow = ((a ^ memory.get(address)) & 0x80) == 0 &&
     ((a ^ reg.A) & 0x80) != 0;
@@ -691,8 +690,7 @@ void CPU::ASL(uint16_t address) {
     
     if (currentAddressMode == Accumulator) {
         reg.A = value;
-    }
-    else {
+    } else {
         memory.set(address, value);
     }
 
@@ -741,8 +739,7 @@ void CPU::LSR(uint16_t address) {
 
     if (currentAddressMode == Accumulator) {
         reg.A = value;
-    }
-    else {
+    } else {
         memory.set(address, value);
     }
 
@@ -817,51 +814,125 @@ void CPU::ROR(uint16_t address) {
     setNZStatus(value);
 }
 
-// Unimplemented
-void CPU::AHX(uint16_t address) {}
-void CPU::ALR(uint16_t address) {}
-void CPU::ANC(uint16_t address) {}
-void CPU::ARR(uint16_t address) {}
-void CPU::AXS(uint16_t address) {}
+// Unofficial
+void CPU::AHX(uint16_t address) {
+    checkForPageCross(address, true);
+    memory.set(address, reg.A & reg.X & (address >> 2) + 1);
+}
+
+void CPU::ALR(uint16_t address) {
+    AND(address);
+    currentAddressMode = Accumulator; // Dirty hack.
+    LSR(address);
+}
+
+void CPU::ANC(uint16_t address) {
+    AND(address);
+    reg.P.status.Carry = reg.A >> 0x7;
+}
+void CPU::ARR(uint16_t address) {
+    reg.A = (reg.A & memory.get(address));
+    reg.A = ((reg.A >> 1) | (reg.P.status.Carry ? 0x80 : 0x00));
+    
+    switch (reg.A & 0x60) {
+    case 0x00: 
+        reg.P.status.Carry = false;
+        reg.P.status.Overflow = false;
+        break;
+    case 0x20:
+        reg.P.status.Carry = false;
+        reg.P.status.Overflow = true;
+        break;
+    case 0x40:
+        reg.P.status.Carry = true;
+        reg.P.status.Overflow = true;
+        break;
+    case 0x60:
+        reg.P.status.Carry = true;
+        reg.P.status.Overflow = false;
+        break;
+    }
+
+    if (reg.P.status.Zero == true) {
+        reg.P.status.Zero = false;
+    } else {
+        reg.P.status.Zero = (reg.A == 0x0);
+    }
+}
+
+void CPU::AXS(uint16_t address) {
+    uint16_t temp = (reg.X & reg.A) - memory.get(address);
+    reg.P.status.Carry = temp < 0x100;
+    reg.X = temp;
+    setNZStatus(reg.X);
+}
+
 void CPU::DCP(uint16_t address) {
-    // DEC(address);
-    // CMP(address);
+    DEC(address);
+    CMP(address);
 }
+
 void CPU::ISB(uint16_t address) {
-//    INC(address);
-//    SBC(address);
+    INC(address);
+    SBC(address);
 }
+
 void CPU::LAS(uint16_t address) {
     checkForPageCross(address, true);
 }
+
 void CPU::LAX(uint16_t address) {
-    checkForPageCross(address, true);
-    reg.A = memory.get(address);
-    setNZStatus(reg.A);
-    reg.X = memory.get(address);
-    setNZStatus(reg.X);
+    LDA(address);
+    LDX(address);
 }
+
 void CPU::RLA(uint16_t address) {
-    // ROL(address);
-    // AND(address);
+    ROL(address);
+    AND(address);
 }
+
 void CPU::RRA(uint16_t address) {
-    // ROR(address);
-    // ADC(address);
+    ROR(address);
+    ADC(address);
 }
+
 void CPU::SLO(uint16_t address) {
-    // ASL(address);
-    // ORA(address);
+    ASL(address);
+    ORA(address);
 }
+
 void CPU::SAX(uint16_t address) {
-    // memory.set(address, reg.A & reg.X);
+    checkForPageCross(address, true);
+    memory.set(address, reg.A & reg.X);
 }
-void CPU::SHX(uint16_t address) {}
-void CPU::SHY(uint16_t address) {}
+
+void CPU::SHX(uint16_t address) {
+    if (checkForPageCross(address, true) == false) {
+        memory.set(address, reg.X & ((address >> 8) + 1));
+    }
+}
+
+void CPU::SHY(uint16_t address) {
+    if (checkForPageCross(address, true) == false) {
+        memory.set(address, reg.Y & ((address >> 8) + 1));
+    }
+}
+
 void CPU::SRE(uint16_t address) {
-    // LSR(address);
-    // EOR(address);
+    LSR(address);
+    EOR(address);
 }
+
 void CPU::STP(uint16_t address) {}
-void CPU::TAS(uint16_t address) {}
-void CPU::XAA(uint16_t address) {}
+
+void CPU::TAS(uint16_t address) {
+    checkForPageCross(address, true);
+    reg.S = reg.A & reg.X;
+    memory.set(address, reg.A & reg.X * (address >> 2));
+}
+
+void CPU::XAA(uint16_t address) {
+    TXA(address);
+    AND(address);
+}
+
