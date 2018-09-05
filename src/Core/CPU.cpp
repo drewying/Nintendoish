@@ -623,7 +623,6 @@ void CPU::ADC(uint16_t address) {
     reg.P.status.Carry = ((int)a + (int)memory.get(address) + (int)reg.P.status.Carry) > 0xFF;
     reg.P.status.Overflow = ((a ^ memory.get(address)) & 0x80) == 0 &&
     ((a ^ reg.A) & 0x80) != 0;
-    
     setNZStatus(reg.A);
 }
 
@@ -811,7 +810,7 @@ void CPU::ROR(uint16_t address) {
 
 // Unofficial
 void CPU::AHX(uint16_t address) {
-    checkForPageCross(address, true);
+    checkForPageCross(address, false);
     memory.set(address, reg.A & reg.X & (address >> 2) + 1);
 }
 
@@ -864,12 +863,16 @@ void CPU::AXS(uint16_t address) {
 
 void CPU::DCP(uint16_t address) {
     DEC(address);
-    CMP(address);
+    compareValues(reg.A, memory.get(address));
 }
 
 void CPU::ISB(uint16_t address) {
     INC(address);
-    SBC(address);
+    uint8_t a = reg.A;
+    reg.A = reg.A - memory.get(address) - (1 - reg.P.status.Carry);
+    reg.P.status.Carry = ((int)a - (int)memory.get(address) - (int)(1 - reg.P.status.Carry)) >= 0x0;
+    reg.P.status.Overflow = ((a ^ memory.get(address)) & 0x80) != 0 && ((a ^ reg.A) & 0x80) != 0;
+    setNZStatus(reg.A);
 }
 
 void CPU::LAS(uint16_t address) {
@@ -878,22 +881,33 @@ void CPU::LAS(uint16_t address) {
 
 void CPU::LAX(uint16_t address) {
     LDA(address);
-    LDX(address);
+    reg.X = memory.get(address);
+    setNZStatus(reg.X);
 }
 
 void CPU::RLA(uint16_t address) {
     ROL(address);
-    AND(address);
+    checkForPageCross(address, false);
+    reg.A = reg.A & memory.get(address);
+    setNZStatus(reg.A);
 }
 
 void CPU::RRA(uint16_t address) {
     ROR(address);
-    ADC(address);
+    checkForPageCross(address, false);
+    uint8_t a = reg.A;
+    reg.A = reg.A + memory.get(address) + reg.P.status.Carry;
+    reg.P.status.Carry = ((int)a + (int)memory.get(address) + (int)reg.P.status.Carry) > 0xFF;
+    reg.P.status.Overflow = ((a ^ memory.get(address)) & 0x80) == 0 &&
+    ((a ^ reg.A) & 0x80) != 0;
+    setNZStatus(reg.A);
 }
 
 void CPU::SLO(uint16_t address) {
     ASL(address);
-    ORA(address);
+    checkForPageCross(address, false);
+    reg.A = reg.A | memory.get(address);
+    setNZStatus(reg.A);
 }
 
 void CPU::SAX(uint16_t address) {
@@ -902,32 +916,35 @@ void CPU::SAX(uint16_t address) {
 }
 
 void CPU::SHX(uint16_t address) {
-    if (checkForPageCross(address, true) == false) {
+    if (checkForPageCross(address, false) == false) {
         memory.set(address, reg.X & ((address >> 8) + 1));
     }
 }
 
 void CPU::SHY(uint16_t address) {
-    if (checkForPageCross(address, true) == false) {
+    if (checkForPageCross(address, false) == false) {
         memory.set(address, reg.Y & ((address >> 8) + 1));
     }
 }
 
 void CPU::SRE(uint16_t address) {
     LSR(address);
-    EOR(address);
+    checkForPageCross(address, false);
+    reg.A = reg.A ^ memory.get(address);
+    setNZStatus(reg.A);
 }
 
 void CPU::STP(uint16_t address) {}
 
 void CPU::TAS(uint16_t address) {
-    checkForPageCross(address, true);
+    checkForPageCross(address, false);
     reg.S = reg.A & reg.X;
     memory.set(address, reg.A & reg.X * (address >> 2));
 }
 
 void CPU::XAA(uint16_t address) {
     TXA(address);
-    AND(address);
+    reg.A = reg.A & memory.get(address);
+    setNZStatus(reg.A);
 }
 

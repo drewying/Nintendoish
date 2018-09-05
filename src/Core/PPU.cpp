@@ -278,7 +278,7 @@ void NES::PPU::renderPixel() {
 
     uint8_t* finalColor = colorTable[console.ppuMemory->get(0x3F00)]; //Default Color
     //If the current VRAM address points in the range $3F00-$3FFF during forced blanking, the color indicated by this palette location will be shown on screen instead of the backdrop color
-    if (vramRegister.v.address >= 0x3F00 && vramRegister.v.address < 0x4000) finalColor = colorTable[console.ppuMemory->get(vramRegister.v.address)];
+    if (vramRegister.v.address >= 0x3F00 && vramRegister.v.address < 0x4000 && reg.mask.flags.RenderBackground == false && reg.mask.flags.RenderSprites == false) finalColor = colorTable[console.ppuMemory->get(vramRegister.v.address)];
     if (backgoundColor != 0x0) finalColor = colorTable[console.ppuMemory->get(0x3F00 | backgoundColor)];
     if (spriteColor != 0x0 && (backgroundPriority == false || backgoundColor == 0x0)) finalColor = colorTable[console.ppuMemory->get(0x3F00 | spriteColor)];
     
