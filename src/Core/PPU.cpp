@@ -162,7 +162,7 @@ void NES::PPU::evaluateSprites() {
             n++;
             m++;
         }
-        if (m == 3) m = 0;
+        if (m == 4) m = 0;
     }
 }
 

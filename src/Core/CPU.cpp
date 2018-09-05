@@ -105,6 +105,11 @@ CPU::CPU(NES::Memory &memory):
     }
     {
         reg.P.byte = 0x24;
+        reg.A = 0;
+        reg.X = 0;
+        reg.Y = 0;
+        reg.S = 0xFD;
+        totalCycles = 0x0;
     }
 
 CPU::~CPU() { }
@@ -208,16 +213,10 @@ void CPU::loadNextInstruction() {
 }
 
 void CPU::reset() {
-    reg.A = 0;
-    reg.X = 0;
-    reg.Y = 0;
-    reg.S = 0xFD;
-    reg.P.status.Unused = true;
-    reg.P.status.Interrupt = true;
-    reg.S = 0xFD;
-    reg.PC = memory.resetVector();
     stallCycles = 0x0;
-    totalCycles = 0x0;
+    reg.S -= 0x3;
+    reg.P.status.Interrupt = 0x1;
+    reg.PC = memory.resetVector();
     loadNextInstruction();
 }
 

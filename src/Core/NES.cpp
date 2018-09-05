@@ -32,7 +32,8 @@ int NES::Console::emulateCycle() {
 
 void NES::Console::loadProgram(const char* path) {
     cartridge = new Cartridge(*this, path);
-    reset();
+    cpu->reg.PC = memory->resetVector();
+    cpu->loadNextInstruction();
     std::cout << "Loaded" << std::endl;
 }
 
