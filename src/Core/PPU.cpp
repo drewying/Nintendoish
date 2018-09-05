@@ -129,7 +129,7 @@ void NES::PPU::reset() {
 }
 
 void NES::PPU::clearSprites() {
-    std::fill_n(spr, 0x40, 0xFF);
+    std::fill_n(spr, 0x20, 0xFF);
 }
 
 void NES::PPU::evaluateSprites() {
@@ -142,9 +142,7 @@ void NES::PPU::evaluateSprites() {
     while (activeSpriteCount < 8 && n < 0x40) {
         uint8_t y = oam[4 * n];
         if (currentScanline >= y && currentScanline < y + spriteHeight) {
-            for (int i = 0; i < 4; i++) {
-                spr[(4 * activeSpriteCount) + i] = oam[(4 * n) + i];
-            }
+            for (int i = 0; i < 4; i++) spr[(4 * activeSpriteCount) + i] = oam[(4 * n) + i];
             activeSpriteCount++;
         }
         n++;
@@ -374,8 +372,8 @@ void NES::PPU::step() {
     bool preRenderCycle = (currentCycle >= 321 && currentCycle <= 336);
     
     // Prepare Sprites
-    if (visibleScanline && currentCycle == 1) clearSprites();
-    if (visibleScanline && currentCycle == 65) evaluateSprites();
+    if (renderingEnabled && visibleScanline && currentCycle == 1) clearSprites();
+    if (renderingEnabled && visibleScanline && currentCycle == 65) evaluateSprites();
     if (renderingEnabled && renderScanline && currentCycle == 257) fetchSprites();
     
     if (renderingEnabled && renderScanline) {
@@ -486,6 +484,7 @@ void NES::PPU::step() {
     if (preRenderScanline) {
         if (currentCycle == 0) {
             reg.status.flags.Sprite0Hit = false; //TODO this should be happening on cycle 1
+            reg.status.flags.SpriteOverflow = false;
         }
         if (currentCycle == 1) {
             vBlankEnd();
