@@ -111,9 +111,9 @@ void NES::PPU::setPPURegister(uint16_t index, uint8_t value) {
 void NES::PPU::copyDMAMemory(uint8_t index) {
     console.cpu->stallCycles = (console.cpu->totalCycles) % 2 == 1 ? 513 : 514;
     for (int i = 0x0; i < 0x100; i++) {
-        oam[i] = console.memory->get((index * 0x100) + i);
+        uint8_t oamAddress = reg.oamAddress + i;
+        oam[oamAddress] = console.memory->get((index * 0x100) + i);
     }
-    //memcpy(memory.oam, &parent.memory[index * 0x100], 0xFF);
 }
 
 void NES::PPU::reset() {
@@ -277,6 +277,8 @@ void NES::PPU::renderPixel() {
     }
 
     uint8_t* finalColor = colorTable[console.ppuMemory->get(0x3F00)]; //Default Color
+    //If the current VRAM address points in the range $3F00-$3FFF during forced blanking, the color indicated by this palette location will be shown on screen instead of the backdrop color
+    if (vramRegister.v.address >= 0x3F00 && vramRegister.v.address < 0x4000) finalColor = colorTable[console.ppuMemory->get(vramRegister.v.address)];
     if (backgoundColor != 0x0) finalColor = colorTable[console.ppuMemory->get(0x3F00 | backgoundColor)];
     if (spriteColor != 0x0 && (backgroundPriority == false || backgoundColor == 0x0)) finalColor = colorTable[console.ppuMemory->get(0x3F00 | spriteColor)];
     
@@ -453,7 +455,7 @@ void NES::PPU::step() {
     }
     
     //Render Pixel During Visible Scanlines
-    if (renderingEnabled && visibleScanline && visibleCycle) {
+    if (visibleScanline && visibleCycle) {
         renderPixel();
     }
     
