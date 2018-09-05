@@ -270,7 +270,7 @@ bool CPU::checkForPageCross(uint16_t address, bool includeCyclePenalty) {
         }
         
         //Dummy read
-        memory.get(address - 0x100);
+        memory.get(address - 0x100); 
 
         return true;
     } else {
@@ -507,13 +507,7 @@ void CPU::PLA(uint16_t address) {
 
 void CPU::PLP(uint16_t address) {
     //Pull Processor Status from Stack
-    uint8_t s = pull();
-    reg.P.status.Negative  = (s & 128) != 0x0;
-    reg.P.status.Overflow  = (s & 64)  != 0x0;
-    reg.P.status.Decimal   = (s & 8)   != 0x0;
-    reg.P.status.Interrupt = (s & 4)   != 0x0;
-    reg.P.status.Zero      = (s & 2)   != 0x0;
-    reg.P.status.Carry     = (s & 1)   != 0x0;
+    reg.P.byte = pull();
 }
 
 void CPU::RTI(uint16_t address) {
@@ -522,6 +516,7 @@ void CPU::RTI(uint16_t address) {
     reg.P.byte = ((pull() & 0xEF) | 0x20);
     doIRQ = false;
     reg.PC = pullAddress();
+    pollInterrurpts();
 }
 
 void CPU::RTS(uint16_t address) {
