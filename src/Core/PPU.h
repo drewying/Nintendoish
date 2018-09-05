@@ -109,7 +109,7 @@ namespace NES {
         };
         
         uint8_t activeSpriteCount = 0;
-        Sprite* spr[0x8]          = { 0 };    // Active Sprites/Secondary OAM
+        uint8_t spr[0x20]         = { 0 };    // Active Sprites/Secondary OAM
         uint8_t oam[0x100]        = { 0 };    // Object Attribute Memory
         uint8_t sprTiles[0x10]    = { 0 };    // Sprite Tiles
         uint8_t sprX[0x8] = { 0 };

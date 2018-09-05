@@ -129,23 +129,42 @@ void NES::PPU::reset() {
 }
 
 void NES::PPU::clearSprites() {
-    std::fill_n(spr, 0x8, (Sprite*)0xFF);
+    std::fill_n(spr, 0x40, 0xFF);
 }
 
 void NES::PPU::evaluateSprites() {
-    Sprite* sprite = (Sprite*)oam;
-    activeSpriteCount = 0;
-    uint8_t oamIndex = 0;
     uint8_t spriteHeight = reg.control.flags.TallSprites ? 16 : 8;
 
-    while (activeSpriteCount < 8 && oamIndex < 64) {
-        if (currentScanline >= sprite->yPosition &&
-            currentScanline  < sprite->yPosition + spriteHeight)
-        {
-            spr[activeSpriteCount++] = sprite;
+    uint8_t m = 0;
+    uint8_t n = 0;
+    activeSpriteCount = 0;
+
+    while (activeSpriteCount < 8 && n < 0x40) {
+        uint8_t y = oam[4 * n];
+        if (currentScanline >= y && currentScanline < y + spriteHeight) {
+            for (int i = 0; i < 4; i++) {
+                spr[(4 * activeSpriteCount) + i] = oam[(4 * n) + i];
+            }
+            activeSpriteCount++;
         }
-        sprite++; // Pointer arithmatic FTW!
-        oamIndex++;
+        n++;
+    }
+    while (n < 0x40) {
+        //Check for Sprite overflow
+        uint8_t y = oam[4 * n + m];
+        if (currentScanline >= y && currentScanline < y + spriteHeight) {
+            reg.status.flags.SpriteOverflow = true;
+            for (int i = 1; i < 4; i++) {
+                m++;
+                if (m == 3) {
+                    n++;
+                }
+            }
+        } else {
+            n++;
+            m++;
+        }
+        if (m == 3) m = 0;
     }
 }
 
@@ -153,9 +172,9 @@ void NES::PPU::fetchSprites() {
     for (int i = 0; i < 8; i++) {
         Sprite *sprite;
         if (i < activeSpriteCount) {
-            sprite = spr[i];
-        }
-        else {
+            sprite = (Sprite*)spr;
+            sprite += (i);
+        } else {
             //For the first empty sprite slot, we will read sprite #63's Y-coordinate followed by 3 $FF bytes; for subsequent empty sprite slots, we will read four $FF bytes
             Sprite defaultSprite = Sprite{ 0xFF, 0xFF, 0x3, 0x7, 0x1, 0x1, 0x1, 0xFF };
             if (i == activeSpriteCount) defaultSprite.yPosition = oam[252];
