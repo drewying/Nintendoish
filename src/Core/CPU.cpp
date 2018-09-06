@@ -61,7 +61,7 @@ CPU::CPU(NES::Memory &memory):
         &CPU::BEQ, &CPU::SBC, &CPU::STP, &CPU::ISB, &CPU::NOP, &CPU::SBC, &CPU::INC, &CPU::ISB, &CPU::SED, &CPU::SBC, &CPU::NOP, &CPU::ISB, &CPU::NOP, &CPU::SBC, &CPU::INC, &CPU::ISB
     },
     timingTable {
-        0, 6, 2, 8, 3, 3, 5, 5, 3, 2, 2, 2, 4, 4, 6, 6,
+        7, 6, 2, 8, 3, 3, 5, 5, 3, 2, 2, 2, 4, 4, 6, 6,
         2, 5, 2, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,
         6, 6, 2, 8, 3, 3, 5, 5, 4, 2, 2, 2, 4, 4, 6, 6,
         2, 5, 2, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,
@@ -223,6 +223,10 @@ void CPU::reset() {
 void CPU::step() {
     totalCycles++;
     stallCycles--;
+    if (loadedInstruction == 0x0 && stallCycles > 0x2 && requestNMI == true) {
+        irqHijack = true;
+    }
+
     if (stallCycles > 0x1) {
         return;
     }
@@ -289,6 +293,10 @@ void CPU::executeInterrurpts() {
 }
 
 void CPU::pollInterrurpts() {
+    if (loadedInstruction == 0x0) {
+        //BRK instruction should not poll interrupts.
+        return;
+    }
     if (requestNMI == true) {
         doNMI = true;
         requestNMI = false;
@@ -326,20 +334,33 @@ uint16_t CPU::pullAddress() {
 void CPU::NMI() {
     // Non-Maskable Interrupt
     pushAddress(reg.PC);
-    PHP(0x0);
+    push(reg.P.byte & 0xEF);  //Set break flag to false
     reg.PC = memory.get(0xFFFB) << 8 | memory.get(0xFFFA);
-    // reg.P.status.Interrupt = true;
     stallCycles += 7;
 }
 
 void CPU::IRQ() {
     // IRQ Interrupt
     pushAddress(reg.PC);
-    PHP(0x0);
-    reg.PC = memory.get(0xFFFF) << 8 | memory.get(0xFFFE);
+    push(reg.P.byte & 0xEF); //Set break flag to false
     reg.P.status.Interrupt = true;
+    reg.PC = memory.get(0xFFFF) << 8 | memory.get(0xFFFE);
     stallCycles += 7;
 }
+
+void CPU::BRK(uint16_t address) {
+    //Force Inturrupt
+    pushAddress(reg.PC + 1);
+    push(reg.P.byte | 0x30);  //Set break flag to true
+    reg.P.status.Interrupt = true;
+    reg.PC = memory.get(0xFFFF) << 8 | memory.get(0xFFFE);
+    if (irqHijack) {
+        //NMI jijacked the intterupt
+        reg.PC = memory.get(0xFFFB) << 8 | memory.get(0xFFFA);
+        irqHijack = false;
+    }
+}
+
 
 void CPU::BCC(uint16_t address) {
     //Branch on Carry Clear
@@ -377,12 +398,6 @@ void CPU::BNE(uint16_t address) {
 void CPU::BPL(uint16_t address) {
     //Branch on Result Plus
     branchOnCondition(reg.P.status.Negative == 0, address);
-}
-
-void CPU::BRK(uint16_t address) {
-    //Force Inturrupt
-    reg.PC += 1;
-    IRQ();
 }
 
 void CPU::BVC(uint16_t address) {
@@ -492,9 +507,7 @@ void CPU::PHA(uint16_t address) {
 
 void CPU::PHP(uint16_t address) {
     //Push Processor Status on Stack
-    uint8_t s = reg.P.byte;
-    s |= 0x30;
-    push(s);
+    push(reg.P.byte | 0x30);
 }
 
 void CPU::PLA(uint16_t address) {

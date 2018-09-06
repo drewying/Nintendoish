@@ -70,6 +70,7 @@ namespace NES {
         bool requestIRQ = false;
         bool doNMI = false;
         bool doIRQ = false;
+        bool irqHijack = false;
         
         bool pageBoundryCross = false;
         
