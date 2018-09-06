@@ -242,23 +242,23 @@ int main(int argc, char** argv) {
     //* nes->loadProgram("roms/test/cpu/branch_timing_tests/1.Branch_Basics.nes");
     //* nes->loadProgram("roms/test/cpu/branch_timing_tests/2.Backward_Branch.nes");
     //* nes->loadProgram("roms/test/cpu/branch_timing_tests/3.Forward_Branch.nes");
-    //nes->loadProgram("roms/test/cpu/cpu_interrupts_v2/cpu_interrupts.nes");
-    //nes->loadProgram("roms/test/cpu/cpu_reset/ram_after_reset.nes");
-    //nes->loadProgram("roms/test/cpu/cpu_reset/registers.nes");
+    nes->loadProgram("roms/test/cpu/cpu_interrupts_v2/cpu_interrupts.nes"); 
+    //* nes->loadProgram("roms/test/cpu/cpu_reset/ram_after_reset.nes");
+    //* nes->loadProgram("roms/test/cpu/cpu_reset/registers.nes");
     //* nes->loadProgram("roms/test/cpu/cpu_timing_test6/cpu_timing_test.nes");
-    //nes->loadProgram("roms/test/cpu/instr_misc/instr_misc.nes");
-    //nes->loadProgram("roms/test/cpu/instr_test-v5/all_instrs.nes");
+    //* nes->loadProgram("roms/test/cpu/instr_misc/instr_misc.nes");
+    //* nes->loadProgram("roms/test/cpu/instr_test-v5/all_instrs.nes");
     //* nes->loadProgram("roms/test/cpu/instr_test-v5/official_only.nes");
     //* nes->loadProgram("roms/test/cpu/instr_timing/instr_timing.nes");
     
     //PPU
     //* nes->loadProgram("roms/test/ppu/blargg_ppu_tests_2005.09.15b/palette_ram.nes");
-    //N nes->loadProgram("roms/test/ppu/blargg_ppu_tests_2005.09.15b/power_up_palette.nes");
-    //nes->loadProgram("roms/test/ppu/blargg_ppu_tests_2005.09.15b/sprite_ram.nes");
+    //* nes->loadProgram("roms/test/ppu/blargg_ppu_tests_2005.09.15b/power_up_palette.nes");
+    //* nes->loadProgram("roms/test/ppu/blargg_ppu_tests_2005.09.15b/sprite_ram.nes");
     //* nes->loadProgram("roms/test/ppu/blargg_ppu_tests_2005.09.15b/vbl_clear_time.nes");
     //* nes->loadProgram("roms/test/ppu/blargg_ppu_tests_2005.09.15b/vram_access.nes");
-    //nes->loadProgram("roms/test/ppu/full_palette/full_palette.nes");
-    //nes->loadProgram("roms/test/ppu/full_palette/full_palette_alt.nes");
+    //* nes->loadProgram("roms/test/ppu/full_palette/full_palette.nes");
+    //? nes->loadProgram("roms/test/ppu/full_palette/full_palette_alt.nes");
     //nes->loadProgram("roms/test/ppu/nmi_sync/demo_ntsc.nes");
     //* nes->loadProgram("roms/test/ppu/oam_read/oam_read.nes");
     //nes->loadProgram("roms/test/ppu/oam_stress/oam_stress.nes");
@@ -309,7 +309,7 @@ int main(int argc, char** argv) {
 
     //Games
     //nes->loadProgram("../roms/PunchOut.nes");
-    nes->loadProgram("roms/games/Battletoads.nes");
+    //nes->loadProgram("roms/games/Battletoads.nes");
     //nes->loadProgram("../roms/Gradius.nes");
     //nes->loadProgram("../roms/Contra.nes");
     //nes->loadProgram("../roms/Metroid.nes");
@@ -318,11 +318,9 @@ int main(int argc, char** argv) {
     //nes->loadProgram("roms/games/Castlevania2.nes");
     //nes->loadProgram("roms/games/Zelda.nes");
     //nes->loadProgram("../roms/SuperMario3.nes");
-    //nes->loadProgram("../roms/Mario.nes");
+    //nes->loadProgram("roms/games/Mario.nes");
     //nes->loadProgram("../roms/Excitebike.nes");
     //nes->loadProgram("../roms/DonkeyKong.nes");
-    
-    //nes->loadProgram("roms/test/cpu/cpu_interrupts_v2/rom_singles/1-cli_latency.nes");
 
     if (compareFile.length() > 0 && showLog) {
         compareLogsLoop();
