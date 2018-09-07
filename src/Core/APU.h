@@ -287,36 +287,76 @@ namespace NES {
         };
 
         struct DMC : Channel {
+            DMC(Console &console) : console(console) { 
+                bitsRemaining.period = 8;
+                bitsRemaining.loopCounter = true;
+            };
+
             uint16_t periodTable[0x10] = {
                 428, 380, 340, 320, 286, 254, 226, 214, 190, 160, 142, 128, 106,  84,  72,  54
             };
 
+            Console &console;
+
+            // Memory reader
             uint16_t currentAddress;
-            uint16_t currentLength;
+            uint16_t sampleAddress;
+            uint16_t sampleLength;
+            uint8_t sampleBuffer;
+
+            //Output Unit
             uint8_t shiftRegister;
             uint8_t shiftCount;
-            uint8_t sampleBuffer;
-            uint8_t sampleLength;
+            uint8_t outputLevel;
+            bool silenceFlag;
 
-            bool interruptFlag;
             Divider timer;
+            Divider bitsRemaining;
+            Divider bytesRemaining;
 
             uint8_t sample() {
-                return 0;
+                return outputLevel;
+            }
+
+            void emptyShiftRegister() {
+
             }
             
             void stepTimer() {
-
+                if (silenceFlag == 0x0) {
+                    bool addOutput = shiftRegister & 0x1;
+                    if (addOutput == true && outputLevel <= 125) outputLevel += 2;
+                    if (addOutput == false && outputLevel >= 2) outputLevel -= 2;
+                }
+                shiftRegister >> 1;
+                if (bitsRemaining.counter == 0) {
+                    if (sampleBuffer == 0x0) {
+                        silenceFlag = true;
+                    } else {
+                        silenceFlag = false;
+                        emptyShiftRegister();
+                    }
+                }
+                bitsRemaining.tick();
             }
 
             void writeRegister(uint16_t index, uint8_t value) {
                 switch (index) {
                 case 0x4010:
-                    interruptFlag = (value & 0x80) == 0x80;
+                    console.cpu->requestIRQ = (value & 0x80) == 0x80;
                     timer.loopCounter = (value & 0x40) == 0x40;
                     timer.period = periodTable[value & 0xF];
                     break;
                 case 0x4011:
+                    outputLevel = value & 0x7F;
+                    break;
+                case 0x4012:
+                    // Sample address = %11AAAAAA.AA000000 = $C000 + (A * 64) 
+                    sampleAddress = 0xC000 + (value * 0x40);
+                    break;
+                case 0x4013:
+                    // Sample length = %LLLL.LLLL0001 = (L * 16) + 1 
+                    sampleLength = (value * 10) + 1;
                     break;
                 }
             }
@@ -330,7 +370,7 @@ namespace NES {
         Pulse pulse2 = Pulse();
         Triangle triangle = Triangle();
         Noise noise = Noise();
-        DMC dmc = DMC();
+        DMC dmc = DMC(console);
 
         uint32_t totalCycles = 0;
         uint32_t currentCycle = 0;

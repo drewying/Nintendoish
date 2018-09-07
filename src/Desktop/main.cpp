@@ -280,7 +280,7 @@ int main(int argc, char** argv) {
     //* nes->loadProgram("roms/test/apu/apu_reset/irq_flag_cleared.nes");
     //* nes->loadProgram("roms/test/apu/apu_reset/len_ctrs_enabled.nes");
     //nes->loadProgram("roms/test/apu/apu_reset/works_immediately.nes");
-    //nes->loadProgram("roms/test/apu/apu_test/apu_test.nes");
+    nes->loadProgram("roms/test/apu/apu_test/apu_test.nes");
     //* nes->loadProgram("roms/test/apu/blargg_apu_2005.07.30/01.len_ctr.nes");
     //* nes->loadProgram("roms/test/apu/blargg_apu_2005.07.30/02.len_table.nes");
     //* nes->loadProgram("roms/test/apu/blargg_apu_2005.07.30/03.irq_flag.nes");

@@ -13,7 +13,7 @@ uint8_t APU::getAPURegister(uint16_t index) {
             return                       (0x0 << 0x7) |
                                      (irqFlag << 0x6) |
                                          (0x0 << 0x5) |
-                                         (0x0 << 0x4) | //DMC status goes here
+            ((dmc.bytesRemaining.counter > 0) << 0x4) | //DMC status goes here
                    ((noise.lengthCounter > 0) << 0x3) |
                 ((triangle.lengthCounter > 0) << 0x2) |
                   ((pulse2.lengthCounter > 0) << 0x1) |
@@ -35,7 +35,7 @@ void APU::setAPURegister(uint16_t index, uint8_t value) {
     if (index >= 0x4004 && index <= 0x4007) pulse2.writeRegister(index - 0x4, value);
     if (index >= 0x4008 && index <= 0x400B) triangle.writeRegister(index, value);
     if (index >= 0x400C && index <= 0x400F) noise.writeRegister(index, value);
-    if (index >= 0x4010 && index <= 0x4013) processDMC(index, value);
+    if (index >= 0x4010 && index <= 0x4013) dmc.writeRegister(index, value);
     if (index == 0x4015) processControl(index, value);
     if (index == 0x4017) {
         frameCounter = value;
@@ -49,9 +49,6 @@ void APU::reset() {
     triangle.lengthCounter = 0x0;
     noise.lengthCounter = 0x0;
     dmc.lengthCounter = 0x0;
-}
-void APU::processDMC(uint16_t index, uint8_t value) {
-    printf("DMC Not Implemented\n");
 }
 
 void APU::processControl(uint16_t index, uint8_t value) {
