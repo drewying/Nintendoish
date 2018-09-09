@@ -76,27 +76,16 @@ void Mapper1::setProgramData(uint16_t index, uint8_t value) {
 }
 
 void Mapper1::updateOffsets() {    
+
     if (chrBankMode == 0x0) {
+        //switch 8 KB at a time
         chrOffset0 = chrValue0 & 0xE;
         chrOffset1 = chrValue0 | 0x1;
     } else if (chrBankMode == 0x1) {
+        //switch two separate 4 KB banks
         chrOffset0 = chrValue0;
-        chrOffset1 = chrValue0 + 1;
+        chrOffset1 = chrValue1;
     }
-
-    /*
-    if (chrBankMode == 0x1) {
-        chrOffset0 = (loadRegister & 0x1);
-    }
-    ramOffset0 = ((loadRegister >> 0x2) & 0x3);
-    prgOffset0 = (loadRegister >> 0x3) * 0x10;
-
-    if (chrBankMode == 0x1) {
-        chrOffset0 = (loadRegister & 0x1);
-        ramOffset0 = ((loadRegister >> 0x2) & 0x3);
-        prgOffset0 = (loadRegister >> 0x3) * 0x10;
-    }
-    */
 
 
     if (prgBankMode == 0x0 || prgBankMode == 0x1) {
@@ -118,7 +107,7 @@ void Mapper1::updateOffsets() {
 
 void Mapper1::loadControlRegister() {
     //Load Control
-    chrBankMode = (controlRegister & 0x10); // 0: switch 8 KB at a time; 1: switch two separate 4 KB banks
+    chrBankMode = (controlRegister & 0x10) >> 4; // 0: switch 8 KB at a time; 1: switch two separate 4 KB banks
     prgBankMode = (controlRegister & 0xC) >> 2;
     switch (controlRegister & 0x3) {
     case 0: // Lower Bank Single Screen

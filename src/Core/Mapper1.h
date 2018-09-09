@@ -14,10 +14,11 @@ namespace NES {
         uint8_t loadRegister = 0x10;
         uint8_t controlRegister = 0x0;
 
-        uint8_t prgOffset0 = 0x0;
-        uint8_t prgOffset1 = 0x0;
-        uint8_t chrOffset0 = 0x0;
-        uint8_t chrOffset1 = 0x0;     
+        uint8_t prgOffset0    = 0x0;
+        uint8_t prgOffset1    = 0x0;
+        uint8_t prgRAMOffset0 = 0x0;
+        uint8_t chrOffset0    = 0x0;
+        uint8_t chrOffset1    = 0x0;     
 
         uint8_t prgValue0  = 0x0;
         uint8_t chrValue0  = 0x0;
