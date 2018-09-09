@@ -269,7 +269,7 @@ void NES::PPU::renderPixel() {
                         (currentScanline - 1) < spriteZero->yPosition + spriteHeight &&
                         spriteColor != 0x0 &&
                         backgoundColor != 0x0 &&
-                        currentCycle >= 1 &&
+                        currentCycle >= 2 &&
                         x != 255 &&
                         (x > 7 || reg.mask.flags.RenderLeftSprites == true) &&
                         (x > 7 || reg.mask.flags.RenderLeftBackground == true) &&
@@ -477,7 +477,7 @@ void NES::PPU::step() {
     }
     
     // VBlank Scanlines
-    if (currentScanline == 241 && currentCycle == 1 + vBlankDelay) {
+    if (currentScanline == 241 && currentCycle == 1 + cycleDelay) {
         vBlankStart();
     }
     

@@ -65,7 +65,7 @@ namespace NES {
         Memory& memory;
         
         uint32_t totalCycles = 0x0;
-        uint32_t stallCycles = 0x1;
+        uint32_t stallCycles = 0x0;
         bool requestNMI = false;
         bool requestIRQ = false;
         bool doNMI = false;

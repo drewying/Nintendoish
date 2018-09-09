@@ -24,8 +24,8 @@ static NES::Console *nes;
 bool pause = false;
 bool showLog = false;
 bool timeSync = false;
-string compareFile = "cli_latency.log";
-int debugStartLineNumber = 64000;
+string compareFile = "";
+int debugStartLineNumber = 000;
 int lineNumber = 0x0;
 
 const double audioSamplesPerSecond = 44100;
@@ -242,7 +242,7 @@ int main(int argc, char** argv) {
     //* nes->loadProgram("roms/test/cpu/branch_timing_tests/1.Branch_Basics.nes");
     //* nes->loadProgram("roms/test/cpu/branch_timing_tests/2.Backward_Branch.nes");
     //* nes->loadProgram("roms/test/cpu/branch_timing_tests/3.Forward_Branch.nes");
-    nes->loadProgram("roms/test/cpu/cpu_interrupts_v2/cpu_interrupts.nes"); 
+    //nes->loadProgram("roms/test/cpu/cpu_interrupts_v2/cpu_interrupts.nes"); 
     //* nes->loadProgram("roms/test/cpu/cpu_reset/ram_after_reset.nes");
     //* nes->loadProgram("roms/test/cpu/cpu_reset/registers.nes");
     //* nes->loadProgram("roms/test/cpu/cpu_timing_test6/cpu_timing_test.nes");
@@ -263,7 +263,7 @@ int main(int argc, char** argv) {
     //* nes->loadProgram("roms/test/ppu/oam_read/oam_read.nes");
     //nes->loadProgram("roms/test/ppu/oam_stress/oam_stress.nes");
     //nes->loadProgram("roms/test/ppu/ppu_open_bus/ppu_open_bus.nes");
-    //* nes->loadProgram("roms/test/ppu/ppu_sprite_hit/ppu_sprite_hit.nes");
+    //nes->loadProgram("roms/test/ppu/ppu_sprite_hit/ppu_sprite_hit.nes");
     //nes->loadProgram("roms/test/ppu/ppu_sprite_overflow/ppu_sprite_overflow.nes");
     //* nes->loadProgram("roms/test/ppu/ppu_vbl_nmi/ppu_vbl_nmi.nes");
     //nes->loadProgram("roms/test/ppu/sprdma_and_dmc_dma/sprdma_and_dmc_dma.nes");
@@ -280,7 +280,7 @@ int main(int argc, char** argv) {
     //* nes->loadProgram("roms/test/apu/apu_reset/irq_flag_cleared.nes");
     //* nes->loadProgram("roms/test/apu/apu_reset/len_ctrs_enabled.nes");
     //nes->loadProgram("roms/test/apu/apu_reset/works_immediately.nes");
-    nes->loadProgram("roms/test/apu/apu_test/apu_test.nes");
+    //nes->loadProgram("roms/test/apu/apu_test/apu_test.nes");
     //* nes->loadProgram("roms/test/apu/blargg_apu_2005.07.30/01.len_ctr.nes");
     //* nes->loadProgram("roms/test/apu/blargg_apu_2005.07.30/02.len_table.nes");
     //* nes->loadProgram("roms/test/apu/blargg_apu_2005.07.30/03.irq_flag.nes");
@@ -309,10 +309,11 @@ int main(int argc, char** argv) {
 
     //Games
     //nes->loadProgram("../roms/PunchOut.nes");
+    nes->loadProgram("roms/games/Simpsons.nes");
     //nes->loadProgram("roms/games/Battletoads.nes");
     //nes->loadProgram("../roms/Gradius.nes");
     //nes->loadProgram("../roms/Contra.nes");
-    //nes->loadProgram("../roms/Metroid.nes");
+    //nes->loadProgram("roms/games/Metroid.nes");
     //nes->loadProgram("../roms/IceClimber.nes");
     //nes->loadProgram("../roms/Megaman3.nes");
     //nes->loadProgram("roms/games/Castlevania2.nes");

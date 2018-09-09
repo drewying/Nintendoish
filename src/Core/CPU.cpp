@@ -227,7 +227,7 @@ void CPU::step() {
         irqHijack = true;
     }
 
-    if (stallCycles > 0x1) {
+    if (stallCycles > 0x0) {
         return;
     }
     pollInterrurpts();

@@ -124,14 +124,14 @@ namespace NES {
         // Emulation
         int32_t totalCycles     = 0;
         int32_t totalFrames     = 0;
-        int32_t currentCycle    = 0;
-        int32_t currentScanline = 241;
+        int32_t currentCycle    = 340;
+        int32_t currentScanline = 260;
         bool oddFrame = false;
         bool suppressNMI = false;
         void step();
         void reset();
         
-        uint8_t vBlankDelay = 0x2; //TODO: Investigate why vBlank needs to occur two ticks later to pass timing tests.
+        uint8_t cycleDelay = 0x2; //TODO: Investigate why vBlank needs to occur two ticks later to pass timing tests/Simpsons
         void vBlankStart();
         void vBlankEnd();
         

@@ -89,6 +89,8 @@ void APU::step() {
 }
 
 void APU::stepFrameCounter() {
+   //http://forums.nesdev.com/viewtopic.php?f=3&t=6603&hilit=first+length+of+mode+0&start=15
+
     currentCycle++;
 
     if (processFrameCounterWrite) {
