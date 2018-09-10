@@ -258,14 +258,14 @@ int main(int argc, char** argv) {
     //* nes->loadProgram("roms/test/ppu/blargg_ppu_tests_2005.09.15b/vbl_clear_time.nes");
     //* nes->loadProgram("roms/test/ppu/blargg_ppu_tests_2005.09.15b/vram_access.nes");
     //* nes->loadProgram("roms/test/ppu/full_palette/full_palette.nes");
-    //nes->loadProgram("roms/test/ppu/full_palette/full_palette_alt.nes");
+    nes->loadProgram("roms/test/ppu/full_palette/full_palette_alt.nes");
     //nes->loadProgram("roms/test/ppu/nmi_sync/demo_ntsc.nes");
     //* nes->loadProgram("roms/test/ppu/oam_read/oam_read.nes");
     //nes->loadProgram("roms/test/ppu/oam_stress/oam_stress.nes");
     //nes->loadProgram("roms/test/ppu/ppu_open_bus/ppu_open_bus.nes");
     //* nes->loadProgram("roms/test/ppu/ppu_sprite_hit/ppu_sprite_hit.nes");
     //nes->loadProgram("roms/test/ppu/ppu_sprite_overflow/ppu_sprite_overflow.nes");
-    nes->loadProgram("roms/test/ppu/ppu_vbl_nmi/ppu_vbl_nmi.nes");
+    //nes->loadProgram("roms/test/ppu/ppu_vbl_nmi/ppu_vbl_nmi.nes");
     //nes->loadProgram("roms/test/ppu/sprdma_and_dmc_dma/sprdma_and_dmc_dma.nes");
     //nes->loadProgram("roms/test/ppu/sprdma_and_dmc_dma/sprdma_and_dmc_dma_512.nes");
 

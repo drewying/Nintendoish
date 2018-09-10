@@ -301,10 +301,28 @@ void NES::PPU::renderPixel() {
     
     colorIndex = console.ppuMemory->get(colorIndex);
     if (reg.mask.flags.Greyscale == true) colorIndex &= 0x30;
-
     uint8_t* finalColor = colorTable[colorIndex]; //Default Color
 
-    unsigned int combinedColor = finalColor[2] << 16 | finalColor[1] << 8 | finalColor[0];
+    //Emphasis bits
+    /* emphasis factors, %000 to %111. r,g,b */
+    /* measurement by Quietust */
+    const float emphasis[8][3] = {
+        { 1.00, 1.00, 1.00 },
+        { 1.00, 0.80, 0.81 },
+        { 0.78, 0.94, 0.66 },
+        { 0.79, 0.77, 0.63 },
+        { 0.82, 0.83, 1.12 },
+        { 0.81, 0.71, 0.87 },
+        { 0.68, 0.79, 0.79 },
+        { 0.70, 0.70, 0.70 }
+    };
+
+    int emphasisIndex = reg.mask.flags.EmphasizeBlue << 2 | reg.mask.flags.EmphasizeGreen << 1 | reg.mask.flags.EmphasizeRed;
+
+    unsigned int combinedColor = 
+        uint8_t(finalColor[2] * emphasis[emphasisIndex][2]) << 16 | 
+        uint8_t(finalColor[1] * emphasis[emphasisIndex][1]) << 8 | 
+        uint8_t(finalColor[0] * emphasis[emphasisIndex][0]);
     console.displayBuffer[x + (y * 256)] = combinedColor;
 } 
 
