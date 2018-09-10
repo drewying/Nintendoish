@@ -263,9 +263,9 @@ int main(int argc, char** argv) {
     //* nes->loadProgram("roms/test/ppu/oam_read/oam_read.nes");
     //nes->loadProgram("roms/test/ppu/oam_stress/oam_stress.nes");
     //nes->loadProgram("roms/test/ppu/ppu_open_bus/ppu_open_bus.nes");
-    //nes->loadProgram("roms/test/ppu/ppu_sprite_hit/ppu_sprite_hit.nes");
+    //* nes->loadProgram("roms/test/ppu/ppu_sprite_hit/ppu_sprite_hit.nes");
     //nes->loadProgram("roms/test/ppu/ppu_sprite_overflow/ppu_sprite_overflow.nes");
-    //* nes->loadProgram("roms/test/ppu/ppu_vbl_nmi/ppu_vbl_nmi.nes");
+    nes->loadProgram("roms/test/ppu/ppu_vbl_nmi/ppu_vbl_nmi.nes");
     //nes->loadProgram("roms/test/ppu/sprdma_and_dmc_dma/sprdma_and_dmc_dma.nes");
     //nes->loadProgram("roms/test/ppu/sprdma_and_dmc_dma/sprdma_and_dmc_dma_512.nes");
 
@@ -310,7 +310,7 @@ int main(int argc, char** argv) {
     //Games
     //nes->loadProgram("../roms/PunchOut.nes");
     //nes->loadProgram("roms/games/Simpsons.nes");
-    nes->loadProgram("roms/games/Battletoads.nes");
+    //nes->loadProgram("roms/games/Battletoads.nes");
     //nes->loadProgram("../roms/Gradius.nes");
     //nes->loadProgram("../roms/Contra.nes");
     //nes->loadProgram("roms/games/Metroid.nes");

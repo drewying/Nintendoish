@@ -269,7 +269,6 @@ void NES::PPU::renderPixel() {
                         (y - 1) < spriteZero->yPosition + spriteHeight &&
                         spriteColor != 0x0 &&
                         backgoundColor != 0x0 &&
-                        x >= 2 &&
                         x != 255 &&
                         (x > 7 || reg.mask.flags.RenderLeftSprites == true) &&
                         (x > 7 || reg.mask.flags.RenderLeftBackground == true) &&
