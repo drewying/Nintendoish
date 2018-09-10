@@ -265,7 +265,7 @@ namespace NES {
             };
 
             uint8_t sample() { 
-                if (enabled == false | lengthCounter == 0 | (shiftRegister & 0x1) == 0x1) {
+                if (enabled == false || lengthCounter == 0 || (shiftRegister & 0x1) == 0x1) {
                     return 0;
                 }
                 return envelope.getVolume();
@@ -328,7 +328,7 @@ namespace NES {
                     if (addOutput == true && outputLevel <= 125) outputLevel += 2;
                     if (addOutput == false && outputLevel >= 2) outputLevel -= 2;
                 }
-                shiftRegister >> 1;
+                shiftRegister >>= 1;
                 if (bitsRemaining.counter == 0) {
                     if (sampleBuffer == 0x0) {
                         silenceFlag = true;

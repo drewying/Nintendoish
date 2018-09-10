@@ -265,11 +265,11 @@ void NES::PPU::renderPixel() {
                     reg.status.flags.Sprite0Hit = (
                         x >= spriteZero->xPosition &&
                         x < (spriteZero->xPosition + 8) &&
-                        (currentScanline - 1) >= spriteZero->yPosition &&
-                        (currentScanline - 1) < spriteZero->yPosition + spriteHeight &&
+                        (y - 1) >= spriteZero->yPosition &&
+                        (y - 1) < spriteZero->yPosition + spriteHeight &&
                         spriteColor != 0x0 &&
                         backgoundColor != 0x0 &&
-                        currentCycle >= 2 &&
+                        x >= 2 &&
                         x != 255 &&
                         (x > 7 || reg.mask.flags.RenderLeftSprites == true) &&
                         (x > 7 || reg.mask.flags.RenderLeftBackground == true) &&
@@ -444,7 +444,7 @@ void NES::PPU::step() {
             }
         }
         
-        if (currentCycle == 256) {
+        if (currentCycle == 256 + scrollDelay) {
             // Update Y Scroll
             if (vramRegister.v.scroll.fineYScroll < 0x7) {
                 vramRegister.v.scroll.fineYScroll += 0x1;
@@ -464,7 +464,7 @@ void NES::PPU::step() {
             }
         }
         
-        if (currentCycle == 257) {
+        if (currentCycle == 257 + scrollDelay) {
             //Copy X: v: ....F.. ...EDCBA = t: ....F.. ...EDCBA
             vramRegister.v.scroll.coarseXScroll = vramRegister.t.scroll.coarseXScroll;
             vramRegister.v.scroll.nameTableX    = vramRegister.t.scroll.nameTableX;
@@ -477,7 +477,7 @@ void NES::PPU::step() {
     }
     
     // VBlank Scanlines
-    if (currentScanline == 241 && currentCycle == 1 + cycleDelay) {
+    if (currentScanline == 241 && currentCycle == 1 + vblankDelay) {
         vBlankStart();
     }
     

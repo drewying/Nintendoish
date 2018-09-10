@@ -131,7 +131,9 @@ namespace NES {
         void step();
         void reset();
         
-        uint8_t cycleDelay = 0x2; //TODO: Investigate why vBlank needs to occur two ticks later to pass timing tests/Simpsons
+        int8_t vblankDelay = 0x2; //TODO: Investigate why vBlank needs to occur two ticks later to pass timing tests
+        int8_t scrollDelay = -0x1; //TODO: Investigate why scrolling needs to occur one ticks earlier to keep sync with Battletoads/Bart vs The World.
+        
         void vBlankStart();
         void vBlankEnd();
         

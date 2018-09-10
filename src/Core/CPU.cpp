@@ -223,10 +223,9 @@ void CPU::reset() {
 void CPU::step() {
     totalCycles++;
     stallCycles--;
-    if (loadedInstruction == 0x0 && stallCycles > 0x2 && requestNMI == true) {
+    if (loadedInstruction == 0x0 && stallCycles > 0x1 && requestNMI == true) {
         irqHijack = true;
     }
-
     if (stallCycles > 0x0) {
         return;
     }
