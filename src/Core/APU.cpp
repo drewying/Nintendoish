@@ -71,11 +71,7 @@ float APU::sample() {
 
 void APU::step() {
     totalCycles++;
-    triangle.stepTimer();
-
-    if (totalCycles % 2 == 1) {
-        stepFrameCounter();
-    }
+    stepFrameCounter();
     
     static bool r = 0;
     static int nextClock = (console.CPU_CLOCK_RATE / console.AUDIO_SAMPLE_RATE);
@@ -91,9 +87,7 @@ void APU::step() {
 void APU::stepFrameCounter() {
    //http://forums.nesdev.com/viewtopic.php?f=3&t=6603&hilit=first+length+of+mode+0&start=15
 
-    currentCycle++;
-
-    if (processFrameCounterWrite) {
+    if (processFrameCounterWrite && currentCycle % 2 == 0) {
         processFrameCounterWrite = false;
         currentCycle = 0;
         if ((frameCounter & 0x80) == 0x80) {
@@ -105,51 +99,69 @@ void APU::stepFrameCounter() {
         }
     }
    
-    pulse1.stepTimer();
-    pulse2.stepTimer();
-    noise.stepTimer();
+    if (currentCycle % 2 == 0) {
+        pulse1.stepTimer();
+        pulse2.stepTimer();
+        noise.stepTimer();
+    }
 
+    triangle.stepTimer();
+    
     bool sequenceMode = ((frameCounter & 0x80) == 0x80);
     bool interruptInhibit = ((frameCounter & 0x40) == 0x40);
 
-    if (sequenceMode == true) {
-        //5-Step Sequence
-        if (currentCycle == 3729) {
-            clockQuarterFrame();
-        }
-        if (currentCycle == 7457) {
-            clockHalfFrame();
-            clockQuarterFrame();
-        }
-        if (currentCycle == 11186) {
-            clockQuarterFrame();
-        }
-        if (currentCycle == 18641) {
-            clockHalfFrame();
-            clockQuarterFrame();
-            currentCycle = 0;
-        }
-    } else {
-        //4-Step Sequence
-        if (currentCycle == 3729) {
-            clockQuarterFrame();
-        }
-        if (currentCycle == 7457) {
-            clockHalfFrame();
-            clockQuarterFrame();
-        }
-        if (currentCycle == 11186) {
+    if (sequenceMode == false) {
+        //Mode 0x0 4-Step Sequence
+        if (currentCycle == 7459) {
             clockQuarterFrame();
         }
         if (currentCycle == 14915) {
+            clockHalfFrame();
+            clockQuarterFrame();
+        }
+        if (currentCycle == 22373) {
+            clockQuarterFrame();
+        }
+        if (currentCycle == 29830) {
+            //IRQ
+            if (interruptInhibit == false) {
+                console.cpu->requestIRQ = true;
+            }
+        }
+        if (currentCycle == 29831) {
             clockHalfFrame();
             clockQuarterFrame();
             //IRQ
             if (interruptInhibit == false) {
                 console.cpu->requestIRQ = true;
             }
-            currentCycle = 0;
         }
+        if (currentCycle == 29832) {
+            //IRQ
+            if (interruptInhibit == false) {
+                console.cpu->requestIRQ = true;
+            }
+        }
+        currentCycle++;
+        if (currentCycle >= 37289) currentCycle = 7459;
+    } else {
+        //Mode 0x1 5-Step Sequence
+        if (currentCycle == 7459) {
+            clockQuarterFrame();
+        }
+        if (currentCycle == 14915) {
+            clockHalfFrame();
+            clockQuarterFrame();
+        }
+        if (currentCycle == 22373) {
+            clockQuarterFrame();
+        }
+        if (currentCycle == 37283) {
+            clockHalfFrame();
+            clockQuarterFrame();
+        }
+        currentCycle++;
+        if (currentCycle >= 44741) currentCycle = 7459;
     }
 }
 
