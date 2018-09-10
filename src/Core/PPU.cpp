@@ -292,12 +292,18 @@ void NES::PPU::renderPixel() {
         }
     }
 
-    uint8_t* finalColor = colorTable[console.ppuMemory->get(0x3F00)]; //Default Color
+    uint16_t colorIndex = 0x3F00; //Default color
+   
     //If the current VRAM address points in the range $3F00-$3FFF during forced blanking, the color indicated by this palette location will be shown on screen instead of the backdrop color
-    if (vramRegister.v.address >= 0x3F00 && vramRegister.v.address < 0x4000 && reg.mask.flags.RenderBackground == false && reg.mask.flags.RenderSprites == false) finalColor = colorTable[console.ppuMemory->get(vramRegister.v.address)];
-    if (backgoundColor != 0x0) finalColor = colorTable[console.ppuMemory->get(0x3F00 | backgoundColor)];
-    if (spriteColor != 0x0 && (backgroundPriority == false || backgoundColor == 0x0)) finalColor = colorTable[console.ppuMemory->get(0x3F00 | spriteColor)];
+    if (vramRegister.v.address >= 0x3F00 && vramRegister.v.address < 0x4000 && reg.mask.flags.RenderBackground == false && reg.mask.flags.RenderSprites == false) colorIndex = vramRegister.v.address;
+    if (backgoundColor != 0x0) colorIndex = (0x3F00 | backgoundColor);
+    if (spriteColor != 0x0 && (backgroundPriority == false || backgoundColor == 0x0)) colorIndex = (0x3F00 | spriteColor);
     
+    colorIndex = console.ppuMemory->get(colorIndex);
+    if (reg.mask.flags.Greyscale == true) colorIndex &= 0x30;
+
+    uint8_t* finalColor = colorTable[colorIndex]; //Default Color
+
     unsigned int combinedColor = finalColor[2] << 16 | finalColor[1] << 8 | finalColor[0];
     console.displayBuffer[x + (y * 256)] = combinedColor;
 } 
