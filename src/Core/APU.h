@@ -291,6 +291,7 @@ namespace NES {
                 bitsRemaining.period = 8;
                 bitsRemaining.loopCounter = false;
                 timer.loopCounter = true;
+                enabled = true;
             };
 
             uint16_t periodTable[0x10] = {
@@ -319,6 +320,12 @@ namespace NES {
                 return outputLevel;
             }
 
+            void reload() {
+                bytesRemaining.period = sampleLength;
+                bytesRemaining.reload();
+                currentAddress = sampleAddress;
+            }
+
             void stepMemoryReader() {
                 if (bitsRemaining.counter == 0x0 && bytesRemaining.counter > 0x0) {
                     if (console.cpu->stallCycles > 7) {
@@ -341,8 +348,8 @@ namespace NES {
                     //The bytes remaining counter is decremented; if it becomes zero and the loop flag is set, the sample is restarted(see above); 
                     //otherwise, if the bytes remaining counter becomes zero and the IRQ enabled flag is set, the interrupt flag is set.
                     if (bytesRemaining.counter == 0x0 && bytesRemaining.loopCounter == true) {
-                        currentAddress = sampleAddress;
-                    } else if (bytesRemaining.counter == 0x0 && bytesRemaining.loopCounter == false && irqEnabledFlag == true) {
+                        reload();
+                    } else if (bytesRemaining.counter == 0x0 && irqEnabledFlag == true) {
                         console.cpu->requestIRQ = true;
                     }
                     bytesRemaining.tick();
@@ -385,6 +392,9 @@ namespace NES {
                 switch (index) {
                 case 0x4010:
                     irqEnabledFlag = (value & 0x80) == 0x80;
+                    if (irqEnabledFlag == false) {
+                        //console.cpu->requestIRQ = false;
+                    }
                     bytesRemaining.loopCounter = (value & 0x40) == 0x40;
                     timer.period = periodTable[value & 0xF];
                     timer.reload();
@@ -399,9 +409,12 @@ namespace NES {
                     break;
                 case 0x4013:
                     // Sample length = %LLLL.LLLL0001 = (L * 16) + 1 
-                    sampleLength = (value * 10) + 1;
-                    bytesRemaining.period = sampleLength;
-                    bytesRemaining.reload();
+                    sampleLength = (value * 0x10) + 1;
+                    if (bytesRemaining.period == 0) {
+                        bytesRemaining.period = sampleLength;
+                        bytesRemaining.reload();
+                    }
+
                     break;
                 }
             }

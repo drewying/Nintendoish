@@ -48,7 +48,7 @@ void APU::reset() {
     pulse2.lengthCounter = 0x0;
     triangle.lengthCounter = 0x0;
     noise.lengthCounter = 0x0;
-    dmc.lengthCounter = 0x0;
+    dmc.bytesRemaining.counter = 0x0;
 }
 
 void APU::processControl(uint16_t index, uint8_t value) {
@@ -61,8 +61,9 @@ void APU::processControl(uint16_t index, uint8_t value) {
     noise.enabled = ((value & 0x8) == 0x8);
     if (noise.enabled == false) noise.lengthCounter = 0x0;
     
-    if ((value & 0x10) == 0x10) {
-        dmc.bytesRemaining.reload();
+    dmc.enabled = ((value & 0x10) == 0x10);
+    if (dmc.enabled == true) {
+        if (dmc.bytesRemaining.counter == 0x0) dmc.reload();
     } else {
         dmc.bytesRemaining.counter = 0x0;
     }

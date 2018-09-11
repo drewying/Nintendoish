@@ -254,7 +254,7 @@ int main(int argc, char** argv) {
     //PPU
     //* nes->loadProgram("roms/test/ppu/blargg_ppu_tests_2005.09.15b/palette_ram.nes");
     //* nes->loadProgram("roms/test/ppu/blargg_ppu_tests_2005.09.15b/power_up_palette.nes");
-    nes->loadProgram("roms/test/ppu/blargg_ppu_tests_2005.09.15b/sprite_ram.nes");
+    //* nes->loadProgram("roms/test/ppu/blargg_ppu_tests_2005.09.15b/sprite_ram.nes");
     //* nes->loadProgram("roms/test/ppu/blargg_ppu_tests_2005.09.15b/vbl_clear_time.nes");
     //* nes->loadProgram("roms/test/ppu/blargg_ppu_tests_2005.09.15b/vram_access.nes");
     //* nes->loadProgram("roms/test/ppu/full_palette/full_palette.nes");
@@ -266,7 +266,7 @@ int main(int argc, char** argv) {
     //* nes->loadProgram("roms/test/ppu/ppu_sprite_hit/ppu_sprite_hit.nes");
     //nes->loadProgram("roms/test/ppu/ppu_sprite_overflow/ppu_sprite_overflow.nes");
     //* nes->loadProgram("roms/test/ppu/ppu_vbl_nmi/ppu_vbl_nmi.nes");
-    //nes->loadProgram("roms/test/ppu/sprdma_and_dmc_dma/sprdma_and_dmc_dma.nes");
+    //nes->loadProgram("roms/test/ppu/sprdma_and_dmc_dma/sprdma_and_dmc_dma.nes"); //http://forums.nesdev.com/viewtopic.php?f=3&t=6100&hilit=sprdma
     //nes->loadProgram("roms/test/ppu/sprdma_and_dmc_dma/sprdma_and_dmc_dma_512.nes");
 
     //APU
@@ -307,7 +307,7 @@ int main(int argc, char** argv) {
     //nes->loadProgram("roms/test/apu/test_apu_timers/triangle_pitch.nes");
     //nes->loadProgram("roms/test/apu/test_tri_lin_ctr/lin_ctr.nes");
 
-    //nes->loadProgram("roms/test/apu/apu_test/rom_singles/7-dmc_basics.nes");
+    nes->loadProgram("roms/test/apu/apu_test/rom_singles/7-dmc_basics.nes");
 
     //Games
     //nes->loadProgram("../roms/PunchOut.nes");
