@@ -280,20 +280,20 @@ int main(int argc, char** argv) {
     //* nes->loadProgram("roms/test/apu/apu_reset/irq_flag_cleared.nes");
     //* nes->loadProgram("roms/test/apu/apu_reset/len_ctrs_enabled.nes");
     //nes->loadProgram("roms/test/apu/apu_reset/works_immediately.nes");
-    nes->loadProgram("roms/test/apu/apu_test/apu_test.nes");
+    //nes->loadProgram("roms/test/apu/apu_test/apu_test.nes");
     //* nes->loadProgram("roms/test/apu/blargg_apu_2005.07.30/01.len_ctr.nes");
     //* nes->loadProgram("roms/test/apu/blargg_apu_2005.07.30/02.len_table.nes");
     //* nes->loadProgram("roms/test/apu/blargg_apu_2005.07.30/03.irq_flag.nes");
     //* nes->loadProgram("roms/test/apu/blargg_apu_2005.07.30/04.clock_jitter.nes");
-    //nes->loadProgram("roms/test/apu/blargg_apu_2005.07.30/05.len_timing_mode0.nes");
-    //nes->loadProgram("roms/test/apu/blargg_apu_2005.07.30/06.len_timing_mode1.nes");
-    //nes->loadProgram("roms/test/apu/blargg_apu_2005.07.30/07.irq_flag_timing.nes");
+    //* nes->loadProgram("roms/test/apu/blargg_apu_2005.07.30/05.len_timing_mode0.nes");
+    //* nes->loadProgram("roms/test/apu/blargg_apu_2005.07.30/06.len_timing_mode1.nes");
+    //* nes->loadProgram("roms/test/apu/blargg_apu_2005.07.30/07.irq_flag_timing.nes");
     //nes->loadProgram("roms/test/apu/blargg_apu_2005.07.30/08.irq_timing.nes");
     //nes->loadProgram("roms/test/apu/blargg_apu_2005.07.30/09.reset_timing.nes");
-    //* nes->loadProgram("roms/test/apu/blargg_apu_2005.07.30/10.len_halt_timing.nes");
+    //nes->loadProgram("roms/test/apu/blargg_apu_2005.07.30/10.len_halt_timing.nes");
     //nes->loadProgram("roms/test/apu/blargg_apu_2005.07.30/11.len_reload_timing.nes");
     //nes->loadProgram("roms/test/apu/dmc_dma_during_read4/dma_2007_read.nes");
-    //* nes->loadProgram("roms/test/apu/dmc_dma_during_read4/dma_2007_write.nes");
+    //nes->loadProgram("roms/test/apu/dmc_dma_during_read4/dma_2007_write.nes");
     //nes->loadProgram("roms/test/apu/dmc_dma_during_read4/dma_4016_read.nes");
     //nes->loadProgram("roms/test/apu/dmc_dma_during_read4/double_2007_read.nes");
     //nes->loadProgram("roms/test/apu/dmc_dma_during_read4/read_write_2007.nes");
@@ -307,10 +307,12 @@ int main(int argc, char** argv) {
     //nes->loadProgram("roms/test/apu/test_apu_timers/triangle_pitch.nes");
     //nes->loadProgram("roms/test/apu/test_tri_lin_ctr/lin_ctr.nes");
 
+    //nes->loadProgram("roms/test/apu/apu_test/rom_singles/7-dmc_basics.nes");
+
     //Games
     //nes->loadProgram("../roms/PunchOut.nes");
     //nes->loadProgram("roms/games/Simpsons.nes");
-    //nes->loadProgram("roms/games/Battletoads.nes");
+    nes->loadProgram("roms/games/Battletoads.nes");
     //nes->loadProgram("../roms/Gradius.nes");
     //nes->loadProgram("../roms/Contra.nes");
     //nes->loadProgram("roms/games/Metroid.nes");

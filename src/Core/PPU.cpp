@@ -370,7 +370,7 @@ void NES::PPU::step() {
     totalCycles += 1;
     currentCycle += 1;
     
-    if (currentCycle == 338 && currentScanline == -1 && oddFrame && reg.mask.flags.RenderBackground) {
+    if (currentCycle == 339 + scrollDelay && currentScanline == -1 && oddFrame && reg.mask.flags.RenderBackground) {
         // Skip 0,0 on odd frames.
         // TODO Test roms that test this behavior only passes if we skip cycle 338 instead of 339. Investigate why.
         currentCycle++;
@@ -505,8 +505,8 @@ void NES::PPU::step() {
     }
     
     if (preRenderScanline) {
-        if (currentCycle == 0) {
-            reg.status.flags.Sprite0Hit = false; //TODO this should be happening on cycle 1
+        if (currentCycle ==  1 + scrollDelay) {
+            reg.status.flags.Sprite0Hit = false; 
             reg.status.flags.SpriteOverflow = false;
         }
         if (currentCycle == 1) {

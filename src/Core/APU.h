@@ -289,7 +289,7 @@ namespace NES {
         struct DMC : Channel {
             DMC(Console &console) : console(console) { 
                 bitsRemaining.period = 8;
-                bitsRemaining.loopCounter = true;
+                timer.loopCounter = true;
             };
 
             uint16_t periodTable[0x10] = {
@@ -299,16 +299,16 @@ namespace NES {
             Console &console;
 
             // Memory reader
-            uint16_t currentAddress;
-            uint16_t sampleAddress;
-            uint16_t sampleLength;
-            uint8_t sampleBuffer;
+            uint16_t currentAddress = 0x0;
+            uint16_t sampleAddress = 0x0;
+            uint16_t sampleLength = 0x0;
+            uint8_t sampleBuffer = 0x0;
 
             //Output Unit
-            uint8_t shiftRegister;
-            uint8_t shiftCount;
-            uint8_t outputLevel;
-            bool silenceFlag;
+            uint8_t shiftRegister = 0x0;
+            uint8_t outputLevel = 0x0;
+            bool silenceFlag = false;
+            bool irqEnabledFlag = false;
 
             Divider timer;
             Divider bitsRemaining;
@@ -318,34 +318,75 @@ namespace NES {
                 return outputLevel;
             }
 
-            void emptyShiftRegister() {
+            void stepMemoryReader() {
+                if (sampleBuffer == 0x0 && bytesRemaining.counter > 0x0) {
+                    if (console.cpu->stallCycles > 7) {
+                        // If OAM DMA is in progress, it is paused for two cycles.
+                        console.cpu->stallCycles += 2;
+                    } else {
+                        //The CPU is stalled for up to 4 CPU cycles
+                        console.cpu->stallCycles += 4;
+                    }
+                    // The sample buffer is filled with the next sample byte read from the current address
+                    sampleBuffer = console.memory->get(currentAddress);
 
+                    //The address is incremented; if it exceeds $FFFF, it is wrapped around to $8000.
+                    currentAddress++;
+                    if (currentAddress == 0x0) {
+                        currentAddress = 0x8000;
+                    }
+
+                    //The bytes remaining counter is decremented; if it becomes zero and the loop flag is set, the sample is restarted(see above); 
+                    //otherwise, if the bytes remaining counter becomes zero and the IRQ enabled flag is set, the interrupt flag is set.
+                    if (bytesRemaining.counter == 0x0 && bytesRemaining.loopCounter == true) {
+                        currentAddress = sampleAddress;
+                    } else if (bytesRemaining.counter == 0x0 && bytesRemaining.loopCounter == false && irqEnabledFlag == true) {
+                        console.cpu->requestIRQ = true;
+                    }
+                    bytesRemaining.tick();
+                }
             }
-            
-            void stepTimer() {
-                if (silenceFlag == 0x0) {
+
+            void stepOutputUnit() {
+                // If the silence flag is clear, the output level changes based on bit 0 of the shift register.
+                if (silenceFlag == false) {
                     bool addOutput = shiftRegister & 0x1;
                     if (addOutput == true && outputLevel <= 125) outputLevel += 2;
                     if (addOutput == false && outputLevel >= 2) outputLevel -= 2;
                 }
+                // The right shift register is clocked.
                 shiftRegister >>= 1;
+
+                // the bits-remaining counter is decremented. If it becomes zero, a new output cycle is started.
                 if (bitsRemaining.counter == 0) {
+                    // If the sample buffer is empty, then the silence flag is set; otherwise, the silence flag is cleared and the sample buffer is emptied into the shift register.
                     if (sampleBuffer == 0x0) {
                         silenceFlag = true;
                     } else {
                         silenceFlag = false;
-                        emptyShiftRegister();
+                        shiftRegister = sampleBuffer;
+                        sampleBuffer = 0x0;
+                        bitsRemaining.reload();
                     }
                 }
                 bitsRemaining.tick();
+            }
+            
+            void stepTimer() {
+                stepMemoryReader();
+                if (timer.counter == 0) {
+                    stepOutputUnit();
+                }
+                timer.tick();
             }
 
             void writeRegister(uint16_t index, uint8_t value) {
                 switch (index) {
                 case 0x4010:
-                    console.cpu->requestIRQ = (value & 0x80) == 0x80;
-                    timer.loopCounter = (value & 0x40) == 0x40;
+                    irqEnabledFlag = (value & 0x80) == 0x80;
+                    bytesRemaining.loopCounter = (value & 0x40) == 0x40;
                     timer.period = periodTable[value & 0xF];
+                    timer.reload();
                     break;
                 case 0x4011:
                     outputLevel = value & 0x7F;
@@ -353,10 +394,13 @@ namespace NES {
                 case 0x4012:
                     // Sample address = %11AAAAAA.AA000000 = $C000 + (A * 64) 
                     sampleAddress = 0xC000 + (value * 0x40);
+                    currentAddress = sampleAddress;
                     break;
                 case 0x4013:
                     // Sample length = %LLLL.LLLL0001 = (L * 16) + 1 
                     sampleLength = (value * 10) + 1;
+                    bytesRemaining.period = sampleLength;
+                    bytesRemaining.reload();
                     break;
                 }
             }

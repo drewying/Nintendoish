@@ -10,7 +10,7 @@ uint8_t APU::getAPURegister(uint16_t index) {
             bool irqFlag = console.cpu->requestIRQ;
             //Clear IRQfLAG
             console.cpu->requestIRQ = false;
-            return                       (0x0 << 0x7) |
+            return        (dmc.irqEnabledFlag << 0x7) |
                                      (irqFlag << 0x6) |
                                          (0x0 << 0x5) |
             ((dmc.bytesRemaining.counter > 0) << 0x4) | //DMC status goes here
@@ -60,12 +60,16 @@ void APU::processControl(uint16_t index, uint8_t value) {
     if (triangle.enabled == false) triangle.lengthCounter = 0x0;
     noise.enabled = ((value & 0x8) == 0x8);
     if (noise.enabled == false) noise.lengthCounter = 0x0;
+    
+    if ((value & 0x10) != 0x10) {
+        dmc.bytesRemaining.counter = 0x0;
+    }
 }
 
 float APU::sample() {
     //TODO Lookup instead of linear approximation
     float pulseOut = 0.00752f * (float)(pulse1.sample() + pulse2.sample());
-    float tndOut = 0.00851 * triangle.sample() + 0.00494 * noise.sample();
+    float tndOut = 0.00851 * triangle.sample() + 0.00494 * noise.sample() + 0.00335 * dmc.sample();
     return pulseOut + tndOut;
 }
 
@@ -85,8 +89,6 @@ void APU::step() {
 }
 
 void APU::stepFrameCounter() {
-   //http://forums.nesdev.com/viewtopic.php?f=3&t=6603&hilit=first+length+of+mode+0&start=15
-
     if (processFrameCounterWrite && currentCycle % 2 == 0) {
         processFrameCounterWrite = false;
         currentCycle = 0;
@@ -103,8 +105,9 @@ void APU::stepFrameCounter() {
         pulse1.stepTimer();
         pulse2.stepTimer();
         noise.stepTimer();
+        
     }
-
+    dmc.stepTimer();
     triangle.stepTimer();
     
     bool sequenceMode = ((frameCounter & 0x80) == 0x80);

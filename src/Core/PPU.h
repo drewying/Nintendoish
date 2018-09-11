@@ -124,8 +124,8 @@ namespace NES {
         // Emulation
         int32_t totalCycles     = 0;
         int32_t totalFrames     = 0;
-        int32_t currentCycle    = 340;
-        int32_t currentScanline = 260;
+        int32_t currentCycle    = 0;
+        int32_t currentScanline = 0;
         bool oddFrame = false;
         bool suppressNMI = false;
         void step();
