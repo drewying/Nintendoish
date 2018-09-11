@@ -25,6 +25,10 @@ uint8_t NES::PPU::getPPURegister(uint16_t index) {
             return status;
             break;
         case 0x2004: //OAM data Read/Write
+            if (reg.oamAddress % 4 == 2) {
+                //These bytes don't exist on real hardware. AND it out.
+                return oam[reg.oamAddress] & 0xE3;
+            }
             return oam[reg.oamAddress];
             break;
         case 0x2007: //PPU Data Read/Write
