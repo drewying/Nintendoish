@@ -61,7 +61,9 @@ void APU::processControl(uint16_t index, uint8_t value) {
     noise.enabled = ((value & 0x8) == 0x8);
     if (noise.enabled == false) noise.lengthCounter = 0x0;
     
-    if ((value & 0x10) != 0x10) {
+    if ((value & 0x10) == 0x10) {
+        dmc.bytesRemaining.reload();
+    } else {
         dmc.bytesRemaining.counter = 0x0;
     }
 }

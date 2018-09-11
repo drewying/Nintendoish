@@ -289,6 +289,7 @@ namespace NES {
         struct DMC : Channel {
             DMC(Console &console) : console(console) { 
                 bitsRemaining.period = 8;
+                bitsRemaining.loopCounter = false;
                 timer.loopCounter = true;
             };
 
@@ -319,7 +320,7 @@ namespace NES {
             }
 
             void stepMemoryReader() {
-                if (sampleBuffer == 0x0 && bytesRemaining.counter > 0x0) {
+                if (bitsRemaining.counter == 0x0 && bytesRemaining.counter > 0x0) {
                     if (console.cpu->stallCycles > 7) {
                         // If OAM DMA is in progress, it is paused for two cycles.
                         console.cpu->stallCycles += 2;
@@ -329,6 +330,7 @@ namespace NES {
                     }
                     // The sample buffer is filled with the next sample byte read from the current address
                     sampleBuffer = console.memory->get(currentAddress);
+                    bitsRemaining.reload();
 
                     //The address is incremented; if it exceeds $FFFF, it is wrapped around to $8000.
                     currentAddress++;
@@ -366,7 +368,6 @@ namespace NES {
                         silenceFlag = false;
                         shiftRegister = sampleBuffer;
                         sampleBuffer = 0x0;
-                        bitsRemaining.reload();
                     }
                 }
                 bitsRemaining.tick();
