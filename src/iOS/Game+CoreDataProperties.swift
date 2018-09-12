@@ -1,8 +1,8 @@
 //
 //  Game+CoreDataProperties.swift
-//  Nintendoish
+//  Nintendoish-iOS
 //
-//  Created by Ingebretsen, Andrew (HBO) on 6/16/18.
+//  Created by Ingebretsen, Andrew (HBO) on 9/12/18.
 //  Copyright © 2018 Ingebretsen, Andrew (HBO). All rights reserved.
 //
 //
@@ -17,7 +17,11 @@ extension Game {
         return NSFetchRequest<Game>(entityName: "Game")
     }
 
-    @NSManaged public var image: NSData?
-    @NSManaged public var name: String
+    @NSManaged public var boxImage: NSData?
+    @NSManaged public var md5: String?
+    @NSManaged public var name: String?
+    @NSManaged public var screenImage: NSData?
+    @NSManaged public var sha1: String?
+    @NSManaged public var titleImage: NSData?
 
 }

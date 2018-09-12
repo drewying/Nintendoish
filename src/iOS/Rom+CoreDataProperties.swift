@@ -1,8 +1,8 @@
 //
 //  Rom+CoreDataProperties.swift
-//  Nintendoish
+//  Nintendoish-iOS
 //
-//  Created by Ingebretsen, Andrew (HBO) on 6/16/18.
+//  Created by Ingebretsen, Andrew (HBO) on 9/12/18.
 //  Copyright © 2018 Ingebretsen, Andrew (HBO). All rights reserved.
 //
 //

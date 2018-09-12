@@ -55,7 +55,7 @@ class RomBrowserViewController: UITableViewController, UIDocumentPickerDelegate,
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! RomBrowserTableViewCell
         cell.titleLabel.text = rom.game.name
-        cell.coverImage.image = UIImage(data: rom.game.image! as Data)
+        cell.coverImage.image = UIImage(data: rom.game.boxImage! as Data)
         return cell
     }
 
@@ -75,29 +75,33 @@ class RomBrowserViewController: UITableViewController, UIDocumentPickerDelegate,
                     let md5:String = try Data(contentsOf: url).MD5()
                     
                     // Get the HashEntry from the file
-                    let fetchRequest = NSFetchRequest<HashEntry>(entityName: "HashEntry")
-                    fetchRequest.predicate = NSPredicate(format: "md5Hash = %@", md5)
-                    fetchRequest.fetchLimit = 1
                     let documentDirectory = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor:nil, create:false)
                     let fileURL = documentDirectory.appendingPathComponent(md5 + ".nes")
                     if FileManager.default.fileExists(atPath: fileURL.path) {
                         print("File all ready exists at path")
-                    } else if let hashEntry = try backgroundContext.fetch(fetchRequest).first {
-                        print("Creating Rom")
-                        
-                        // Copy the file
-                        try FileManager.default.copyItem(atPath: url.path, toPath: fileURL.path)
-                        
-                        //Create the rom object
-                        let romObj:Rom = NSEntityDescription.insertNewObject(forEntityName: "Rom", into: backgroundContext) as! Rom
-                        romObj.game = hashEntry.game
-                        romObj.filePath = fileURL.path
-                        print("Created Rom")
-                        
-                        // Save
-                        try backgroundContext.save()
+                        //Handle error
                     } else {
-                        // Handle hash not found error here
+                        print("Creating Rom Entry")
+                        //Find game
+                        let fetchRequest = NSFetchRequest<Game>(entityName: "Game")
+                        fetchRequest.predicate = NSPredicate(format: "md5 = %@", md5)
+                        fetchRequest.fetchLimit = 1
+                        if let game = try backgroundContext.fetch(fetchRequest).first {
+                            //Create the rom object
+                            let romObj:Rom = NSEntityDescription.insertNewObject(forEntityName: "Rom", into: backgroundContext) as! Rom
+                            romObj.game = game
+                            romObj.filePath = fileURL.path
+                            print("Created Rom")
+                            
+                            // Copy the file
+                            try FileManager.default.copyItem(atPath: url.path, toPath: fileURL.path)
+                            
+                            // Save
+                            try backgroundContext.save()
+                            
+                        } else {
+                            //Didn't find the game
+                        }
                     }
                 }
                 DispatchQueue.main.async {

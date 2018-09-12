@@ -25,7 +25,7 @@ class NESPersistentContainer: NSPersistentContainer {
     }*/
 }
 
-class GameDownloader {
+class GameDatabaseBuilder: NSObject, XMLParserDelegate {
     lazy var persistentContainer: NESPersistentContainer = {
         let container = NESPersistentContainer(name: "GameLibrary")
         
@@ -50,105 +50,79 @@ class GameDownloader {
         }
     }
     
-    func downloadGameData() {
-        do {
-            print("Starting Download")
-            // let files = try FileManager.default.contentsOfDirectory(at: Bundle.main.bundleURL, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)
-            let files = Bundle.main.urls(forResourcesWithExtension: "nes", subdirectory: nil)!
-            for url in files {
-                if url.lastPathComponent.suffix(3) == "nes" {
-                    let trimSet = [
-                        " & "     : " and ",
-                        " VII "   : " 7 ",
-                        " VI "    : " 6 ",
-                        " V "     : " 5 ",
-                        " IV "    : " 4 ",
-                        " III "   : " 3 ",
-                        " II "    : " 2 ",
-                        "[!].nes" : "",
-                        "(PRG0)"  : "",
-                        "(PRG1)"  : "",
-                        "(PRG2)"  : "",
-                        "(REV0)"  : "",
-                        "(REV1)"  : "",
-                        "(REVA)"  : "",
-                        "(JU)"    : "",
-                        "(U)"     : "",
-                        "(W)"     : "",
-                        "(UE)"    : "",
-                        ]
-                    var name = url.lastPathComponent
-                    print("\n Processing file:" + name)
-                    for (k,v) in trimSet {
-                        name = name.replacingOccurrences(of: k, with: v)
-                    }
-                    name = name.trimmingCharacters(in: .whitespacesAndNewlines)
-                    
-                    let md5:String = try Data(contentsOf: url).MD5()
-                    var fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "HashEntry")
-                    fetchRequest.predicate = NSPredicate(format: "md5Hash = %@", md5)
-                    var resultCount = try persistentContainer.viewContext.count(for: fetchRequest)
-                    if (resultCount == 0) {
-                        createEntityDataForFile(md5: md5, name: name)
-                    } else {
-                        print("File exists in database")
-                    }
-                }
-            }
+    var currentName = ""
+    var currentMD5 = ""
+    var currentSHA = ""
+    var verified = false
     
-            print ("\nFinished. Database at " + persistentContainer.persistentStoreCoordinator.persistentStores.first!.url!.path)
-        } catch {
-            
+    func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String : String] = [:]) {
+        if elementName == "game" {
+            currentName = attributeDict["name"]!
         }
+        if elementName == "rom" {
+            currentMD5 = attributeDict["md5"]!
+            currentSHA = attributeDict["sha1"]!
+            if attributeDict["status"] == "verified" {
+                verified = true
+            } else {
+                verified = false
+                print("Error! Unverified game: \(currentName)")
+            }
+        }
+    }
+    
+    func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
+        if elementName == "game" && verified == true {
+            createEntityDataForFile()
+            currentName = ""
+            currentMD5 = ""
+            currentSHA = ""
+        }
+    }
+    
+    func buildDatabase() {
+        
+        /*let parser = XMLParser(contentsOf: Bundle.main.url(forResource: "database", withExtension: "xml")!);
+        parser?.delegate = self
+        parser?.parse()*/
         
     }
     
-    func createEntityDataForFile(md5:String, name:String) {
-        print("Querying database for title:" + name)
-        let url = URL(string: "https://api-endpoint.igdb.com/games/?search=" + name.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)! + "&fields=cover,name,platforms&filter[release_dates.platform][eq]=18")
-        var request = URLRequest(url: url!)
-        request.setValue("application/json", forHTTPHeaderField: "Accept")
-        request.setValue("dd751e4a3844fc6d5019b0689d936dab", forHTTPHeaderField: "user-key")
+    func createEntityDataForFile() {
+        let gameObj:NSManagedObject = NSEntityDescription.insertNewObject(forEntityName: "Game", into: persistentContainer.viewContext)
+        gameObj.setValue(currentName, forKey: "name")
+        gameObj.setValue(currentMD5, forKey: "md5")
+        gameObj.setValue(currentSHA, forKey: "sha1")
         
         do {
-            // Perform the request
-            let response: AutoreleasingUnsafeMutablePointer<URLResponse?>? = nil
-            let data = try NSURLConnection.sendSynchronousRequest(request, returning: response)
-            
-            // Convert the data to JSON
-            let jsonSerialized = try JSONSerialization.jsonObject(with: data, options: []) as? [[String : Any]]
-            
-            if let json = jsonSerialized {
-                
-                if let name = json.first?["name"] as? String,
-                    let cover = (json.first?["cover"] as?[String : Any]) {
-                    let coverUrl = cover["url"] as! String
-                    
-                    let imageURL = URL(string:"https:" + coverUrl.replacingOccurrences(of: "thumb", with: "cover_big"))
-                    let imageRequest = URLRequest(url: imageURL!)
-                    print("Found title:" + name)
-                    print("Downloading " + imageURL!.absoluteString)
-                    let imageData = try NSURLConnection.sendSynchronousRequest(imageRequest, returning: response)
-                    
-                    let gameObj:NSManagedObject = NSEntityDescription.insertNewObject(forEntityName: "Game", into: persistentContainer.viewContext)
-                    gameObj.setValue(name, forKey: "name")
-                    gameObj.setValue(imageData, forKey: "image")
-                    
-                    let hashObj:NSManagedObject = NSEntityDescription.insertNewObject(forEntityName: "HashEntry", into: persistentContainer.viewContext)
-                    hashObj.setValue(md5, forKey: "md5Hash")
-                    hashObj.setValue(gameObj, forKey: "game")
-                    save()
-                    print("Saved to Database")
-                }
+            if let url = Bundle.main.url(forResource: currentName.replacingOccurrences(of: "&", with: "_"), withExtension: "png", subdirectory: "thumbs/Named_Boxarts") {
+                let boxartImage = try Data(contentsOf: url)
+                gameObj.setValue(boxartImage, forKey: "boxImage")
+            } else {
+                print("\n\nUnable to find box art image for \(currentName)\n\n")
             }
-        } catch let error {
-            print("ERROR PARSING:" + error.localizedDescription)
+            
+            if let url = Bundle.main.url(forResource: currentName.replacingOccurrences(of: "&", with: "_"), withExtension: "png", subdirectory: "thumbs/snaps") {
+                let snapImage = try Data(contentsOf: url)
+                gameObj.setValue(snapImage, forKey: "screenImage")
+            } else {
+                print("\n\nUnable to find screenshot image for \(currentName)\n\n")
+            }
+            
+            if let url = Bundle.main.url(forResource: currentName.replacingOccurrences(of: "&", with: "_"), withExtension: "png", subdirectory: "thumbs/titles") {
+                let titleImage = try Data(contentsOf: url)
+                gameObj.setValue(titleImage, forKey: "titleImage")
+            } else {
+                print("\n\nUnable to find title image for \(currentName)\n\n")
+            }
+        } catch {
+            print("Error")
         }
-        
+        save()
+        print("Saved \(currentName) to Database")
     }
 }
 
-
-var gameDownloader = GameDownloader()
-gameDownloader.downloadGameData()
-
+var gameDatabaseBuilder = GameDatabaseBuilder()
+gameDatabaseBuilder.buildDatabase()
+print("Database saved to" + NESPersistentContainer.defaultDirectoryURL())
