@@ -36,7 +36,7 @@ class RomBrowserViewController: UITableViewController, UIDocumentPickerDelegate,
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         let rom:Rom = self.fetchedResultsController.object(at: indexPath)
-        performSegue(withIdentifier: "playRom", sender: rom.filePath)
+        performSegue(withIdentifier: "playRom", sender: rom)
     }
 
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -54,7 +54,7 @@ class RomBrowserViewController: UITableViewController, UIDocumentPickerDelegate,
         let rom:Rom = self.fetchedResultsController.object(at: indexPath)
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! RomBrowserTableViewCell
-        cell.titleLabel.text = rom.game.name
+        cell.titleLabel.text = rom.game.strippedName
         cell.coverImage.image = UIImage(data: rom.game.boxImage! as Data)
         return cell
     }
@@ -72,8 +72,7 @@ class RomBrowserViewController: UITableViewController, UIDocumentPickerDelegate,
             do {
                 for url in urls {
                     // Get the md5 hash
-                    let md5:String = try Data(contentsOf: url).MD5()
-                    
+                    let md5:String = try Data(contentsOf: url).advanced(by: 16).MD5().uppercased()
                     // Get the HashEntry from the file
                     let documentDirectory = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor:nil, create:false)
                     let fileURL = documentDirectory.appendingPathComponent(md5 + ".nes")
@@ -101,6 +100,7 @@ class RomBrowserViewController: UITableViewController, UIDocumentPickerDelegate,
                             
                         } else {
                             //Didn't find the game
+                            print("Couldn't find md5 has that matches:" + md5)
                         }
                     }
                 }
@@ -119,9 +119,10 @@ class RomBrowserViewController: UITableViewController, UIDocumentPickerDelegate,
     }
     
    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-    let path:String = sender as! String
+    let rom:Rom = sender as! Rom
     let vc:NESViewController = segue.destination as! NESViewController
-        vc.loadRom(path: path)
+        vc.loadRom(path: rom.filePath!)
+        vc.title = rom.game.name
     }
     
 }

@@ -1,23 +1,5 @@
 import Cocoa
-import CommonCrypto
 import PlaygroundSupport
-
-extension Data {
-    func MD5() -> String {
-        let digestLength = Int(CC_MD5_DIGEST_LENGTH)
-        let md5Buffer = UnsafeMutablePointer<CUnsignedChar>.allocate(capacity: digestLength)
-        withUnsafeBytes {
-            CC_MD5($0, CC_LONG(count), md5Buffer)
-        }
-        
-        let output = NSMutableString(capacity: Int(CC_MD5_DIGEST_LENGTH * 2))
-        for i in 0..<digestLength {
-            output.appendFormat("%02x", md5Buffer[i])
-        }
-        
-        return NSString(format: output) as String
-    }
-}
 
 class NESPersistentContainer: NSPersistentContainer {
     /*override class func defaultDirectoryURL() -> URL {
@@ -81,11 +63,9 @@ class GameDatabaseBuilder: NSObject, XMLParserDelegate {
     }
     
     func buildDatabase() {
-        
-        /*let parser = XMLParser(contentsOf: Bundle.main.url(forResource: "database", withExtension: "xml")!);
+        let parser = XMLParser(contentsOf: Bundle.main.url(forResource: "database", withExtension: "xml")!);
         parser?.delegate = self
-        parser?.parse()*/
-        
+        parser?.parse()
     }
     
     func createEntityDataForFile() {
@@ -95,7 +75,7 @@ class GameDatabaseBuilder: NSObject, XMLParserDelegate {
         gameObj.setValue(currentSHA, forKey: "sha1")
         
         do {
-            if let url = Bundle.main.url(forResource: currentName.replacingOccurrences(of: "&", with: "_"), withExtension: "png", subdirectory: "thumbs/Named_Boxarts") {
+            if let url = Bundle.main.url(forResource: currentName.replacingOccurrences(of: "&", with: "_"), withExtension: "png", subdirectory: "thumbs/boxart") {
                 let boxartImage = try Data(contentsOf: url)
                 gameObj.setValue(boxartImage, forKey: "boxImage")
             } else {
@@ -125,4 +105,4 @@ class GameDatabaseBuilder: NSObject, XMLParserDelegate {
 
 var gameDatabaseBuilder = GameDatabaseBuilder()
 gameDatabaseBuilder.buildDatabase()
-print("Database saved to" + NESPersistentContainer.defaultDirectoryURL())
+print("Database saved to" + NESPersistentContainer.defaultDirectoryURL().absoluteString)

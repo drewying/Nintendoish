@@ -24,4 +24,19 @@ extension Data {
         
         return NSString(format: output) as String
     }
+    
+    func SHA1() -> String {
+        let digestLength = Int(CC_SHA1_DIGEST_LENGTH)
+        let sha1Buffer = UnsafeMutablePointer<CUnsignedChar>.allocate(capacity: digestLength)
+        withUnsafeBytes {
+            CC_SHA1($0, CC_LONG(count), sha1Buffer)
+        }
+        
+        let output = NSMutableString(capacity: Int(CC_SHA1_DIGEST_LENGTH * 2))
+        for i in 0..<digestLength {
+            output.appendFormat("%02x", sha1Buffer[i])
+        }
+        
+        return NSString(format: output) as String
+    }
 }

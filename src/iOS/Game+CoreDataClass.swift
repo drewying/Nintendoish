@@ -12,5 +12,15 @@ import CoreData
 
 @objc(Game)
 public class Game: NSManagedObject {
-
+    var strippedName:String? {
+        // returns the name stripped of region information
+        if let name = name {
+            if let index = name.lastIndex(of: "(") {
+                return String(name.prefix(upTo: index))
+            } else {
+                return name
+            }
+        }
+        return nil
+    }
 }

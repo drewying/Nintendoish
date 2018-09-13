@@ -262,9 +262,6 @@
                                 <include reference="OlZ-bz-3xF"/>
                             </mask>
                         </variation>
-                        <connections>
-                            <outletCollection property="gestureRecognizers" destination="miS-kp-7at" appends="YES" id="6vz-BF-W3u"/>
-                        </connections>
                     </view>
                     <navigationItem key="navigationItem" title="Title" id="LLM-cG-RmS"/>
                     <connections>
@@ -277,11 +274,6 @@
                         <action selector="didDragTouchpad:" destination="nB0-vR-1ee" id="1UA-tC-Sf5"/>
                     </connections>
                 </pongPressGestureRecognizer>
-                <tapGestureRecognizer id="miS-kp-7at">
-                    <connections>
-                        <action selector="tapMainView:" destination="nB0-vR-1ee" id="Tw6-u4-RtX"/>
-                    </connections>
-                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="-114" y="54"/>
         </scene>
@@ -293,9 +285,11 @@
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translucent="NO" id="SNo-J3-o3M">
                         <rect key="frame" x="0.0" y="20" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
-                        <color key="barTintColor" red="0.43529411764705883" green="0.43529411764705883" blue="0.43529411764705883" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="tintColor" red="0.62745098039215685" green="0.15686274509803921" blue="0.11764705882352941" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="barTintColor" red="0.78431372549019607" green="0.78431372549019607" blue="0.78431372549019607" alpha="1" colorSpace="calibratedRGB"/>
                         <textAttributes key="titleTextAttributes">
                             <fontDescription key="fontDescription" name="PixelNES" family="Pixel NES" pointSize="17"/>
+                            <color key="textColor" red="0.29411764705882354" green="0.29411764705882354" blue="0.29411764705882354" alpha="1" colorSpace="calibratedRGB"/>
                         </textAttributes>
                     </navigationBar>
                     <nil name="viewControllers"/>

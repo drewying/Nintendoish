@@ -40,8 +40,6 @@ class NESViewController: UIViewController {
         renderer.mtkView(metalView, drawableSizeWillChange: metalView.drawableSize)
 
         metalView.delegate = renderer
-        self.navigationController?.hidesBarsOnTap = true
-        navigationController?.setNavigationBarHidden(true, animated: false)
     }
     
     public func loadRom(path:String) {
@@ -137,8 +135,6 @@ class NESViewController: UIViewController {
             
             let threshold:CGFloat = center.x
             
-            
-            
             //Release if we've ended the gesture or too close to sender
             let shouldRelease = sender.state == .ended || getDistance(point1: touchPoint, point2: center) < center.x * 0.2;
             
@@ -174,26 +170,4 @@ class NESViewController: UIViewController {
         let yDist = (point1.y - point2.y)
         return sqrt((xDist * xDist) + (yDist * yDist))
     }
-    
-    func showActionBar() {
-        if (navigationController?.isNavigationBarHidden == false) {
-            return
-        }
-        navigationController?.setNavigationBarHidden(false, animated: true)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5, execute: {
-            self.hideActionBar()
-        })
-    }
-    
-    @IBAction func tapMainView(_ sender: Any) {
-        showActionBar()
-    }
-    
-    func hideActionBar() {
-        if (navigationController?.isNavigationBarHidden == true) {
-            return
-        }
-        navigationController?.setNavigationBarHidden(true, animated: true)
-    }
-    
 }
