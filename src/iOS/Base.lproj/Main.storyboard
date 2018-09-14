@@ -24,7 +24,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" id="Dmz-vH-kRe" customClass="RomBrowserTableViewCell" customModule="Nintendoish_iOS" customModuleProvider="target">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="RomCell" id="Dmz-vH-kRe" customClass="RomBrowserTableViewCell" customModule="Nintendoish_iOS" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="28" width="375" height="150"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Dmz-vH-kRe" id="hBQ-96-8dr">
@@ -68,6 +68,30 @@
                                     <outlet property="coverImage" destination="XQC-UT-iPO" id="we9-SO-EbK"/>
                                     <outlet property="titleLabel" destination="Qaw-jQ-JCG" id="dS9-GJ-msU"/>
                                 </connections>
+                            </tableViewCell>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="NoRomCell" id="jcQ-qd-ez8">
+                                <rect key="frame" x="0.0" y="178" width="375" height="150"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="jcQ-qd-ez8" id="Edn-Ix-RyN">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="150"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="no roms in library press add" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NV6-Kg-jHR">
+                                            <rect key="frame" x="37.5" y="51.5" width="300" height="47"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="300" id="XxR-s5-gtA"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" name="PixelNES" family="Pixel NES" pointSize="20"/>
+                                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <constraints>
+                                        <constraint firstItem="NV6-Kg-jHR" firstAttribute="centerX" secondItem="Edn-Ix-RyN" secondAttribute="centerX" id="J23-3H-dgZ"/>
+                                        <constraint firstItem="NV6-Kg-jHR" firstAttribute="centerY" secondItem="Edn-Ix-RyN" secondAttribute="centerY" id="zxQ-xD-QDB"/>
+                                    </constraints>
+                                </tableViewCellContentView>
                             </tableViewCell>
                         </prototypes>
                         <connections>

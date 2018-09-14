@@ -94,7 +94,6 @@ class Renderer: NSObject, MTKViewDelegate {
         ]
     
         return device.makeBuffer(bytes: vertexData, length: 96, options: [.storageModeShared])!
-        
     }
     
     func loadTextureBuffer(device: MTLDevice) throws -> MTLBuffer {

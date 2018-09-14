@@ -33,6 +33,13 @@ class RomBrowserViewController: UITableViewController, UIDocumentPickerDelegate,
         try? fetchedResultsController.performFetch()
     }
 
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let rom:Rom = sender as! Rom
+        let vc:NESViewController = segue.destination as! NESViewController
+        vc.rom = rom
+        vc.title = rom.game.strippedName
+    }
+    
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         let rom:Rom = self.fetchedResultsController.object(at: indexPath)
@@ -45,17 +52,26 @@ class RomBrowserViewController: UITableViewController, UIDocumentPickerDelegate,
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let count = fetchedResultsController.sections?[section].numberOfObjects
-        return count!
+        guard let count = fetchedResultsController.sections?[section].numberOfObjects else {
+            return 1
+        }
+        return max(count, 1)
     }
-
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let rom:Rom = self.fetchedResultsController.object(at: indexPath)
+        guard let count = fetchedResultsController.sections?[indexPath.section].numberOfObjects else {
+            return tableView.dequeueReusableCell(withIdentifier: "NoRomCell", for: indexPath)
+        }
+        if (count == 0) {
+            return tableView.dequeueReusableCell(withIdentifier: "NoRomCell", for: indexPath)
+        }
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! RomBrowserTableViewCell
+        let rom:Rom = self.fetchedResultsController.object(at: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "RomCell", for: indexPath) as! RomBrowserTableViewCell
+
         cell.titleLabel.text = rom.game.strippedName
         cell.coverImage.image = UIImage(data: rom.game.boxImage! as Data)
+
         return cell
     }
 
@@ -68,6 +84,8 @@ class RomBrowserViewController: UITableViewController, UIDocumentPickerDelegate,
     
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         print("Processing \(urls.count) files")
+        var successfulImports = 0
+        var failedImports = 0
         persistentContainer.performBackgroundTask({ backgroundContext in
             do {
                 for url in urls {
@@ -78,7 +96,7 @@ class RomBrowserViewController: UITableViewController, UIDocumentPickerDelegate,
                     let fileURL = documentDirectory.appendingPathComponent(md5 + ".nes")
                     if FileManager.default.fileExists(atPath: fileURL.path) {
                         print("File all ready exists at path")
-                        //Handle error
+                        failedImports += 1
                     } else {
                         print("Creating Rom Entry")
                         //Find game
@@ -98,15 +116,24 @@ class RomBrowserViewController: UITableViewController, UIDocumentPickerDelegate,
                             // Save
                             try backgroundContext.save()
                             
+                            successfulImports += 1
+                            
                         } else {
                             //Didn't find the game
                             print("Couldn't find md5 has that matches:" + md5)
+                            
+                            failedImports += 1
                         }
                     }
                 }
                 DispatchQueue.main.async {
                     try? self.fetchedResultsController.performFetch()
                     self.tableView.reloadData()
+                    if failedImports == 0 {
+                        self.displayMessage("Successfully imported \(successfulImports) games.")
+                    } else {
+                        self.displayMessage("Failed to import \(failedImports) games.\n\n Either the rom all ready exists in your library, or you tried to import a game that is unrecognized in our rom database.")
+                    }
                 }
             } catch {
                 print("Error creating entity:\(error)")
@@ -114,15 +141,13 @@ class RomBrowserViewController: UITableViewController, UIDocumentPickerDelegate,
         })
     }
     
+    func displayMessage(_ message:String) {
+        let alertController = UIAlertController(title: "Notice", message: message, preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         tableView.reloadData()
     }
-    
-   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-    let rom:Rom = sender as! Rom
-    let vc:NESViewController = segue.destination as! NESViewController
-        vc.loadRom(path: rom.filePath!)
-        vc.title = rom.game.name
-    }
-    
 }

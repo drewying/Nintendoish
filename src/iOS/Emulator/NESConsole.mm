@@ -50,8 +50,16 @@
     return self.nes->displayBuffer;
 }
 
--(void)getAudioBuffer {
-    
+-(void)clearAudioBuffer {
+    self.nes->audioBufferLength = 0;
+}
+
+-(unsigned int)getAudioBufferLength {
+    return self.nes->audioBufferLength;
+}
+
+-(float*)getAudioBuffer {
+    return self.nes->audioBuffer;
 }
 
 -(void)pressButton:(NESButton)button {

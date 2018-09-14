@@ -12,16 +12,25 @@ import MetalKit
 // Our iOS specific view controller
 class NESViewController: UIViewController {
     
-     @IBOutlet weak var metalView: MTKView!
     var renderer: Renderer!
+    var audioPlayer: AudioPlayer!
     var nes: NESConsole = NESConsole()
+    var rom:Rom?
     
+    @IBOutlet weak var metalView: MTKView!
     @IBOutlet weak var actionBar: UIView!
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        if rom != nil {
+            nes.loadRom(rom?.filePath)
+        }
+    }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        // Select the device to render with.  We choose the default device
+        
         guard let defaultDevice = MTLCreateSystemDefaultDevice() else {
             print("Metal is not supported")
             return
@@ -36,14 +45,10 @@ class NESViewController: UIViewController {
         }
 
         renderer = newRenderer
-
         renderer.mtkView(metalView, drawableSizeWillChange: metalView.drawableSize)
-
         metalView.delegate = renderer
-    }
-    
-    public func loadRom(path:String) {
-        nes.loadRom(path)
+        
+        audioPlayer = AudioPlayer(nes: nes)
     }
     
     @IBAction func exitButton(_ sender: Any) {

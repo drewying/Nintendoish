@@ -21,13 +21,17 @@ typedef NS_ENUM(NSInteger, NESButton) {
     RIGHT
 };
 
--(BOOL)loadRom:(NSString*)romPath;
--(void)stepFrame;
--(unsigned int)getDisplayBufferSize;
--(unsigned int*)getDisplayBuffer;
--(void)getAudioBuffer;
--(void)pressButton:(NESButton)button;
--(void)releaseButton:(NESButton)button;
+-(BOOL) loadRom:(NSString*)romPath;
+-(void) stepFrame;
 
+-(unsigned int) getDisplayBufferSize;
+-(unsigned int*) getDisplayBuffer;
+
+-(unsigned int) getAudioBufferLength;
+-(float*) getAudioBuffer;
+-(void) clearAudioBuffer;
+
+-(void) pressButton:(NESButton)button;
+-(void) releaseButton:(NESButton)button;
 
 @end
