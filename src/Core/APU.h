@@ -347,12 +347,13 @@ namespace NES {
 
                     //The bytes remaining counter is decremented; if it becomes zero and the loop flag is set, the sample is restarted(see above); 
                     //otherwise, if the bytes remaining counter becomes zero and the IRQ enabled flag is set, the interrupt flag is set.
+                    bytesRemaining.tick();
                     if (bytesRemaining.counter == 0x0 && bytesRemaining.loopCounter == true) {
                         reload();
                     } else if (bytesRemaining.counter == 0x0 && irqEnabledFlag == true) {
-                        console.cpu->requestIRQ = true;
+                        console.apu->dmcIRQ = true;
                     }
-                    bytesRemaining.tick();
+                    
                 }
             }
 
@@ -367,6 +368,7 @@ namespace NES {
                 shiftRegister >>= 1;
 
                 // the bits-remaining counter is decremented. If it becomes zero, a new output cycle is started.
+                bitsRemaining.tick();
                 if (bitsRemaining.counter == 0) {
                     // If the sample buffer is empty, then the silence flag is set; otherwise, the silence flag is cleared and the sample buffer is emptied into the shift register.
                     if (sampleBuffer == 0x0) {
@@ -377,7 +379,6 @@ namespace NES {
                         sampleBuffer = 0x0;
                     }
                 }
-                bitsRemaining.tick();
             }
             
             void stepTimer() {
@@ -393,7 +394,7 @@ namespace NES {
                 case 0x4010:
                     irqEnabledFlag = (value & 0x80) == 0x80;
                     if (irqEnabledFlag == false) {
-                        //console.cpu->requestIRQ = false;
+                        console.apu->dmcIRQ = false;
                     }
                     bytesRemaining.loopCounter = (value & 0x40) == 0x40;
                     timer.period = periodTable[value & 0xF];
@@ -434,6 +435,8 @@ namespace NES {
         uint32_t currentCycle = 0;
         uint8_t frameCounter;
         bool processFrameCounterWrite = false;
+        bool dmcIRQ = false;
+        bool frameIRQ = false;
         uint8_t getAPURegister(uint16_t index);
         void setAPURegister(uint16_t index, uint8_t value);
 

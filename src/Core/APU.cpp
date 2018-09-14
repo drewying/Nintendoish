@@ -7,10 +7,11 @@ using namespace NES;
 uint8_t APU::getAPURegister(uint16_t index) {
     switch (index) {
         case 0x4015: {
-            bool irqFlag = console.cpu->requestIRQ;
-            //Clear IRQfLAG
+            bool irqFlag = frameIRQ;
+            //Clear IRQ flag
+            frameIRQ = false;
             console.cpu->requestIRQ = false;
-            return        (dmc.irqEnabledFlag << 0x7) |
+            return                    (dmcIRQ << 0x7) |
                                      (irqFlag << 0x6) |
                                          (0x0 << 0x5) |
             ((dmc.bytesRemaining.counter > 0) << 0x4) | //DMC status goes here
@@ -67,6 +68,8 @@ void APU::processControl(uint16_t index, uint8_t value) {
     } else {
         dmc.bytesRemaining.counter = 0x0;
     }
+    dmcIRQ = false;
+    console.cpu->requestIRQ = false;
 }
 
 float APU::sample() {
@@ -79,7 +82,9 @@ float APU::sample() {
 void APU::step() {
     totalCycles++;
     stepFrameCounter();
-    
+    if (frameIRQ || dmcIRQ) {
+        console.cpu->requestIRQ = true;
+    }
     static bool r = 0;
     static int nextClock = (console.CPU_CLOCK_RATE / console.AUDIO_SAMPLE_RATE);
     if (totalCycles == nextClock) {
@@ -100,6 +105,7 @@ void APU::stepFrameCounter() {
             clockQuarterFrame();
         }
         if ((frameCounter & 0x40) == 0x40) {
+            frameIRQ = false;
             console.cpu->requestIRQ = false;
         }
     }
@@ -131,7 +137,7 @@ void APU::stepFrameCounter() {
         if (currentCycle == 29830) {
             //IRQ
             if (interruptInhibit == false) {
-                console.cpu->requestIRQ = true;
+                frameIRQ = true;
             }
         }
         if (currentCycle == 29831) {
@@ -139,13 +145,13 @@ void APU::stepFrameCounter() {
             clockQuarterFrame();
             //IRQ
             if (interruptInhibit == false) {
-                console.cpu->requestIRQ = true;
+                frameIRQ = true;
             }
         }
         if (currentCycle == 29832) {
             //IRQ
             if (interruptInhibit == false) {
-                console.cpu->requestIRQ = true;
+                frameIRQ = true;
             }
         }
         currentCycle++;

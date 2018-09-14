@@ -242,7 +242,7 @@ int main(int argc, char** argv) {
     //* nes->loadProgram("roms/test/cpu/branch_timing_tests/1.Branch_Basics.nes");
     //* nes->loadProgram("roms/test/cpu/branch_timing_tests/2.Backward_Branch.nes");
     //* nes->loadProgram("roms/test/cpu/branch_timing_tests/3.Forward_Branch.nes");
-    //nes->loadProgram("roms/test/cpu/cpu_interrupts_v2/cpu_interrupts.nes"); 
+    //nes->loadProgram("roms/test/cpu/cpu_interrupts_v2/cpu_interrupts.nes");
     //* nes->loadProgram("roms/test/cpu/cpu_reset/ram_after_reset.nes");
     //* nes->loadProgram("roms/test/cpu/cpu_reset/registers.nes");
     //* nes->loadProgram("roms/test/cpu/cpu_timing_test6/cpu_timing_test.nes");
@@ -280,7 +280,7 @@ int main(int argc, char** argv) {
     //* nes->loadProgram("roms/test/apu/apu_reset/irq_flag_cleared.nes");
     //* nes->loadProgram("roms/test/apu/apu_reset/len_ctrs_enabled.nes");
     //nes->loadProgram("roms/test/apu/apu_reset/works_immediately.nes");
-    //nes->loadProgram("roms/test/apu/apu_test/apu_test.nes");
+    nes->loadProgram("roms/test/apu/apu_test/apu_test.nes");
     //* nes->loadProgram("roms/test/apu/blargg_apu_2005.07.30/01.len_ctr.nes");
     //* nes->loadProgram("roms/test/apu/blargg_apu_2005.07.30/02.len_table.nes");
     //* nes->loadProgram("roms/test/apu/blargg_apu_2005.07.30/03.irq_flag.nes");
@@ -307,7 +307,7 @@ int main(int argc, char** argv) {
     //nes->loadProgram("roms/test/apu/test_apu_timers/triangle_pitch.nes");
     //nes->loadProgram("roms/test/apu/test_tri_lin_ctr/lin_ctr.nes");
 
-    nes->loadProgram("roms/test/apu/apu_test/rom_singles/7-dmc_basics.nes");
+    //nes->loadProgram("roms/test/apu/apu_test/rom_singles/7-dmc_basics.nes");
 
     //Games
     //nes->loadProgram("../roms/PunchOut.nes");
