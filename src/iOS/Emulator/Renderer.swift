@@ -83,7 +83,7 @@ class Renderer: NSObject, MTKViewDelegate {
     }
     
     func loadVertexBuffer(device: MTLDevice) throws -> MTLBuffer {
-        let yOverscan:Float = 10.0 / 240.0
+        let yOverscan:Float = 0.0 / 240.0
         let xOverscan:Float = 0.0 / 256.0
         let xMax:Float = 1.0 - xOverscan
         let xMin:Float = 0.0 + xOverscan

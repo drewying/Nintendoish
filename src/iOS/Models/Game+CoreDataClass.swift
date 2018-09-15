@@ -15,10 +15,11 @@ public class Game: NSManagedObject {
     var strippedName:String? {
         // returns the name stripped of region information
         if let name = name {
-            if let index = name.lastIndex(of: "(") {
-                return String(name.prefix(upTo: index))
+            if let index = name.lastIndex(of: "U") {
+                
+                return String(name.prefix(upTo: name.index(index, offsetBy:-1)))
             } else {
-                return name + "Test"
+                return name
             }
         }
         return nil

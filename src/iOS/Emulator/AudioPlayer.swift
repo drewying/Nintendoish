@@ -16,7 +16,7 @@ class AudioPlayer {
     var buffers:[AudioQueueBufferRef?] = []
     var bufferLengthInFrames:UInt32 = 1024
     var frameSizeInBytes:UInt32 = UInt32(MemoryLayout<Float32>.size)
-    var audioDispatchQueue = DispatchQueue(label: "audioQueue", attributes: .concurrent)
+    var audioDispatchQueue = DispatchQueue(label: "audioQueue")
     var bufferLengthInBytes:UInt32 {
         return bufferLengthInFrames * frameSizeInBytes
     }
@@ -72,7 +72,7 @@ class AudioPlayer {
             }
             self.prepareBuffer(queue: queue!, buffer: buffer!)
         }
-        
+        AudioQueueSetParameter(queue!, kAudioQueueParam_Volume, 1.0);
         error = AudioQueueStart(queue!, nil)
         if (error != 0) {
             print ("Error starting queue:\(error)")
