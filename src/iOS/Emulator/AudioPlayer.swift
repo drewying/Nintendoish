@@ -55,8 +55,7 @@ class AudioPlayer {
         
 
         var error:OSStatus
-        error = AudioQueueNewOutputWithDispatchQueue(&queue, &audioFormat, 0, audioDispatchQueue, {
-            (queue:AudioQueueRef, buffer:AudioQueueBufferRef) -> Void in
+        error = AudioQueueNewOutputWithDispatchQueue(&queue, &audioFormat, 0, audioDispatchQueue, { [unowned self] (queue:AudioQueueRef, buffer:AudioQueueBufferRef) -> Void in
             self.prepareBuffer(queue: queue, buffer: buffer)
         })
         
@@ -80,7 +79,7 @@ class AudioPlayer {
     }
     
     func stopAudio() {
-        AudioQueueStop(queue!, false)
-        AudioQueueDispose(queue!, false)
+        AudioQueueStop(queue!, true)
+        AudioQueueDispose(queue!, true)
     }
 }

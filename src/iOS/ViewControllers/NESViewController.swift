@@ -55,7 +55,8 @@ class NESViewController: UIViewController {
         audioPlayer.startAudio()
     }
     
-    override func viewDidDisappear(_ animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         audioPlayer.stopAudio()
     }
     
