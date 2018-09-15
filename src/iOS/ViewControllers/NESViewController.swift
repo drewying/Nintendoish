@@ -55,6 +55,10 @@ class NESViewController: UIViewController {
         audioPlayer.startAudio()
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        audioPlayer.stopAudio()
+    }
+    
     @IBAction func exitButton(_ sender: Any) {
         navigationController?.popViewController(animated: true)
     }
