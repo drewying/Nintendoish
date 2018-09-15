@@ -22,8 +22,11 @@ class NESViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        if rom != nil {
-            nes.loadRom(rom?.filePath)
+        if let romData = rom?.romData {
+            let tempFile = NSTemporaryDirectory() + "/" + ProcessInfo.processInfo.globallyUniqueString + ".nes"
+            
+            try? romData.write(toFile: tempFile, options: .atomic)
+            nes.loadRom(tempFile)
         }
     }
     
@@ -49,6 +52,7 @@ class NESViewController: UIViewController {
         metalView.delegate = renderer
         
         audioPlayer = AudioPlayer(nes: nes)
+        audioPlayer.startAudio()
     }
     
     @IBAction func exitButton(_ sender: Any) {

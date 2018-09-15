@@ -19,7 +19,7 @@ void Mapper2::setTileData(uint16_t index, uint8_t value) {
 
 uint8_t Mapper2::getProgramData(uint16_t index) {
     if (index < 0x8000) {
-        printf("Ruh Roh. SVRAM not implemented.");
+        //printf("Ruh Roh. SVRAM not implemented.");
         return 0x0;
     } else if (index < 0xC000) {
         return cartridge.prg[(prgOffset0 * 0x4000) + (index - 0x8000)];
@@ -30,7 +30,7 @@ uint8_t Mapper2::getProgramData(uint16_t index) {
 
 void Mapper2::setProgramData(uint16_t index, uint8_t value) {
     if (index < 0x8000) {
-        printf("Ruh Roh. SVRAM not implemented.");
+        //printf("Ruh Roh. SVRAM not implemented.");
         return;
     }
     prgOffset0 = (value & 0x7);

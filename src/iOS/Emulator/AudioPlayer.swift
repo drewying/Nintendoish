@@ -13,7 +13,12 @@ import AudioToolbox
 class AudioPlayer {
     var nes:NESConsole
     var queue:AudioQueueRef? = nil
-    var buffer:AudioQueueBufferRef? = nil
+    var buffers:[AudioQueueBufferRef?] = []
+    var bufferLengthInFrames:Int = 2048
+    var frameSizeInBytes:Int = MemoryLayout<Float32>.size
+    var bufferLengthInBytes:Int {
+        return bufferLengthInFrames * frameSizeInBytes
+    }
     
     init(nes: NESConsole) {
         self.nes = nes
@@ -21,42 +26,75 @@ class AudioPlayer {
     
     func startAudio() {
         var audioFormat:AudioStreamBasicDescription = AudioStreamBasicDescription()
-        
         audioFormat.mSampleRate = 44100
         audioFormat.mFormatID = kAudioFormatLinearPCM
-        audioFormat.mFormatFlags = kLinearPCMFormatFlagIsFloat | kLinearPCMFormatFlagIsNonInterleaved
-        audioFormat.mBitsPerChannel = UInt32(MemoryLayout<Float32>.size * 8)
-        audioFormat.mChannelsPerFrame = 1;
-        audioFormat.mBytesPerFrame = UInt32(MemoryLayout<Float32>.size)
+        audioFormat.mFormatFlags = kLinearPCMFormatFlagIsFloat | kLinearPCMFormatFlagIsPacked
         audioFormat.mFramesPerPacket = 1
-        audioFormat.mBytesPerPacket = audioFormat.mBytesPerFrame * audioFormat.mFramesPerPacket;
+        audioFormat.mChannelsPerFrame = 1
+        audioFormat.mBitsPerChannel = UInt32(frameSizeInBytes * 8)
+        audioFormat.mBytesPerFrame = UInt32(frameSizeInBytes)
+        audioFormat.mBytesPerPacket = UInt32(frameSizeInBytes)
         audioFormat.mReserved = 0
-    
+ 
         func audioCallback (userData:UnsafeMutableRawPointer?, queue:AudioQueueRef, buffer:AudioQueueBufferRef) {
-            print("Calling callback")
+            
+            let frameSizeInBytes:Int = MemoryLayout<Float32>.size
+            let bufferLengthInBytes = 2048 * frameSizeInBytes
+            
             let nes:NESConsole = userData!.assumingMemoryBound(to: NESConsole.self).pointee
-
-            memcpy(buffer, nes.getAudioBuffer(), Int(nes.getAudioBufferLength()))
-            
-            var audioDescription:AudioStreamPacketDescription = AudioStreamPacketDescription()
-            audioDescription.mDataByteSize = nes.getAudioBufferLength() * UInt32(MemoryLayout<Float32>.size)
-            audioDescription.mStartOffset = 0
-            
-            AudioQueueEnqueueBuffer(queue, buffer, nes.getAudioBufferLength(), &audioDescription)
-            
-            nes.clearAudioBuffer()
+            if (nes.getAudioBufferLength() == 0) {
+                memset(buffer.pointee.mAudioData, 0, bufferLengthInBytes)
+                buffer.pointee.mAudioDataByteSize = UInt32(bufferLengthInBytes)
+                
+                let error:OSStatus = AudioQueueEnqueueBuffer(queue, buffer, 0, nil)
+                if (error != 0) {
+                    print ("Error enqueing audio buffer:\(error)")
+                }
+            } else {
+                buffer.pointee.mAudioDataByteSize = nes.getAudioBufferLength() * UInt32(frameSizeInBytes)
+                memcpy(buffer.pointee.mAudioData, nes.getAudioBuffer(), Int(nes.getAudioBufferLength()) * frameSizeInBytes)
+                let error:OSStatus = AudioQueueEnqueueBuffer(queue, buffer, 0, nil)
+                if (error != 0) {
+                    print ("Error enqueing audio buffer:\(error)")
+                }
+                nes.clearAudioBuffer()
+            }
         }
         
-        AudioQueueNewOutput(&audioFormat,
-                            audioCallback,
-                            &nes,
-                            CFRunLoopGetMain(),
-                            CFRunLoopMode.commonModes.rawValue,
-                            0,
-                            &queue)
+        var error:OSStatus
         
-        AudioQueueAllocateBuffer(queue!, 4096, &buffer)
+        error = AudioQueueNewOutput(&audioFormat,
+                                                 audioCallback,
+                                                 &nes,
+                                                 nil,
+                                                 nil,
+                                                 0,
+                                                 &queue)
         
-        AudioQueueStart(queue!, nil)
+        if (error != 0) {
+            print ("Error creating audio queue:\(error)")
+        }
+        var temp = bufferLengthInBytes
+        for _ in 0..<3 {
+            var buffer:AudioQueueBufferRef?
+            error = AudioQueueAllocateBuffer(queue!, UInt32(bufferLengthInBytes), &buffer)
+            if (error != 0) {
+                print ("Error creating audio buffer:\(error)")
+            }
+            buffers.append(buffer)
+            
+            memset(buffer!.pointee.mAudioData, 0, bufferLengthInBytes);
+            buffer?.pointee.mAudioDataByteSize = UInt32(bufferLengthInBytes)
+
+            error = AudioQueueEnqueueBuffer(queue!, buffer!, 0, nil);
+            if (error != 0) {
+                print ("Error enqueing audio buffer:\(error)")
+            }
+        }
+        
+        error = AudioQueueStart(queue!, nil)
+        if (error != 0) {
+            print ("Error starting queue:\(error)")
+        }
     }
 }

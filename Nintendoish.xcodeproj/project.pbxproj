@@ -10,6 +10,7 @@
 		1003FB9620D377BD0059A18B /* GameLibraryPersistentContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1003FB9520D377BD0059A18B /* GameLibraryPersistentContainer.swift */; };
 		1016180C20D61B7B00DDD2B5 /* Data+MD5.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1016180B20D61B7B00DDD2B5 /* Data+MD5.swift */; };
 		10164BEC20D6407400F13ED2 /* GameLibrary.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 10164BEB20D6407400F13ED2 /* GameLibrary.sqlite */; };
+		1038344F214CCDE800D03A5B /* Rom+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1038344E214CCDE800D03A5B /* Rom+CoreDataProperties.swift */; };
 		105CD0F120D1021400B67406 /* RomBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 105CD0EF20D1020F00B67406 /* RomBrowserViewController.swift */; };
 		105CD0F720D1059F00B67406 /* RomBrowserTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 105CD0F520D104E300B67406 /* RomBrowserTableViewCell.swift */; };
 		1060B1241F4373F200C9EFF5 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1060B1231F4373F200C9EFF5 /* OpenGL.framework */; };
@@ -23,7 +24,6 @@
 		10E2D592205F2E45009AC3C2 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10E2D591205F2E45009AC3C2 /* Cocoa.framework */; };
 		10E2D594205F2E4D009AC3C2 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10E2D593205F2E4D009AC3C2 /* CoreVideo.framework */; };
 		10EFBB7D21498F4F00C693AB /* Rom+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10EFBB7921498F4F00C693AB /* Rom+CoreDataClass.swift */; };
-		10EFBB7E21498F4F00C693AB /* Rom+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10EFBB7A21498F4F00C693AB /* Rom+CoreDataProperties.swift */; };
 		10EFBB7F21498F4F00C693AB /* Game+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10EFBB7B21498F4F00C693AB /* Game+CoreDataClass.swift */; };
 		10EFBB8021498F4F00C693AB /* Game+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10EFBB7C21498F4F00C693AB /* Game+CoreDataProperties.swift */; };
 		10EFBB822149927000C693AB /* Pixel_NES.otf in Resources */ = {isa = PBXBuildFile; fileRef = 10EFBB812149927000C693AB /* Pixel_NES.otf */; };
@@ -93,6 +93,7 @@
 		1016180620D617D800DDD2B5 /* GameDatabaseBuilder.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; name = GameDatabaseBuilder.playground; path = src/iOS/GameDatabaseBuilder.playground; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		1016180B20D61B7B00DDD2B5 /* Data+MD5.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+MD5.swift"; sourceTree = "<group>"; };
 		10164BEB20D6407400F13ED2 /* GameLibrary.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = GameLibrary.sqlite; sourceTree = "<group>"; };
+		1038344E214CCDE800D03A5B /* Rom+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Rom+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		105CD0EF20D1020F00B67406 /* RomBrowserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RomBrowserViewController.swift; sourceTree = "<group>"; };
 		105CD0F520D104E300B67406 /* RomBrowserTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RomBrowserTableViewCell.swift; path = src/iOS/RomBrowserTableViewCell.swift; sourceTree = SOURCE_ROOT; };
 		1060B10A1F43737D00C9EFF5 /* Nintendoish-macOS */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Nintendoish-macOS"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -109,7 +110,6 @@
 		10E2D591205F2E45009AC3C2 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		10E2D593205F2E4D009AC3C2 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		10EFBB7921498F4F00C693AB /* Rom+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Rom+CoreDataClass.swift"; sourceTree = "<group>"; };
-		10EFBB7A21498F4F00C693AB /* Rom+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Rom+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		10EFBB7B21498F4F00C693AB /* Game+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Game+CoreDataClass.swift"; sourceTree = "<group>"; };
 		10EFBB7C21498F4F00C693AB /* Game+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Game+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		10EFBB812149927000C693AB /* Pixel_NES.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Pixel_NES.otf; sourceTree = "<group>"; };
@@ -209,7 +209,7 @@
 			children = (
 				10FF3D3820D6228400B92AE1 /* GameLibrary.xcdatamodeld */,
 				10EFBB7921498F4F00C693AB /* Rom+CoreDataClass.swift */,
-				10EFBB7A21498F4F00C693AB /* Rom+CoreDataProperties.swift */,
+				1038344E214CCDE800D03A5B /* Rom+CoreDataProperties.swift */,
 				10EFBB7B21498F4F00C693AB /* Game+CoreDataClass.swift */,
 				10EFBB7C21498F4F00C693AB /* Game+CoreDataProperties.swift */,
 				1003FB9520D377BD0059A18B /* GameLibraryPersistentContainer.swift */,
@@ -543,6 +543,7 @@
 				10FFD59E20CDF40900910B40 /* Mapper4.cpp in Sources */,
 				105CD0F120D1021400B67406 /* RomBrowserViewController.swift in Sources */,
 				10FFD59F20CDF40900910B40 /* Memory.cpp in Sources */,
+				1038344F214CCDE800D03A5B /* Rom+CoreDataProperties.swift in Sources */,
 				10FFD5A020CDF40900910B40 /* PPU.cpp in Sources */,
 				10FFD5A120CDF40900910B40 /* Mapper1.h in Sources */,
 				10FF3D3E20D6254700B92AE1 /* GameLibrary.xcdatamodeld in Sources */,
@@ -558,7 +559,6 @@
 				10FFD5A820CDF40900910B40 /* Mapper1.cpp in Sources */,
 				10EFBB7D21498F4F00C693AB /* Rom+CoreDataClass.swift in Sources */,
 				1003FB9620D377BD0059A18B /* GameLibraryPersistentContainer.swift in Sources */,
-				10EFBB7E21498F4F00C693AB /* Rom+CoreDataProperties.swift in Sources */,
 				10EFBB7F21498F4F00C693AB /* Game+CoreDataClass.swift in Sources */,
 				10FFD5A920CDF40900910B40 /* Mapper0.cpp in Sources */,
 				10FFD5AA20CDF40900910B40 /* NES.cpp in Sources */,

@@ -18,7 +18,7 @@ public class Game: NSManagedObject {
             if let index = name.lastIndex(of: "(") {
                 return String(name.prefix(upTo: index))
             } else {
-                return name
+                return name + "Test"
             }
         }
         return nil

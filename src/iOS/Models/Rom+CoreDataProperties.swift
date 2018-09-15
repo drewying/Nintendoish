@@ -2,7 +2,7 @@
 //  Rom+CoreDataProperties.swift
 //  Nintendoish-iOS
 //
-//  Created by Ingebretsen, Andrew (HBO) on 9/12/18.
+//  Created by Ingebretsen, Andrew (HBO) on 9/14/18.
 //  Copyright © 2018 Ingebretsen, Andrew (HBO). All rights reserved.
 //
 //
@@ -17,7 +17,7 @@ extension Rom {
         return NSFetchRequest<Rom>(entityName: "Rom")
     }
 
-    @NSManaged public var filePath: String?
+    @NSManaged public var romData: NSData?
     @NSManaged public var game: Game
 
 }

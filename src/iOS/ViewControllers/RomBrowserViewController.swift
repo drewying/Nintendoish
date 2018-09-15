@@ -90,48 +90,39 @@ class RomBrowserViewController: UITableViewController, UIDocumentPickerDelegate,
             do {
                 for url in urls {
                     // Get the md5 hash
-                    let md5:String = try Data(contentsOf: url).advanced(by: 16).MD5().uppercased()
-                    // Get the HashEntry from the file
-                    let documentDirectory = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor:nil, create:false)
-                    let fileURL = documentDirectory.appendingPathComponent(md5 + ".nes")
-                    if FileManager.default.fileExists(atPath: fileURL.path) {
-                        print("File all ready exists at path")
-                        failedImports += 1
-                    } else {
-                        print("Creating Rom Entry")
-                        //Find game
-                        let fetchRequest = NSFetchRequest<Game>(entityName: "Game")
-                        fetchRequest.predicate = NSPredicate(format: "md5 = %@", md5)
-                        fetchRequest.fetchLimit = 1
-                        if let game = try backgroundContext.fetch(fetchRequest).first {
+                    let romData = try Data(contentsOf: url)
+                    let md5:String = romData.advanced(by: 16).MD5().uppercased()
+                    
+                    //Find game
+                    let fetchRequest = NSFetchRequest<Game>(entityName: "Game")
+                    fetchRequest.predicate = NSPredicate(format: "md5 = %@", md5)
+                    fetchRequest.fetchLimit = 1
+                    if let game = try backgroundContext.fetch(fetchRequest).first {
+                        if game.rom != nil {
+                            // game all ready exists
+                            print("Game all ready exists")
+                            failedImports += 1
+                        } else {
                             //Create the rom object
                             let romObj:Rom = NSEntityDescription.insertNewObject(forEntityName: "Rom", into: backgroundContext) as! Rom
                             romObj.game = game
-                            romObj.filePath = fileURL.path
+                            romObj.romData = romData as NSData
                             print("Created Rom")
-                            
-                            // Copy the file
-                            try FileManager.default.copyItem(atPath: url.path, toPath: fileURL.path)
                             
                             // Save
                             try backgroundContext.save()
-                            
                             successfulImports += 1
-                            
-                        } else {
-                            //Didn't find the game
-                            print("Couldn't find md5 has that matches:" + md5)
-                            
-                            failedImports += 1
                         }
+                    } else {
+                        //Didn't find the game
+                        print("Couldn't find md5 has that matches:" + md5)
+                        failedImports += 1
                     }
                 }
                 DispatchQueue.main.async {
                     try? self.fetchedResultsController.performFetch()
                     self.tableView.reloadData()
-                    if failedImports == 0 {
-                        self.displayMessage("Successfully imported \(successfulImports) games.")
-                    } else {
+                    if failedImports != 0 {
                         self.displayMessage("Failed to import \(failedImports) games.\n\n Either the rom all ready exists in your library, or you tried to import a game that is unrecognized in our rom database.")
                     }
                 }
