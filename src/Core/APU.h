@@ -352,8 +352,8 @@ namespace NES {
                         reload();
                     } else if (bytesRemaining.counter == 0x0 && irqEnabledFlag == true) {
                         console.apu->dmcIRQ = true;
+                        console.cpu->requestIRQ = true;
                     }
-                    
                 }
             }
 
@@ -368,7 +368,7 @@ namespace NES {
                 shiftRegister >>= 1;
 
                 // the bits-remaining counter is decremented. If it becomes zero, a new output cycle is started.
-                bitsRemaining.tick();
+                
                 if (bitsRemaining.counter == 0) {
                     // If the sample buffer is empty, then the silence flag is set; otherwise, the silence flag is cleared and the sample buffer is emptied into the shift register.
                     if (sampleBuffer == 0x0) {
@@ -379,6 +379,7 @@ namespace NES {
                         sampleBuffer = 0x0;
                     }
                 }
+                bitsRemaining.tick();
             }
             
             void stepTimer() {
@@ -395,6 +396,7 @@ namespace NES {
                     irqEnabledFlag = (value & 0x80) == 0x80;
                     if (irqEnabledFlag == false) {
                         console.apu->dmcIRQ = false;
+                        console.cpu->requestIRQ = false;
                     }
                     bytesRemaining.loopCounter = (value & 0x40) == 0x40;
                     timer.period = periodTable[value & 0xF];
@@ -447,7 +449,6 @@ namespace NES {
 
         void clockQuarterFrame();
         void clockHalfFrame();
-        void processDMC(uint16_t index, uint8_t value);
         void processControl(uint16_t index, uint8_t value);
         void reset();
     };

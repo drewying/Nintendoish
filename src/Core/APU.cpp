@@ -45,11 +45,7 @@ void APU::setAPURegister(uint16_t index, uint8_t value) {
 }
 
 void APU::reset() {
-    pulse1.lengthCounter = 0x0;
-    pulse2.lengthCounter = 0x0;
-    triangle.lengthCounter = 0x0;
-    noise.lengthCounter = 0x0;
-    dmc.bytesRemaining.counter = 0x0;
+    processControl(0x4015, 0x0);
 }
 
 void APU::processControl(uint16_t index, uint8_t value) {
@@ -138,6 +134,7 @@ void APU::stepFrameCounter() {
             //IRQ
             if (interruptInhibit == false) {
                 frameIRQ = true;
+                console.cpu->requestIRQ = true;
             }
         }
         if (currentCycle == 29831) {
@@ -146,12 +143,14 @@ void APU::stepFrameCounter() {
             //IRQ
             if (interruptInhibit == false) {
                 frameIRQ = true;
+                console.cpu->requestIRQ = true;
             }
         }
         if (currentCycle == 29832) {
             //IRQ
             if (interruptInhibit == false) {
                 frameIRQ = true;
+                console.cpu->requestIRQ = true;
             }
         }
         currentCycle++;

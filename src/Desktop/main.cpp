@@ -274,7 +274,7 @@ int main(int argc, char** argv) {
     //nes->loadProgram("roms/test/apu/apu_mixer/noise.nes");
     //nes->loadProgram("roms/test/apu/apu_mixer/square.nes");
     //nes->loadProgram("roms/test/apu/apu_mixer/triangle.nes");
-    //nes->loadProgram("roms/test/apu/apu_reset/4015_cleared.nes");
+    //* nes->loadProgram("roms/test/apu/apu_reset/4015_cleared.nes");
     //nes->loadProgram("roms/test/apu/apu_reset/4017_timing.nes");
     //nes->loadProgram("roms/test/apu/apu_reset/4017_written.nes");
     //* nes->loadProgram("roms/test/apu/apu_reset/irq_flag_cleared.nes");
@@ -297,7 +297,7 @@ int main(int argc, char** argv) {
     //nes->loadProgram("roms/test/apu/dmc_dma_during_read4/dma_4016_read.nes");
     //nes->loadProgram("roms/test/apu/dmc_dma_during_read4/double_2007_read.nes");
     //nes->loadProgram("roms/test/apu/dmc_dma_during_read4/read_write_2007.nes");
-    //nes->loadProgram("roms/test/apu/square_timer_div2/square_timer_div2.nes");
+    //* nes->loadProgram("roms/test/apu/square_timer_div2/square_timer_div2.nes");
     //nes->loadProgram("roms/test/apu/test_apu_env/test_apu_env.nes");
     //nes->loadProgram("roms/test/apu/test_apu_sweep/sweep_cutoff.nes");
     //nes->loadProgram("roms/test/apu/test_apu_sweep/sweep_sub.nes");
@@ -307,7 +307,7 @@ int main(int argc, char** argv) {
     //nes->loadProgram("roms/test/apu/test_apu_timers/triangle_pitch.nes");
     //nes->loadProgram("roms/test/apu/test_tri_lin_ctr/lin_ctr.nes");
 
-    //nes->loadProgram("roms/test/apu/apu_test/rom_singles/7-dmc_basics.nes");
+    //nes->loadProgram("roms/test/cpu/cpu_interrupts_v2/rom_singles/5-branch_delays_irq.nes");
 
     //Games
     //nes->loadProgram("../roms/PunchOut.nes");
