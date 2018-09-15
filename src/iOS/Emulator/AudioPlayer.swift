@@ -14,8 +14,9 @@ class AudioPlayer {
     var nes:NESConsole
     var queue:AudioQueueRef? = nil
     var buffers:[AudioQueueBufferRef?] = []
-    var bufferLengthInFrames:UInt32 = 2048
+    var bufferLengthInFrames:UInt32 = 1024
     var frameSizeInBytes:UInt32 = UInt32(MemoryLayout<Float32>.size)
+    var audioDispatchQueue = DispatchQueue(label: "audioQueue", attributes: .concurrent)
     var bufferLengthInBytes:UInt32 {
         return bufferLengthInFrames * frameSizeInBytes
     }
@@ -26,9 +27,10 @@ class AudioPlayer {
     
     func prepareBuffer(queue:AudioQueueRef, buffer:AudioQueueBufferRef) {
         if (nes.getAudioBufferLength() > 0) {
-            memcpy(buffer.pointee.mAudioData, nes.getAudioBuffer(), Int(nes.getAudioBufferLength() * frameSizeInBytes))
-            buffer.pointee.mAudioDataByteSize = nes.getAudioBufferLength() * frameSizeInBytes
-        
+            let bufferLength = min(nes.getAudioBufferLength() * frameSizeInBytes, bufferLengthInBytes)
+            memcpy(buffer.pointee.mAudioData, nes.getAudioBuffer(), Int(bufferLength))
+            buffer.pointee.mAudioDataByteSize = bufferLength
+            nes.clearAudioBuffer()
         } else {
             memset(buffer.pointee.mAudioData, 0, Int(bufferLengthInBytes))
             buffer.pointee.mAudioDataByteSize = bufferLengthInBytes
@@ -53,7 +55,7 @@ class AudioPlayer {
         
 
         var error:OSStatus
-        error = AudioQueueNewOutputWithDispatchQueue(&queue, &audioFormat, 0, DispatchQueue.main, {
+        error = AudioQueueNewOutputWithDispatchQueue(&queue, &audioFormat, 0, audioDispatchQueue, {
             (queue:AudioQueueRef, buffer:AudioQueueBufferRef) -> Void in
             self.prepareBuffer(queue: queue, buffer: buffer)
         })

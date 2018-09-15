@@ -83,14 +83,21 @@ class Renderer: NSObject, MTKViewDelegate {
     }
     
     func loadVertexBuffer(device: MTLDevice) throws -> MTLBuffer {
+        let yOverscan:Float = 10.0 / 240.0
+        let xOverscan:Float = 0.0 / 256.0
+        let xMax:Float = 1.0 - xOverscan
+        let xMin:Float = 0.0 + xOverscan
+        let yMax:Float = 1.0 - yOverscan
+        let yMin:Float = 0.0 + yOverscan
+        
         let vertexData:[vector_float2] = [
-            vector2( 1.0, -1.0), vector2(1.0, 1.0),
-            vector2(-1.0, -1.0), vector2(0.0, 1.0),
-            vector2(-1.0,  1.0), vector2(0.0, 0.0),
+            vector2( 1.0, -1.0), vector2(xMax, yMax),
+            vector2(-1.0, -1.0), vector2(xMin, yMax),
+            vector2(-1.0,  1.0), vector2(xMin, yMin),
             
-            vector2( 1.0, -1.0), vector2(1.0, 1.0),
-            vector2(-1.0,  1.0), vector2(0.0, 0.0),
-            vector2( 1.0,  1.0), vector2(1.0, 0.0),
+            vector2( 1.0, -1.0), vector2(xMax, yMax),
+            vector2(-1.0,  1.0), vector2(xMin, yMin),
+            vector2( 1.0,  1.0), vector2(xMax, yMin),
         ]
     
         return device.makeBuffer(bytes: vertexData, length: 96, options: [.storageModeShared])!
