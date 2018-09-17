@@ -324,16 +324,17 @@ namespace NES {
                 bytesRemaining.period = sampleLength;
                 bytesRemaining.reload();
                 currentAddress = sampleAddress;
+                stepOutputUnit();
             }
 
             void stepMemoryReader() {
-                if (bitsRemaining.counter == 0x0 && bytesRemaining.counter > 0x0) {
+                if (sampleLength > 0x0 && bitsRemaining.counter == 0x0 && bytesRemaining.counter > 0x0) {
                     if (console.cpu->stallCycles > 7) {
                         // If OAM DMA is in progress, it is paused for two cycles.
                         console.cpu->stallCycles += 2;
                     } else {
                         //The CPU is stalled for up to 4 CPU cycles
-                        console.cpu->stallCycles += 4;
+                        console.cpu->stallCycles += 3;
                     }
                     // The sample buffer is filled with the next sample byte read from the current address
                     sampleBuffer = console.memory->get(currentAddress);
@@ -368,7 +369,6 @@ namespace NES {
                 shiftRegister >>= 1;
 
                 // the bits-remaining counter is decremented. If it becomes zero, a new output cycle is started.
-                
                 if (bitsRemaining.counter == 0) {
                     // If the sample buffer is empty, then the silence flag is set; otherwise, the silence flag is cleared and the sample buffer is emptied into the shift register.
                     if (sampleBuffer == 0x0) {
@@ -384,10 +384,11 @@ namespace NES {
             
             void stepTimer() {
                 stepMemoryReader();
+                timer.tick();
                 if (timer.counter == 0) {
                     stepOutputUnit();
+                    timer.reload();
                 }
-                timer.tick();
             }
 
             void writeRegister(uint16_t index, uint8_t value) {
@@ -414,10 +415,8 @@ namespace NES {
                     // Sample length = %LLLL.LLLL0001 = (L * 16) + 1 
                     sampleLength = (value * 0x10) + 1;
                     if (bytesRemaining.period == 0) {
-                        bytesRemaining.period = sampleLength;
-                        bytesRemaining.reload();
+                        reload();
                     }
-
                     break;
                 }
             }
@@ -435,7 +434,7 @@ namespace NES {
 
         uint32_t totalCycles = 0;
         uint32_t currentCycle = 0;
-        uint8_t frameCounter;
+        uint8_t frameCounter = 0x0;
         bool processFrameCounterWrite = false;
         bool dmcIRQ = false;
         bool frameIRQ = false;
