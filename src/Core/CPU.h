@@ -80,7 +80,6 @@ namespace NES {
         
         void reset();
         void setNZStatus(uint8_t value);
-        void executeInterrurpts();
         void pollInterrurpts();
         void branchOnCondition(bool condition, uint16_t address);
         bool checkForPageCross(uint16_t address, bool includeCyclePenalty);
@@ -93,8 +92,8 @@ namespace NES {
         
         typedef void (CPU::*Op)(uint16_t);
         
-        void NMI();
-        void IRQ();
+        void NMI(uint16_t address);
+        void IRQ(uint16_t address);
         
         // Control Flow
         void BCC(uint16_t address);

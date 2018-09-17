@@ -11,8 +11,8 @@ using namespace NES;
 CPU::CPU(NES::Memory &memory):
     memory(memory),
     debugTable {
-        "BRK", "ORA", "STP", "SLO", "NOP", "ORA", "ASL", "SLO", "PHP", "ORA", "ASL", "ANC", "NOP", "ORA", "ASL", "SLO",
-        "BPL", "ORA", "STP", "SLO", "NOP", "ORA", "ASL", "SLO", "CLC", "ORA", "NOP", "SLO", "NOP", "ORA", "ASL", "SLO",
+        "BRK", "ORA", "NMI", "SLO", "NOP", "ORA", "ASL", "SLO", "PHP", "ORA", "ASL", "ANC", "NOP", "ORA", "ASL", "SLO",
+        "BPL", "ORA", "IRQ", "SLO", "NOP", "ORA", "ASL", "SLO", "CLC", "ORA", "NOP", "SLO", "NOP", "ORA", "ASL", "SLO",
         
         "JSR", "AND", "STP", "RLA", "BIT", "AND", "ROL", "RLA", "PLP", "AND", "ROL", "ANC", "BIT", "AND", "ROL", "RLA",
         "BMI", "AND", "STP", "RLA", "NOP", "AND", "ROL", "RLA", "SEC", "AND", "NOP", "RLA", "NOP", "AND", "ROL", "RLA",
@@ -36,8 +36,8 @@ CPU::CPU(NES::Memory &memory):
         "BEQ", "SBC", "STP", "ISB", "NOP", "SBC", "INC", "ISB", "SED", "SBC", "NOP", "ISB", "NOP", "SBC", "INC", "ISB"
     },
     opTable {
-        &CPU::BRK, &CPU::ORA, &CPU::STP, &CPU::SLO, &CPU::NOP, &CPU::ORA, &CPU::ASL, &CPU::SLO, &CPU::PHP, &CPU::ORA, &CPU::ASL, &CPU::ANC, &CPU::NOP, &CPU::ORA, &CPU::ASL, &CPU::SLO,
-        &CPU::BPL, &CPU::ORA, &CPU::STP, &CPU::SLO, &CPU::NOP, &CPU::ORA, &CPU::ASL, &CPU::SLO, &CPU::CLC, &CPU::ORA, &CPU::NOP, &CPU::SLO, &CPU::NOP, &CPU::ORA, &CPU::ASL, &CPU::SLO,
+        &CPU::BRK, &CPU::ORA, &CPU::NMI, &CPU::SLO, &CPU::NOP, &CPU::ORA, &CPU::ASL, &CPU::SLO, &CPU::PHP, &CPU::ORA, &CPU::ASL, &CPU::ANC, &CPU::NOP, &CPU::ORA, &CPU::ASL, &CPU::SLO,
+        &CPU::BPL, &CPU::ORA, &CPU::IRQ, &CPU::SLO, &CPU::NOP, &CPU::ORA, &CPU::ASL, &CPU::SLO, &CPU::CLC, &CPU::ORA, &CPU::NOP, &CPU::SLO, &CPU::NOP, &CPU::ORA, &CPU::ASL, &CPU::SLO,
         
         &CPU::JSR, &CPU::AND, &CPU::STP, &CPU::RLA, &CPU::BIT, &CPU::AND, &CPU::ROL, &CPU::RLA, &CPU::PLP, &CPU::AND, &CPU::ROL, &CPU::ANC, &CPU::BIT, &CPU::AND, &CPU::ROL, &CPU::RLA,
         &CPU::BMI, &CPU::AND, &CPU::STP, &CPU::RLA, &CPU::NOP, &CPU::AND, &CPU::ROL, &CPU::RLA, &CPU::SEC, &CPU::AND, &CPU::NOP, &CPU::RLA, &CPU::NOP, &CPU::AND, &CPU::ROL, &CPU::RLA,
@@ -61,8 +61,8 @@ CPU::CPU(NES::Memory &memory):
         &CPU::BEQ, &CPU::SBC, &CPU::STP, &CPU::ISB, &CPU::NOP, &CPU::SBC, &CPU::INC, &CPU::ISB, &CPU::SED, &CPU::SBC, &CPU::NOP, &CPU::ISB, &CPU::NOP, &CPU::SBC, &CPU::INC, &CPU::ISB
     },
     timingTable {
-        7, 6, 2, 8, 3, 3, 5, 5, 3, 2, 2, 2, 4, 4, 6, 6,
-        2, 5, 2, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,
+        7, 6, 7, 8, 3, 3, 5, 5, 3, 2, 2, 2, 4, 4, 6, 6,
+        2, 5, 7, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,
         6, 6, 2, 8, 3, 3, 5, 5, 4, 2, 2, 2, 4, 4, 6, 6,
         2, 5, 2, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,
         6, 6, 2, 8, 3, 3, 5, 5, 3, 2, 2, 2, 3, 4, 6, 6,
@@ -124,6 +124,23 @@ void CPU::executeLoadedInstruction() {
 }
 
 void CPU::loadNextInstruction() {
+    
+    if (doNMI == true) {
+        loadedInstruction = 0x02;
+        stallCycles += timingTable[loadedInstruction];
+        pageBoundryCross = false;
+        doNMI = false;
+        return;
+    }
+
+    if (doIRQ == true) {
+        loadedInstruction = 0x12;
+        pageBoundryCross = false;
+        stallCycles += timingTable[loadedInstruction];
+        doIRQ = false;
+        return;
+    }
+
     //Load next instruction
     loadedInstruction = readProgram();
     stallCycles += timingTable[loadedInstruction];
@@ -231,7 +248,6 @@ void CPU::step() {
     }
     pollInterrurpts();
     executeLoadedInstruction();
-    executeInterrurpts();
     loadNextInstruction();
 }
 
@@ -280,20 +296,9 @@ bool CPU::checkForPageCross(uint16_t address, bool includeCyclePenalty) {
     }
 }
 
-void CPU::executeInterrurpts() {
-    if (doNMI == true) {
-        NMI();
-    }
-    if (doIRQ == true) {
-        IRQ();
-    }
-    doNMI = false;
-    doIRQ = false;
-}
-
 void CPU::pollInterrurpts() {
-    if (loadedInstruction == 0x0) {
-        //BRK instruction should not poll interrupts.
+    if (loadedInstruction == 0x0 || loadedInstruction == 0x2 || loadedInstruction == 0x12) {
+        //Interrupts should not poll interrupts.
         return;
     }
     if (requestNMI == true) {
@@ -330,21 +335,24 @@ uint16_t CPU::pullAddress() {
     return hi << 8 | lo;
 }
 
-void CPU::NMI() {
+void CPU::NMI(uint16_t address) {
     // Non-Maskable Interrupt
     pushAddress(reg.PC);
     push(reg.P.byte & 0xEF);  //Set break flag to false
     reg.PC = memory.get(0xFFFB) << 8 | memory.get(0xFFFA);
-    stallCycles += 7;
 }
 
-void CPU::IRQ() {
+void CPU::IRQ(uint16_t address) {
     // IRQ Interrupt
     pushAddress(reg.PC);
     push(reg.P.byte & 0xEF); //Set break flag to false
     reg.P.status.Interrupt = true;
     reg.PC = memory.get(0xFFFF) << 8 | memory.get(0xFFFE);
-    stallCycles += 7;
+    if (irqHijack) {
+        //NMI jijacked the intterupt
+        reg.PC = memory.get(0xFFFB) << 8 | memory.get(0xFFFA);
+        irqHijack = false;
+    }
 }
 
 void CPU::BRK(uint16_t address) {
