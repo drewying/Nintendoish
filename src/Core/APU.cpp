@@ -93,7 +93,7 @@ void APU::step() {
 }
 
 void APU::stepFrameCounter() {
-    if (processFrameCounterWrite && currentCycle % 2 == 0) {
+    if (processFrameCounterWrite && currentCycle % 2 == 1) {
         processFrameCounterWrite = false;
         currentCycle = 0;
         if ((frameCounter & 0x80) == 0x80) {
