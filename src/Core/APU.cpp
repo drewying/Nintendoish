@@ -84,7 +84,7 @@ void APU::step() {
     if (frameIRQ || dmcIRQ) {
         console.cpu->requestIRQ = true;
     }
-    static bool r = 0;
+    static bool r = 0; 
     static int nextClock = (console.CPU_CLOCK_RATE / console.AUDIO_SAMPLE_RATE);
     if (totalCycles == nextClock) {
         r = !r;
@@ -99,6 +99,8 @@ void APU::stepFrameCounter() {
     if (processFrameCounterWrite && currentCycle % 2 == 0) {
         processFrameCounterWrite = false;
         currentCycle = 0;
+        longSequence = ((frameCounter & 0x80) == 0x80);
+        interruptInhibit = ((frameCounter & 0x40) == 0x40);
         if ((frameCounter & 0x80) == 0x80) {
             clockHalfFrame();
             clockQuarterFrame();
@@ -117,11 +119,8 @@ void APU::stepFrameCounter() {
     }
     dmc.stepTimer();
     triangle.stepTimer();
-    
-    bool sequenceMode = ((frameCounter & 0x80) == 0x80);
-    bool interruptInhibit = ((frameCounter & 0x40) == 0x40);
 
-    if (sequenceMode == false) {
+    if (longSequence == false) {
         //Mode 0x0 4-Step Sequence
         if (currentCycle == 7459) {
             clockQuarterFrame();
