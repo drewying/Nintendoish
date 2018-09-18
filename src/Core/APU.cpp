@@ -45,7 +45,10 @@ void APU::setAPURegister(uint16_t index, uint8_t value) {
 }
 
 void APU::reset() {
-    processControl(0x4015, 0x0);
+    dmcIRQ = false;
+    frameIRQ = false;
+    setAPURegister(0x4015, 0x0);
+    setAPURegister(0x4017, frameCounter);
 }
 
 void APU::processControl(uint16_t index, uint8_t value) {
@@ -93,7 +96,7 @@ void APU::step() {
 }
 
 void APU::stepFrameCounter() {
-    if (processFrameCounterWrite && currentCycle % 2 == 1) {
+    if (processFrameCounterWrite && currentCycle % 2 == 0) {
         processFrameCounterWrite = false;
         currentCycle = 0;
         if ((frameCounter & 0x80) == 0x80) {
@@ -105,7 +108,7 @@ void APU::stepFrameCounter() {
             console.cpu->requestIRQ = false;
         }
     }
-   
+
     if (currentCycle % 2 == 0) {
         pulse1.stepTimer();
         pulse2.stepTimer();

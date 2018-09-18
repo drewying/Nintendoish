@@ -435,6 +435,7 @@ namespace NES {
         uint32_t totalCycles = 0;
         uint32_t currentCycle = 0;
         uint8_t frameCounter = 0x0;
+
         bool processFrameCounterWrite = false;
         bool dmcIRQ = false;
         bool frameIRQ = false;
