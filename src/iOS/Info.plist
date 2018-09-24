@@ -4,17 +4,19 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>NES</string>
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
-			<key>LSHandlerRank</key>
-			<string>Default</string>
-			<key>CFBundleTypeRole</key>
-			<string>Viewer</string>
 			<key>CFBundleTypeIconFiles</key>
 			<array/>
 			<key>CFBundleTypeName</key>
 			<string>NES Rom</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSHandlerRank</key>
+			<string>Default</string>
 			<key>LSItemContentTypes</key>
 			<array>
 				<string>nintendo.nes</string>
@@ -68,11 +70,6 @@
 	<key>UTImportedTypeDeclarations</key>
 	<array>
 		<dict>
-			<key>UTTypeTagSpecification</key>
-			<dict>
-				<key>public.filename-extension</key>
-				<string>nes</string>
-			</dict>
 			<key>UTTypeConformsTo</key>
 			<array>
 				<string>public.data</string>
@@ -84,6 +81,11 @@
 			<array/>
 			<key>UTTypeIdentifier</key>
 			<string>nintendo.nes</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<string>nes</string>
+			</dict>
 		</dict>
 	</array>
 </dict>

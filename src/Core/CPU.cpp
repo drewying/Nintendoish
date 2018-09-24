@@ -306,6 +306,7 @@ void CPU::pollInterrurpts() {
         requestNMI = false;
     } else if (requestIRQ == true && reg.P.status.Interrupt == false) {
         doIRQ = true;
+        requestIRQ = false; //TODO is this right? required for Megaman 3. Docs unclear
     }
 }
 

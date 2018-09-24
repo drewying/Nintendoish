@@ -213,12 +213,12 @@ void NES::PPU::fetchSprites() {
         uint8_t tile2 = console.ppuMemory->get(tileIndex + 8);
         if (sprite->attributes.horizontalFlip == false) {
             tile1 = tile1 >> 4 | tile1 << 4;
-            tile1 = (tile1 >> 2) & 0x33 | (tile1 & 0x33) << 2;
-            tile1 = (tile1 >> 1) & 0x55 | (tile1 & 0x55) << 1;
+            tile1 = ((tile1 >> 2) & 0x33) | (tile1 & 0x33) << 2;
+            tile1 = ((tile1 >> 1) & 0x55) | (tile1 & 0x55) << 1;
 
             tile2 = tile2 >> 4 | tile2 << 4;
-            tile2 = (tile2 >> 2) & 0x33 | (tile2 & 0x33) << 2;
-            tile2 = (tile2 >> 1) & 0x55 | (tile2 & 0x55) << 1;
+            tile2 = ((tile2 >> 2) & 0x33) | (tile2 & 0x33) << 2;
+            tile2 = ((tile2 >> 1) & 0x55) | (tile2 & 0x55) << 1;
         }
 
         sprTiles[i * 2] = tile1;

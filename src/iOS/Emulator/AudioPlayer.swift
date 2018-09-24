@@ -79,7 +79,7 @@ class AudioPlayer {
     }
     
     func stopAudio() {
-        AudioQueueStop(queue!, true)
-        AudioQueueDispose(queue!, true)
+        AudioQueueStop(queue!, false)
+        AudioQueueDispose(queue!, false)
     }
 }
