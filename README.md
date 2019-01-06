@@ -19,9 +19,9 @@ This emulator is very much a continual work in progress.
 
 ### Accuracy
 
-The emulator current can successfully emulate nearly all known [tricky to emulate games](https://wiki.nesdev.com/w/index.php/Tricky-to-emulate_games) including two most notorious emulator accuracy challenges: it can successfully play Battletoads level 2 and 3 as well as render the status bar in Bart vs the Space Mutants correctly.
+The emulator can successfully emulate nearly all known [tricky to emulate games](https://wiki.nesdev.com/w/index.php/Tricky-to-emulate_games) including two notorious emulator accuracy challenges: it can successfully play Battletoads level 2 and 3 as well as render the status bar in Bart vs the Space Mutants correctly.
 
-Although not a good measure of emulator accuracy, by [TAS Video nes emulator accuracy standards](http://tasvideos.org/EmulatorResources/NESAccuracyTests.html) this emulator scores 76% in accuracy, mostly because of the work in progress APU. That number bumps up to 96% when considering only PPU and CPU accuracy.
+Although not a good measure of emulator accuracy, by [TAS Video nes emulator accuracy standards](http://tasvideos.org/EmulatorResources/NESAccuracyTests.html) the emulator scores 76% in accuracy, mostly because of the work in progress APU. That number bumps up to 96% when considering only PPU and CPU accuracy.
 
 ### TODO
 - Add support for save/restore states
