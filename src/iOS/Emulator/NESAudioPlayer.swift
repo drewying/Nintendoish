@@ -10,13 +10,13 @@ import Foundation
 import CoreAudio
 import AudioToolbox
 
-class AudioPlayer {
+class NESAudioPlayer {
     var nes:NESConsole
     var queue:AudioQueueRef? = nil
     var buffers:[AudioQueueBufferRef?] = []
     var bufferLengthInFrames:UInt32 = 1024
     var frameSizeInBytes:UInt32 = UInt32(MemoryLayout<Float32>.size)
-    var audioDispatchQueue = DispatchQueue(label: "audioQueue")
+    var audioDispatchQueue = DispatchQueue(label: "nesAudioQueue")
     var bufferLengthInBytes:UInt32 {
         return bufferLengthInFrames * frameSizeInBytes
     }
@@ -61,6 +61,7 @@ class AudioPlayer {
         
         if (error != 0) {
             print ("Error creating audio queue:\(error)")
+            return
         }
         
         for _ in 0..<3 {
@@ -68,6 +69,7 @@ class AudioPlayer {
             error = AudioQueueAllocateBuffer(queue!, bufferLengthInBytes, &buffer)
             if (error != 0) {
                 print ("Error allocating audio buffer:\(error)")
+                return
             }
             self.prepareBuffer(queue: queue!, buffer: buffer!)
         }
@@ -75,6 +77,7 @@ class AudioPlayer {
         error = AudioQueueStart(queue!, nil)
         if (error != 0) {
             print ("Error starting queue:\(error)")
+            return
         }
     }
     

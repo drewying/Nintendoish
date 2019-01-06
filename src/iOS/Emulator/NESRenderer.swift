@@ -18,13 +18,14 @@ enum RendererError: Error {
     case badVertexDescriptor
 }
 
-class Renderer: NSObject, MTKViewDelegate {
+class NESRenderer: NSObject, MTKViewDelegate {
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
         
     }
     
     public let device: MTLDevice
     public let nes:NESConsole
+    
     let commandQueue: MTLCommandQueue
     var pipelineState: MTLRenderPipelineState!
     var renderTexture: MTLTexture!

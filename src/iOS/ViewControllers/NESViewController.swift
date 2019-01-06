@@ -12,13 +12,14 @@ import MetalKit
 // Our iOS specific view controller
 class NESViewController: UIViewController {
     
-    var renderer: Renderer!
-    var audioPlayer: AudioPlayer!
+    var renderer: NESRenderer!
+    var audioPlayer: NESAudioPlayer!
     var nes: NESConsole = NESConsole()
     var rom:Rom?
     
     @IBOutlet weak var metalView: MTKView!
-    @IBOutlet weak var actionBar: UIView!
+    
+    // MARK: UIViewControlller Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,7 +34,6 @@ class NESViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        
         guard let defaultDevice = MTLCreateSystemDefaultDevice() else {
             print("Metal is not supported")
             return
@@ -42,7 +42,7 @@ class NESViewController: UIViewController {
         metalView.device = defaultDevice
         metalView.backgroundColor = UIColor.black
         
-        guard let newRenderer = Renderer(metalKitView: metalView, nes: nes) else {
+        guard let newRenderer = NESRenderer(metalKitView: metalView, nes: nes) else {
             print("Renderer cannot be initialized")
             return
         }
@@ -51,7 +51,7 @@ class NESViewController: UIViewController {
         renderer.mtkView(metalView, drawableSizeWillChange: metalView.drawableSize)
         metalView.delegate = renderer
         
-        audioPlayer = AudioPlayer(nes: nes)
+        audioPlayer = NESAudioPlayer(nes: nes)
         audioPlayer.startAudio()
     }
     
@@ -60,9 +60,7 @@ class NESViewController: UIViewController {
         audioPlayer.stopAudio()
     }
     
-    @IBAction func exitButton(_ sender: Any) {
-        navigationController?.popViewController(animated: true)
-    }
+    // MARK: IBActions
     
     @IBAction func AButtonTouchDown(_ sender: UIButton) {
         sender.backgroundColor = UIColor(white: 1.0, alpha: 0.5)
@@ -124,19 +122,20 @@ class NESViewController: UIViewController {
         nes.release(.SELECT)
     }
     
-    var center:CGPoint = CGPoint(x:0, y:0);
+    var center:CGPoint = CGPoint(x:0, y:0)
     
     @IBAction func didDragTouchpad(_ sender: UIGestureRecognizer) {
         if let touchView = sender.view {
             
-            let touchPoint = sender.location(in: touchView)
+            let touchSensitivity:CGFloat = 0.2
+            let touchPoint:CGPoint = sender.location(in: touchView)
             let height:CGFloat = touchView.bounds.height
             let width:CGFloat = touchView.bounds.width
             
             if (sender.state == .began) {
                 center = CGPoint(x: width / 2.0, y: height / 2.0)
-                let distanceFromCenter:CGFloat = getDistance(point1: touchPoint, point2: center)
-                if distanceFromCenter < center.x * 0.2 {
+                let distanceFromCenter:CGFloat = touchPoint.distance(fromPoint: center)
+                if distanceFromCenter < center.x * touchSensitivity {
                     center = touchPoint
                 }
             }
@@ -150,38 +149,32 @@ class NESViewController: UIViewController {
             let threshold:CGFloat = center.x
             
             //Release if we've ended the gesture or too close to sender
-            let shouldRelease = sender.state == .ended || getDistance(point1: touchPoint, point2: center) < center.x * 0.2;
+            let shouldRelease = sender.state == .ended || touchPoint.distance(fromPoint: center) < center.x * touchSensitivity
             
-            if (getDistance(point1: topCoordinate, point2: touchPoint) > threshold || shouldRelease) {
+            if topCoordinate.distance(fromPoint: touchPoint) > threshold || shouldRelease {
                 nes.release(.UP)
             } else {
                 nes.press(.UP)
             }
             
-            if (getDistance(point1: bottomCoordinate, point2: touchPoint) > threshold || shouldRelease) {
+            if bottomCoordinate.distance(fromPoint: touchPoint) > threshold || shouldRelease {
                 nes.release(.DOWN)
             } else {
                 nes.press(.DOWN)
                 
             }
             
-            if (getDistance(point1: leftCoordinate, point2: touchPoint) > threshold || shouldRelease) {
+            if leftCoordinate.distance(fromPoint: touchPoint) > threshold || shouldRelease {
                 nes.release(.LEFT)
             } else {
                 nes.press(.LEFT)
             }
             
-            if (getDistance(point1: rightCoordinate, point2: touchPoint) > threshold || shouldRelease) {
+            if rightCoordinate.distance(fromPoint: touchPoint) > threshold || shouldRelease {
                 nes.release(.RIGHT)
             } else {
                 nes.press(.RIGHT)
             }
         }
-    }
-    
-    func getDistance(point1:CGPoint, point2:CGPoint) -> CGFloat {
-        let xDist = (point1.x - point2.x)
-        let yDist = (point1.y - point2.y)
-        return sqrt((xDist * xDist) + (yDist * yDist))
     }
 }

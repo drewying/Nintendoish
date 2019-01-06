@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="IzT-ST-pVc">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="IzT-ST-pVc">
     <device id="retina6_5" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14283.14"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -44,11 +44,18 @@
                                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Xhd-dD-x9l">
-                                            <rect key="frame" x="10" y="148" width="394" height="2"/>
+                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MeB-jn-lq6" userLabel="Top Seperator">
+                                            <rect key="frame" x="0.0" y="0.0" width="414" height="1"/>
                                             <color key="backgroundColor" red="0.43529411759999997" green="0.43529411759999997" blue="0.43529411759999997" alpha="1" colorSpace="calibratedRGB"/>
                                             <constraints>
-                                                <constraint firstAttribute="height" constant="2" id="0pW-Eg-KHn"/>
+                                                <constraint firstAttribute="height" constant="1" id="1LE-qk-rfQ"/>
+                                            </constraints>
+                                        </view>
+                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Xhd-dD-x9l" userLabel="Bottom Seperator">
+                                            <rect key="frame" x="0.0" y="149" width="414" height="1"/>
+                                            <color key="backgroundColor" red="0.43529411759999997" green="0.43529411759999997" blue="0.43529411759999997" alpha="1" colorSpace="calibratedRGB"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="1" id="0pW-Eg-KHn"/>
                                             </constraints>
                                         </view>
                                     </subviews>
@@ -56,12 +63,15 @@
                                     <constraints>
                                         <constraint firstItem="XQC-UT-iPO" firstAttribute="centerY" secondItem="hBQ-96-8dr" secondAttribute="centerY" id="2gq-yk-tbq"/>
                                         <constraint firstAttribute="bottom" secondItem="Xhd-dD-x9l" secondAttribute="bottom" id="44g-Hs-UTv"/>
+                                        <constraint firstAttribute="trailing" secondItem="MeB-jn-lq6" secondAttribute="trailing" id="BPm-lI-6ea"/>
                                         <constraint firstItem="Qaw-jQ-JCG" firstAttribute="top" secondItem="XQC-UT-iPO" secondAttribute="top" id="Le5-gQ-FLS"/>
                                         <constraint firstAttribute="trailing" secondItem="Qaw-jQ-JCG" secondAttribute="trailing" constant="8" id="gUb-og-JwA"/>
-                                        <constraint firstItem="Xhd-dD-x9l" firstAttribute="leading" secondItem="hBQ-96-8dr" secondAttribute="leading" constant="10" id="gdo-lJ-0v1"/>
+                                        <constraint firstItem="Xhd-dD-x9l" firstAttribute="leading" secondItem="hBQ-96-8dr" secondAttribute="leading" id="gdo-lJ-0v1"/>
+                                        <constraint firstItem="MeB-jn-lq6" firstAttribute="top" secondItem="hBQ-96-8dr" secondAttribute="top" id="oq2-cx-HbK"/>
                                         <constraint firstItem="Qaw-jQ-JCG" firstAttribute="leading" secondItem="XQC-UT-iPO" secondAttribute="trailing" constant="20" id="s7I-0w-hQg"/>
+                                        <constraint firstItem="MeB-jn-lq6" firstAttribute="leading" secondItem="hBQ-96-8dr" secondAttribute="leading" id="sig-6J-Ya7"/>
                                         <constraint firstItem="XQC-UT-iPO" firstAttribute="leading" secondItem="hBQ-96-8dr" secondAttribute="leading" constant="20" id="tSg-ab-hab"/>
-                                        <constraint firstAttribute="trailing" secondItem="Xhd-dD-x9l" secondAttribute="trailing" constant="10" id="wz2-dy-ecT"/>
+                                        <constraint firstAttribute="trailing" secondItem="Xhd-dD-x9l" secondAttribute="trailing" id="wz2-dy-ecT"/>
                                     </constraints>
                                 </tableViewCellContentView>
                                 <connections>
@@ -130,7 +140,7 @@
                                 </constraints>
                             </mtkView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0Mf-nG-mbH" userLabel="DPad">
-                                <rect key="frame" x="15" y="432.33333333333337" width="130" height="130"/>
+                                <rect key="frame" x="15" y="432" width="130" height="130"/>
                                 <subviews>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="DPad" translatesAutoresizingMaskIntoConstraints="NO" id="f4z-Cx-YPN" userLabel="DPadImage">
                                         <rect key="frame" x="0.0" y="0.0" width="130" height="130"/>
@@ -152,16 +162,16 @@
                                 </connections>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bcV-fd-rMM" userLabel="ABButtons">
-                                <rect key="frame" x="234" y="443" width="200" height="108.33333333333337"/>
+                                <rect key="frame" x="234" y="443" width="200" height="108"/>
                                 <subviews>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="A-B Buttons" translatesAutoresizingMaskIntoConstraints="NO" id="kcx-Kl-lB5">
-                                        <rect key="frame" x="0.0" y="0.0" width="200" height="108.33333333333333"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="200" height="108"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="200" id="ls6-LW-j04"/>
                                         </constraints>
                                     </imageView>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6kc-e3-0oi" userLabel="AButton">
-                                        <rect key="frame" x="104" y="21.666666666666629" width="66" height="65"/>
+                                        <rect key="frame" x="104" y="21.666666666666629" width="66" height="64.666666666666671"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <state key="normal">
                                             <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -173,7 +183,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tc0-gM-l8a" userLabel="BButton">
-                                        <rect key="frame" x="30" y="21.666666666666629" width="66" height="65"/>
+                                        <rect key="frame" x="30" y="21.666666666666629" width="66" height="64.666666666666671"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <state key="normal">
                                             <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -194,7 +204,7 @@
                                     <constraint firstItem="6kc-e3-0oi" firstAttribute="centerY" secondItem="bcV-fd-rMM" secondAttribute="centerY" id="8jm-Bm-bgH"/>
                                     <constraint firstItem="kcx-Kl-lB5" firstAttribute="top" secondItem="bcV-fd-rMM" secondAttribute="top" id="MDw-Dp-361"/>
                                     <constraint firstItem="tc0-gM-l8a" firstAttribute="centerY" secondItem="bcV-fd-rMM" secondAttribute="centerY" id="YLV-1R-kwl"/>
-                                    <constraint firstAttribute="width" secondItem="bcV-fd-rMM" secondAttribute="height" multiplier="362:196" id="aCY-Kx-M1e"/>
+                                    <constraint firstAttribute="width" secondItem="bcV-fd-rMM" secondAttribute="height" multiplier="362:195" id="aCY-Kx-M1e"/>
                                     <constraint firstItem="6kc-e3-0oi" firstAttribute="width" secondItem="bcV-fd-rMM" secondAttribute="width" multiplier="0.33" id="e0u-u5-tJv"/>
                                     <constraint firstItem="6kc-e3-0oi" firstAttribute="centerX" secondItem="bcV-fd-rMM" secondAttribute="centerX" multiplier="1.37" id="iHW-0B-zwh"/>
                                     <constraint firstItem="tc0-gM-l8a" firstAttribute="width" secondItem="bcV-fd-rMM" secondAttribute="width" multiplier="0.33" id="n9a-8m-jld"/>
@@ -203,13 +213,13 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lBI-Te-Wmr" userLabel="SelectStart">
-                                <rect key="frame" x="147" y="582.33333333333337" width="120" height="80"/>
+                                <rect key="frame" x="147" y="582" width="120" height="80"/>
                                 <subviews>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="SelectStart" translatesAutoresizingMaskIntoConstraints="NO" id="Hp2-C5-uEV">
                                         <rect key="frame" x="0.0" y="0.0" width="120" height="80"/>
                                     </imageView>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cuD-sd-IRL" userLabel="StartButton">
-                                        <rect key="frame" x="60" y="28.333333333333258" width="60" height="44"/>
+                                        <rect key="frame" x="60" y="28.333333333333371" width="60" height="44"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <state key="normal">
                                             <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -221,7 +231,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Rzc-3L-lfZ" userLabel="SelectButton">
-                                        <rect key="frame" x="0.0" y="28.333333333333258" width="60" height="44"/>
+                                        <rect key="frame" x="0.0" y="28.333333333333371" width="60" height="44"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <state key="normal">
                                             <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

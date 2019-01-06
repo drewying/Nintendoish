@@ -23,6 +23,7 @@ class RomBrowserViewController: UITableViewController, UIDocumentPickerDelegate,
     }()
     
     var fetchedResultsController:NSFetchedResultsController<Rom>!
+    
     var hasRoms:Bool {
         get {
             guard let count = fetchedResultsController.sections?[0].numberOfObjects else {
@@ -31,6 +32,15 @@ class RomBrowserViewController: UITableViewController, UIDocumentPickerDelegate,
             return count > 0
         }
     }
+    
+    @IBAction func addButton(_ sender: Any) {
+        let vc:UIDocumentPickerViewController = UIDocumentPickerViewController.init(documentTypes: ["nintendo.nes"], in: .import)
+        vc.delegate = self
+        vc.allowsMultipleSelection = true
+        present(vc, animated: true, completion: nil)
+    }
+    
+    // MARK: UIViewController Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.estimatedRowHeight = 0
@@ -51,33 +61,7 @@ class RomBrowserViewController: UITableViewController, UIDocumentPickerDelegate,
         vc.title = rom.game.strippedName
     }
     
-    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        if (hasRoms == false) {
-            return UISwipeActionsConfiguration(actions: [])
-        }
-        
-        let deleteAction = UIContextualAction.init(style: .destructive, title: "Remove", handler: {_,_,completionHandler in
-            do {
-                self.persistentContainer.viewContext.delete(self.fetchedResultsController.object(at: indexPath))
-                try self.persistentContainer.viewContext.save()
-                completionHandler(true)
-            } catch {
-                completionHandler(false)
-                print("Error deleting object")
-            }
-        })
-        
-        return UISwipeActionsConfiguration(actions: [deleteAction])
-    }
-    
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if (hasRoms == false) {
-            return
-        }
-        tableView.deselectRow(at: indexPath, animated: true)
-        let rom:Rom = self.fetchedResultsController.object(at: indexPath)
-        performSegue(withIdentifier: "playRom", sender: rom)
-    }
+    // MARK: UITableViewDelegete/Datasource methods
 
     override func numberOfSections(in tableView: UITableView) -> Int {
         let count = fetchedResultsController.sections?.count
@@ -107,13 +91,36 @@ class RomBrowserViewController: UITableViewController, UIDocumentPickerDelegate,
 
         return cell
     }
-
-    @IBAction func addButton(_ sender: Any) {
-        let vc:UIDocumentPickerViewController = UIDocumentPickerViewController.init(documentTypes: ["nintendo.nes"], in: .import)
-        vc.delegate = self
-        vc.allowsMultipleSelection = true
-        present(vc, animated: true, completion: nil)
+    
+    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        if (hasRoms == false) {
+            return UISwipeActionsConfiguration(actions: [])
+        }
+        
+        let deleteAction = UIContextualAction.init(style: .destructive, title: "Remove", handler: {_,_,completionHandler in
+            do {
+                self.persistentContainer.viewContext.delete(self.fetchedResultsController.object(at: indexPath))
+                try self.persistentContainer.viewContext.save()
+                completionHandler(true)
+            } catch {
+                completionHandler(false)
+                print("Error deleting object")
+            }
+        })
+        
+        return UISwipeActionsConfiguration(actions: [deleteAction])
     }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if (hasRoms == false) {
+            return
+        }
+        tableView.deselectRow(at: indexPath, animated: true)
+        let rom:Rom = self.fetchedResultsController.object(at: indexPath)
+        performSegue(withIdentifier: "playRom", sender: rom)
+    }
+    
+    // MARK: UIDocumentPickerDelegate methods
     
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         print("Processing \(urls.count) files")
@@ -133,14 +140,12 @@ class RomBrowserViewController: UITableViewController, UIDocumentPickerDelegate,
                 if let game = try context.fetch(fetchRequest).first {
                     if game.rom != nil {
                         // game all ready exists
-                        print("Game all ready exists")
                         failedImports += 1
                     } else {
-                        //Create the rom object
+                        // create the rom object
                         let romObj:Rom = NSEntityDescription.insertNewObject(forEntityName: "Rom", into: context) as! Rom
                         romObj.game = game
                         romObj.romData = romData as NSData
-                        print("Created Rom")
                         
                         // Save
                         try context.save()
@@ -165,6 +170,8 @@ class RomBrowserViewController: UITableViewController, UIDocumentPickerDelegate,
         alertController.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
         self.present(alertController, animated: true, completion: nil)
     }
+    
+    // MARK: NSFetchedResultsControllerDelegate methods
     
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         tableView.beginUpdates()
