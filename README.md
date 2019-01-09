@@ -15,6 +15,7 @@ This emulator is very much a continual work in progress.
 - Support for Mappers 0/1/2/3/4/7/9. This makes it compatible with nearly every licensed USA game released. The only games not currently supported are a [handful of Mapper 5 games](http://bootgod.dyndns.org:7777/search.php?ines=5&group=groupid).
 - Built-in ROM database and ROM manager, complete with artwork and game information
 - Fast render pipeline built in Apple Metal
+- Can import ROMs from any source which supports document browsing, including Dropbox, Google Drive, iCloud, and others.
 - Retro 80's font
 
 ### Accuracy
