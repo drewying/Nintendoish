@@ -6,7 +6,7 @@ This is a cycle accurate, scanline accurate, emulator for the Nintendo Entertain
 
 The custom built emulation core is written in C++. The user interface is written in Swift.
 
-While the emullator's primary user experience is for iOS, a very bare bones port of the emulator is also available for Windows and Mac OSX, created mostly to aide development of the emulation core.
+While the emulator's primary user experience is for iOS, a very bare bones port of the emulator is also available for Windows and Mac OSX, created mostly to aide development of the emulation core.
 
 This emulator is very much a continual work in progress.
 
