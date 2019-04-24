@@ -9,7 +9,7 @@
 import UIKit
 import CoreData
 
-class RomBrowserViewController: UITableViewController, UIDocumentPickerDelegate, NSFetchedResultsControllerDelegate {
+class RomBrowserViewController: UIViewController {
     
     lazy var persistentContainer: GameLibraryPersistentContainer = {
         let container = GameLibraryPersistentContainer(name: "GameLibrary")
@@ -24,11 +24,11 @@ class RomBrowserViewController: UITableViewController, UIDocumentPickerDelegate,
     
     var fetchedResultsController:NSFetchedResultsController<Rom>!
     
+    @IBOutlet weak var tableView: UITableView!
+    
     var hasRoms:Bool {
         get {
-            guard let count = fetchedResultsController.sections?[0].numberOfObjects else {
-                return false
-            }
+            let count = fetchedResultsController.sections?[0].numberOfObjects ?? 0
             return count > 0
         }
     }
@@ -43,56 +43,64 @@ class RomBrowserViewController: UITableViewController, UIDocumentPickerDelegate,
     // MARK: UIViewController Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        tableView.estimatedRowHeight = 0
-        tableView.estimatedSectionFooterHeight = 0
-        tableView.estimatedSectionHeaderHeight = 0
         
         let fr:NSFetchRequest<Rom> = Rom.fetchRequest()
         fr.sortDescriptors = [NSSortDescriptor(keyPath: \Rom.game.name, ascending: true)]
-        fetchedResultsController = NSFetchedResultsController(fetchRequest: fr, managedObjectContext: persistentContainer.viewContext, sectionNameKeyPath: nil, cacheName: nil)
+        fetchedResultsController = NSFetchedResultsController(fetchRequest: fr, managedObjectContext: persistentContainer.viewContext, sectionNameKeyPath: nil, cacheName: "RomCache")
         fetchedResultsController.delegate = self
         try? fetchedResultsController.performFetch()
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let rom:Rom = sender as! Rom
-        let vc:NESViewController = segue.destination as! NESViewController
-        vc.rom = rom
-        vc.title = rom.game.strippedName
+        if let selectedIndexPath = tableView.indexPathForSelectedRow {
+            tableView.deselectRow(at: selectedIndexPath, animated: true)
+            let rom:Rom = self.fetchedResultsController.object(at: selectedIndexPath)
+            let vc:NESViewController = segue.destination as! NESViewController
+            vc.rom = rom
+            vc.title = rom.game.strippedName
+        }
     }
     
-    // MARK: UITableViewDelegete/Datasource methods
-
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        let count = fetchedResultsController.sections?.count
-        return count!
+    func displayMessage(_ message:String) {
+        let alertController = UIAlertController(title: "Notice", message: message, preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
+        self.present(alertController, animated: true, completion: nil)
     }
+}
 
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        guard let count = fetchedResultsController.sections?[section].numberOfObjects else {
-            return 1
-        }
+
+extension RomBrowserViewController: UITableViewDataSource {
+    // MARK: UITableViewDatasource
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return fetchedResultsController.sections?.count ?? 0
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        let count = fetchedResultsController.sections?[section].numberOfObjects ?? 1
         return max(count, 1)
     }
     
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let count = fetchedResultsController.sections?[indexPath.section].numberOfObjects else {
-            return tableView.dequeueReusableCell(withIdentifier: "NoRomCell", for: indexPath)
-        }
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let count = fetchedResultsController.sections?[indexPath.section].numberOfObjects ?? 0
         if (count == 0) {
             return tableView.dequeueReusableCell(withIdentifier: "NoRomCell", for: indexPath)
         }
         
         let rom:Rom = self.fetchedResultsController.object(at: indexPath)
         let cell = tableView.dequeueReusableCell(withIdentifier: "RomCell", for: indexPath) as! RomBrowserTableViewCell
-
+        
         cell.titleLabel.text = rom.game.strippedName
         cell.coverImage.image = UIImage(data: rom.game.boxImage! as Data)
-
+        
         return cell
     }
+}
+
+extension RomBrowserViewController: UITableViewDelegate {
+    // MARK: UITableViewDelegate
     
-    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         if (hasRoms == false) {
             return UISwipeActionsConfiguration(actions: [])
         }
@@ -111,16 +119,16 @@ class RomBrowserViewController: UITableViewController, UIDocumentPickerDelegate,
         return UISwipeActionsConfiguration(actions: [deleteAction])
     }
     
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if (hasRoms == false) {
             return
         }
-        tableView.deselectRow(at: indexPath, animated: true)
-        let rom:Rom = self.fetchedResultsController.object(at: indexPath)
-        performSegue(withIdentifier: "playRom", sender: rom)
+        performSegue(withIdentifier: "playRom", sender: nil)
     }
-    
-    // MARK: UIDocumentPickerDelegate methods
+}
+
+extension RomBrowserViewController: UIDocumentPickerDelegate {
+    // MARK: UIDocumentPickerDelegatex
     
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         print("Processing \(urls.count) files")
@@ -164,17 +172,16 @@ class RomBrowserViewController: UITableViewController, UIDocumentPickerDelegate,
             print("Error creating entity:\(error)")
         }
     }
-    
-    func displayMessage(_ message:String) {
-        let alertController = UIAlertController(title: "Notice", message: message, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
-        self.present(alertController, animated: true, completion: nil)
-    }
-    
-    // MARK: NSFetchedResultsControllerDelegate methods
+}
+
+extension RomBrowserViewController: NSFetchedResultsControllerDelegate {
+    // MARK: NSFetchedResultsControllerDelegate
     
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         tableView.beginUpdates()
+        if hasRoms == false {
+            tableView.deleteRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
+        }
     }
     
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
@@ -186,6 +193,9 @@ class RomBrowserViewController: UITableViewController, UIDocumentPickerDelegate,
     }
     
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        if hasRoms == false {
+            tableView.insertRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
+        }
         tableView.endUpdates()
     }
 }
