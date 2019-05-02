@@ -2,8 +2,8 @@
 //  Data+MD5.swift
 //  Nintendoish
 //
-//  Created by Ingebretsen, Andrew (HBO) on 6/14/18.
-//  Copyright © 2018 Ingebretsen, Andrew (HBO). All rights reserved.
+//  Created by Drew Ingebretsen on 6/14/18.
+//  Copyright © 2018 Drew Ingebretsen. All rights reserved.
 //
 
 import Foundation

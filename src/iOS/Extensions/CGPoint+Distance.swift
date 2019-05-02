@@ -2,8 +2,8 @@
 //  CGPoint+Distance.swift
 //  Nintendoish-iOS
 //
-//  Created by Ingebretsen, Andrew (HBO) on 1/5/19.
-//  Copyright © 2019 Ingebretsen, Andrew (HBO). All rights reserved.
+//  Created by Drew Ingebretsen on 1/5/19.
+//  Copyright © 2019 Drew Ingebretsen. All rights reserved.
 //
 
 import Foundation
