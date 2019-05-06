@@ -12,8 +12,9 @@
 		10164BEC20D6407400F13ED2 /* GameLibrary.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 10164BEB20D6407400F13ED2 /* GameLibrary.sqlite */; };
 		102024A221E18DEB003C6F1A /* CGPoint+Distance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102024A121E18DEB003C6F1A /* CGPoint+Distance.swift */; };
 		1038344F214CCDE800D03A5B /* Rom+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1038344E214CCDE800D03A5B /* Rom+CoreDataProperties.swift */; };
+		1043C9102280DD9F00A324B3 /* RomBrowserTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1043C90F2280DD9E00A324B3 /* RomBrowserTableViewCell.swift */; };
+		1043C9112280E27700A324B3 /* RomBrowserTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1043C90F2280DD9E00A324B3 /* RomBrowserTableViewCell.swift */; };
 		105CD0F120D1021400B67406 /* RomBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 105CD0EF20D1020F00B67406 /* RomBrowserViewController.swift */; };
-		105CD0F720D1059F00B67406 /* RomBrowserTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 105CD0F520D104E300B67406 /* RomBrowserTableViewCell.swift */; };
 		1060B1241F4373F200C9EFF5 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1060B1231F4373F200C9EFF5 /* OpenGL.framework */; };
 		10A78EA1214B92C000F4AA78 /* NESAudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10A78EA0214B92C000F4AA78 /* NESAudioPlayer.swift */; };
 		10D7FF3A209458700070569F /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10D7FF39209458700070569F /* CoreAudio.framework */; };
@@ -47,7 +48,7 @@
 		10FFD5AD20CDF40900910B40 /* CPU.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD58920CDF3D000910B40 /* CPU.cpp */; };
 		10FFD5AE20CDF40900910B40 /* Mapper9.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD58A20CDF3D000910B40 /* Mapper9.cpp */; };
 		10FFD5AF20CDF48200910B40 /* NESConsole.mm in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD55E20CDF3D000910B40 /* NESConsole.mm */; };
-		10FFD5B020CDF48200910B40 /* NESViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD56620CDF3D000910B40 /* NESViewController.swift */; };
+		10FFD5B020CDF48200910B40 /* RomPlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD56620CDF3D000910B40 /* RomPlayerViewController.swift */; };
 		10FFD5B120CDF48200910B40 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD56720CDF3D000910B40 /* AppDelegate.swift */; };
 		10FFD5B220CDF48200910B40 /* NESRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD56920CDF3D000910B40 /* NESRenderer.swift */; };
 		10FFD5B320CDF5C700910B40 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 10FFD56120CDF3D000910B40 /* LaunchScreen.storyboard */; };
@@ -96,8 +97,8 @@
 		10164BEB20D6407400F13ED2 /* GameLibrary.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = GameLibrary.sqlite; sourceTree = "<group>"; };
 		102024A121E18DEB003C6F1A /* CGPoint+Distance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGPoint+Distance.swift"; sourceTree = "<group>"; };
 		1038344E214CCDE800D03A5B /* Rom+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Rom+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		1043C90F2280DD9E00A324B3 /* RomBrowserTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RomBrowserTableViewCell.swift; sourceTree = "<group>"; };
 		105CD0EF20D1020F00B67406 /* RomBrowserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RomBrowserViewController.swift; sourceTree = "<group>"; };
-		105CD0F520D104E300B67406 /* RomBrowserTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RomBrowserTableViewCell.swift; path = src/iOS/RomBrowserTableViewCell.swift; sourceTree = SOURCE_ROOT; };
 		1060B10A1F43737D00C9EFF5 /* Nintendoish-macOS */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Nintendoish-macOS"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1060B1231F4373F200C9EFF5 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		10969B5120C6F91E00895FC1 /* Nintendoish-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Nintendoish-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -124,7 +125,7 @@
 		10FFD56220CDF3D000910B40 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		10FFD56420CDF3D000910B40 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		10FFD56520CDF3D000910B40 /* ShaderTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderTypes.h; sourceTree = "<group>"; };
-		10FFD56620CDF3D000910B40 /* NESViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NESViewController.swift; sourceTree = "<group>"; };
+		10FFD56620CDF3D000910B40 /* RomPlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RomPlayerViewController.swift; sourceTree = "<group>"; };
 		10FFD56720CDF3D000910B40 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		10FFD56820CDF3D000910B40 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		10FFD56920CDF3D000910B40 /* NESRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NESRenderer.swift; sourceTree = "<group>"; };
@@ -232,9 +233,9 @@
 		105CD0F320D1023300B67406 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
-				10FFD56620CDF3D000910B40 /* NESViewController.swift */,
+				10FFD56620CDF3D000910B40 /* RomPlayerViewController.swift */,
 				105CD0EF20D1020F00B67406 /* RomBrowserViewController.swift */,
-				105CD0F520D104E300B67406 /* RomBrowserTableViewCell.swift */,
+				1043C90F2280DD9E00A324B3 /* RomBrowserTableViewCell.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -463,7 +464,7 @@
 					1060B1091F43737D00C9EFF5 = {
 						CreatedOnToolsVersion = 8.3.3;
 						DevelopmentTeam = Q8ZUCZJ2K4;
-						LastSwiftMigration = 1000;
+						LastSwiftMigration = 1020;
 						ProvisioningStyle = Automatic;
 					};
 					10969B5020C6F91E00895FC1 = {
@@ -479,6 +480,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -529,6 +531,7 @@
 				10FFD5F620CDF76100910B40 /* APU.cpp in Sources */,
 				10FFD5F720CDF76100910B40 /* CPU.cpp in Sources */,
 				10FFD5F820CDF76100910B40 /* Mapper9.cpp in Sources */,
+				1043C9102280DD9F00A324B3 /* RomBrowserTableViewCell.swift in Sources */,
 				10FFD5F920CDF76100910B40 /* Display.cpp in Sources */,
 				10FFD5FA20CDF76100910B40 /* main.cpp in Sources */,
 			);
@@ -541,10 +544,11 @@
 				102024A221E18DEB003C6F1A /* CGPoint+Distance.swift in Sources */,
 				10FFD5D420CDF64A00910B40 /* Shaders.metal in Sources */,
 				10FFD5AF20CDF48200910B40 /* NESConsole.mm in Sources */,
-				10FFD5B020CDF48200910B40 /* NESViewController.swift in Sources */,
+				10FFD5B020CDF48200910B40 /* RomPlayerViewController.swift in Sources */,
 				10FFD5B120CDF48200910B40 /* AppDelegate.swift in Sources */,
 				10FFD5B220CDF48200910B40 /* NESRenderer.swift in Sources */,
 				10FFD59E20CDF40900910B40 /* Mapper4.cpp in Sources */,
+				1043C9112280E27700A324B3 /* RomBrowserTableViewCell.swift in Sources */,
 				105CD0F120D1021400B67406 /* RomBrowserViewController.swift in Sources */,
 				10FFD59F20CDF40900910B40 /* Memory.cpp in Sources */,
 				1038344F214CCDE800D03A5B /* Rom+CoreDataProperties.swift in Sources */,
@@ -556,7 +560,6 @@
 				10FFD5A320CDF40900910B40 /* Mapper.cpp in Sources */,
 				1016180C20D61B7B00DDD2B5 /* Data+MD5.swift in Sources */,
 				10FFD5A420CDF40900910B40 /* Mapper2.cpp in Sources */,
-				105CD0F720D1059F00B67406 /* RomBrowserTableViewCell.swift in Sources */,
 				10FFD5A520CDF40900910B40 /* Mapper3.cpp in Sources */,
 				10FFD5A620CDF40900910B40 /* PPUMemory.cpp in Sources */,
 				10FFD5A720CDF40900910B40 /* Cartridge.cpp in Sources */,

@@ -11,6 +11,8 @@ import CoreData
 
 class RomBrowserViewController: UIViewController {
     
+    @IBOutlet weak var tableView: UITableView!
+    
     lazy var persistentContainer: GameLibraryPersistentContainer = {
         let container = GameLibraryPersistentContainer(name: "GameLibrary")
         
@@ -23,8 +25,6 @@ class RomBrowserViewController: UIViewController {
     }()
     
     var fetchedResultsController:NSFetchedResultsController<Rom>!
-    
-    @IBOutlet weak var tableView: UITableView!
     
     var hasRoms:Bool {
         get {
@@ -55,7 +55,7 @@ class RomBrowserViewController: UIViewController {
         if let selectedIndexPath = tableView.indexPathForSelectedRow {
             tableView.deselectRow(at: selectedIndexPath, animated: true)
             let rom:Rom = self.fetchedResultsController.object(at: selectedIndexPath)
-            let vc:NESViewController = segue.destination as! NESViewController
+            let vc:RomPlayerViewController = segue.destination as! RomPlayerViewController
             vc.rom = rom
             vc.title = rom.game.strippedName
         }
@@ -77,13 +77,14 @@ extension RomBrowserViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let count = fetchedResultsController.sections?[section].numberOfObjects ?? 1
-        return max(count, 1)
+        if hasRoms == false {
+            return 1
+        }
+        return fetchedResultsController.sections?[section].numberOfObjects ?? 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let count = fetchedResultsController.sections?[indexPath.section].numberOfObjects ?? 0
-        if (count == 0) {
+        if (hasRoms == false) {
             return tableView.dequeueReusableCell(withIdentifier: "NoRomCell", for: indexPath)
         }
         

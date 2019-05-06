@@ -10,7 +10,7 @@ import UIKit
 import MetalKit
 
 // Our iOS specific view controller
-class NESViewController: UIViewController {
+class RomPlayerViewController: UIViewController {
     
     var renderer: NESRenderer!
     var audioPlayer: NESAudioPlayer!
@@ -19,40 +19,35 @@ class NESViewController: UIViewController {
     
     @IBOutlet weak var metalView: MTKView!
     
+    @IBOutlet weak var aButton:      UIButton!
+    @IBOutlet weak var bButton:      UIButton!
+    @IBOutlet weak var startButton:  UIButton!
+    @IBOutlet weak var selectButton: UIButton!
+    
+    lazy var buttonMap:[UIView: NESButton] = [
+        bButton:      .B,
+        aButton:      .A,
+        startButton:  .START,
+        selectButton: .SELECT
+    ]
+    
     // MARK: UIViewControlller Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        if let romData = rom?.romData {
-            let tempFile = NSTemporaryDirectory() + "/" + ProcessInfo.processInfo.globallyUniqueString + ".nes"
-            
-            try? romData.write(toFile: tempFile, options: .atomic)
-            nes.loadRom(tempFile)
-        }
+        let tempFile = NSTemporaryDirectory() + "/" + ProcessInfo.processInfo.globallyUniqueString + ".nes"
+        try? rom?.romData?.write(toFile: tempFile, options: .atomic)
+        nes.loadRom(tempFile)
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-        guard let defaultDevice = MTLCreateSystemDefaultDevice() else {
-            print("Metal is not supported")
-            return
-        }
-        
-        metalView.device = defaultDevice
-        metalView.backgroundColor = UIColor.black
-        
-        guard let newRenderer = NESRenderer(metalKitView: metalView, nes: nes) else {
+        do {
+            try initializeVideo()
+            initializeAudio()
+        } catch {
             print("Renderer cannot be initialized")
-            return
         }
-
-        renderer = newRenderer
-        renderer.mtkView(metalView, drawableSizeWillChange: metalView.drawableSize)
-        metalView.delegate = renderer
-        
-        audioPlayer = NESAudioPlayer(nes: nes)
-        audioPlayer.startAudio()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -60,66 +55,40 @@ class NESViewController: UIViewController {
         audioPlayer.stopAudio()
     }
     
+    // MARK Intialization
+    
+    func initializeVideo() throws {
+        metalView.device = MTLCreateSystemDefaultDevice()
+        metalView.backgroundColor = UIColor.black
+        
+        renderer = NESRenderer(metalKitView: metalView, nes: nes)
+        renderer.mtkView(metalView, drawableSizeWillChange: metalView.drawableSize)
+        metalView.delegate = renderer
+    }
+    
+    func initializeAudio() {
+        audioPlayer = NESAudioPlayer(nes: nes)
+        audioPlayer.startAudio()
+    }
+    
     // MARK: IBActions
     
-    @IBAction func AButtonTouchDown(_ sender: UIButton) {
+    @IBAction func buttonTouchDown(_ sender: UIButton) {
         sender.backgroundColor = UIColor(white: 1.0, alpha: 0.5)
-        nes.press(.A)
+        let button:NESButton = buttonMap[sender]!
+        nes.press(button)
     }
     
-    @IBAction func AButtonTouchUpInside(_ sender: UIButton) {
+    @IBAction func buttonTouchUpInside(_ sender: UIButton) {
         sender.backgroundColor = UIColor(white: 1.0, alpha: 0.0)
-        nes.release(.A)
+        let button:NESButton = buttonMap[sender]!
+        nes.release(button)
     }
     
-    @IBAction func AButtonTouchUpOutside(_ sender: UIButton) {
+    @IBAction func buttonTouchUpOutside(_ sender: UIButton) {
         sender.backgroundColor = UIColor(white: 1.0, alpha: 0.0)
-        nes.release(.A)
-    }
-    
-    @IBAction func BButtonTouchDown(_ sender: UIButton) {
-        sender.backgroundColor = UIColor(white: 1.0, alpha: 0.5)
-        nes.press(.B)
-    }
-    
-    @IBAction func BButtonTouchUpInside(_ sender: UIButton) {
-        sender.backgroundColor = UIColor(white: 1.0, alpha: 0.0)
-        nes.release(.B)
-    }
-    
-    @IBAction func BButtonTouchUpOutside(_ sender: UIButton) {
-        sender.backgroundColor = UIColor(white: 1.0, alpha: 0.0)
-        nes.release(.B)
-    }
-    
-    @IBAction func startButtonTouchDown(_ sender: UIButton) {
-        sender.backgroundColor = UIColor(white: 1.0, alpha: 0.5)
-        nes.press(.START)
-    }
-    
-    @IBAction func startButtonTouchUpInside(_ sender: UIButton) {
-        sender.backgroundColor = UIColor(white: 1.0, alpha: 0.0)
-        nes.release(.START)
-    }
-    
-    @IBAction func startButtonTouchUpOutside(_ sender: UIButton) {
-        sender.backgroundColor = UIColor(white: 1.0, alpha: 0.0)
-        nes.release(.START)
-    }
-    
-    @IBAction func selectButtonTouchDown(_ sender: UIButton) {
-        sender.backgroundColor = UIColor(white: 1.0, alpha: 0.5)
-        nes.press(.SELECT)
-    }
-    
-    @IBAction func selectButtonTouchUpInside(_ sender: UIButton) {
-        sender.backgroundColor = UIColor(white: 1.0, alpha: 0.0)
-        nes.release(.SELECT)
-    }
-    
-    @IBAction func selectButtonTouchUpOutside(_ sender: UIButton) {
-        sender.backgroundColor = UIColor(white: 1.0, alpha: 0.0)
-        nes.release(.SELECT)
+        let button:NESButton = buttonMap[sender]!
+        nes.release(button)
     }
     
     var center:CGPoint = CGPoint(x:0, y:0)

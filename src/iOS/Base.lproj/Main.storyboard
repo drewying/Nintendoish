@@ -144,7 +144,7 @@
         <!--Title-->
         <scene sceneID="2SY-sh-bfm">
             <objects>
-                <viewController id="nB0-vR-1ee" customClass="NESViewController" customModule="Nintendoish_iOS" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="nB0-vR-1ee" customClass="RomPlayerViewController" customModule="Nintendoish_iOS" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="59I-G1-Ofv">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="808"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -193,9 +193,9 @@
                                             <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         </state>
                                         <connections>
-                                            <action selector="AButtonTouchDown:" destination="nB0-vR-1ee" eventType="touchDown" id="nat-LV-jck"/>
-                                            <action selector="AButtonTouchUpInside:" destination="nB0-vR-1ee" eventType="touchUpInside" id="iSa-xq-ZfF"/>
-                                            <action selector="AButtonTouchUpOutside:" destination="nB0-vR-1ee" eventType="touchUpOutside" id="aMt-AY-z6T"/>
+                                            <action selector="buttonTouchDown:" destination="nB0-vR-1ee" eventType="touchDown" id="fHZ-fE-aRl"/>
+                                            <action selector="buttonTouchUpInside:" destination="nB0-vR-1ee" eventType="touchUpInside" id="r8R-C3-LQx"/>
+                                            <action selector="buttonTouchUpOutside:" destination="nB0-vR-1ee" eventType="touchUpOutside" id="Nsh-BV-ydz"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tc0-gM-l8a" userLabel="BButton">
@@ -205,9 +205,9 @@
                                             <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         </state>
                                         <connections>
-                                            <action selector="BButtonTouchDown:" destination="nB0-vR-1ee" eventType="touchDown" id="Pka-De-5rR"/>
-                                            <action selector="BButtonTouchUpInside:" destination="nB0-vR-1ee" eventType="touchUpInside" id="qc5-ld-8qR"/>
-                                            <action selector="BButtonTouchUpOutside:" destination="nB0-vR-1ee" eventType="touchUpOutside" id="7AB-ph-MpZ"/>
+                                            <action selector="buttonTouchDown:" destination="nB0-vR-1ee" eventType="touchDown" id="9HW-sN-FHj"/>
+                                            <action selector="buttonTouchUpInside:" destination="nB0-vR-1ee" eventType="touchUpInside" id="O5w-ca-Ryj"/>
+                                            <action selector="buttonTouchUpOutside:" destination="nB0-vR-1ee" eventType="touchUpOutside" id="TQg-As-6dK"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -241,9 +241,9 @@
                                             <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         </state>
                                         <connections>
-                                            <action selector="startButtonTouchDown:" destination="nB0-vR-1ee" eventType="touchDown" id="EQ2-YA-q4S"/>
-                                            <action selector="startButtonTouchUpInside:" destination="nB0-vR-1ee" eventType="touchUpInside" id="HYA-4H-zHg"/>
-                                            <action selector="startButtonTouchUpOutside:" destination="nB0-vR-1ee" eventType="touchUpOutside" id="iU2-0B-lky"/>
+                                            <action selector="buttonTouchDown:" destination="nB0-vR-1ee" eventType="touchDown" id="Vcr-hf-NzT"/>
+                                            <action selector="buttonTouchUpInside:" destination="nB0-vR-1ee" eventType="touchUpInside" id="uW9-Gg-hzi"/>
+                                            <action selector="buttonTouchUpOutside:" destination="nB0-vR-1ee" eventType="touchUpOutside" id="L96-Ic-Vwg"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Rzc-3L-lfZ" userLabel="SelectButton">
@@ -253,9 +253,9 @@
                                             <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         </state>
                                         <connections>
-                                            <action selector="selectButtonTouchDown:" destination="nB0-vR-1ee" eventType="touchDown" id="BAr-FJ-fKZ"/>
-                                            <action selector="selectButtonTouchUpInside:" destination="nB0-vR-1ee" eventType="touchUpInside" id="cyp-Uo-edh"/>
-                                            <action selector="selectButtonTouchUpOutside:" destination="nB0-vR-1ee" eventType="touchUpOutside" id="ICz-kz-Qzk"/>
+                                            <action selector="buttonTouchDown:" destination="nB0-vR-1ee" eventType="touchDown" id="WrZ-E9-zbC"/>
+                                            <action selector="buttonTouchUpInside:" destination="nB0-vR-1ee" eventType="touchUpInside" id="Byy-pp-nq3"/>
+                                            <action selector="buttonTouchUpOutside:" destination="nB0-vR-1ee" eventType="touchUpOutside" id="llk-Vx-PvW"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -335,7 +335,11 @@
                     </view>
                     <navigationItem key="navigationItem" title="Title" id="LLM-cG-RmS"/>
                     <connections>
+                        <outlet property="aButton" destination="6kc-e3-0oi" id="grP-YD-Kqd"/>
+                        <outlet property="bButton" destination="tc0-gM-l8a" id="ai5-TN-E9e"/>
                         <outlet property="metalView" destination="D1f-oJ-9mx" id="DXG-Ws-lqn"/>
+                        <outlet property="selectButton" destination="Rzc-3L-lfZ" id="5CS-eB-3x5"/>
+                        <outlet property="startButton" destination="cuD-sd-IRL" id="YdK-f4-83R"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fLR-5S-OVW" userLabel="First Responder" sceneMemberID="firstResponder"/>
