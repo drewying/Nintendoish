@@ -8,7 +8,6 @@ namespace NES {
     class Console;
     class APU {
     public:
-
         struct Divider {
             uint16_t period = 0;
             uint16_t counter = 0;

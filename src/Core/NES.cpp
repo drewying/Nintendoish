@@ -21,7 +21,14 @@ NES::Console::Console() {
     controllerOne = new Controller();
 }
 
-NES::Console::~Console() {}
+NES::Console::~Console() {
+    delete apu;
+    delete memory;
+    delete cpu;
+    delete ppu;
+    delete ppuMemory;
+    delete controllerOne;
+}
 
 int NES::Console::emulateCycle() {
     apu->step();

@@ -50,8 +50,7 @@ class RomPlayerViewController: UIViewController {
         }
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
+    deinit {
         audioPlayer.stopAudio()
     }
     
@@ -94,56 +93,55 @@ class RomPlayerViewController: UIViewController {
     var center:CGPoint = CGPoint(x:0, y:0)
     
     @IBAction func didDragTouchpad(_ sender: UIGestureRecognizer) {
-        if let touchView = sender.view {
+        guard let touchView = sender.view else { return }
             
-            let touchSensitivity:CGFloat = 0.2
-            let touchPoint:CGPoint = sender.location(in: touchView)
-            let height:CGFloat = touchView.bounds.height
-            let width:CGFloat = touchView.bounds.width
-            
-            if (sender.state == .began) {
-                center = CGPoint(x: width / 2.0, y: height / 2.0)
-                let distanceFromCenter:CGFloat = touchPoint.distance(fromPoint: center)
-                if distanceFromCenter < center.x * touchSensitivity {
-                    center = touchPoint
-                }
+        let touchSensitivity:CGFloat = 0.2
+        let touchPoint:CGPoint = sender.location(in: touchView)
+        let height:CGFloat = touchView.bounds.height
+        let width:CGFloat = touchView.bounds.width
+        
+        if (sender.state == .began) {
+            center = CGPoint(x: width / 2.0, y: height / 2.0)
+            let distanceFromCenter:CGFloat = touchPoint.distance(fromPoint: center)
+            if distanceFromCenter < center.x * touchSensitivity {
+                center = touchPoint
             }
-            
+        }
+        
 
-            let topCoordinate = CGPoint(x: center.x, y: 0)
-            let bottomCoordinate = CGPoint(x: center.x, y: height)
-            let leftCoordinate = CGPoint(x: 0, y: center.y)
-            let rightCoordinate = CGPoint(x: width, y: center.y)
+        let topCoordinate = CGPoint(x: center.x, y: 0)
+        let bottomCoordinate = CGPoint(x: center.x, y: height)
+        let leftCoordinate = CGPoint(x: 0, y: center.y)
+        let rightCoordinate = CGPoint(x: width, y: center.y)
+        
+        let threshold:CGFloat = center.x
+        
+        //Release if we've ended the gesture or too close to sender
+        let shouldRelease = sender.state == .ended || touchPoint.distance(fromPoint: center) < center.x * touchSensitivity
+        
+        if topCoordinate.distance(fromPoint: touchPoint) > threshold || shouldRelease {
+            nes.release(.UP)
+        } else {
+            nes.press(.UP)
+        }
+        
+        if bottomCoordinate.distance(fromPoint: touchPoint) > threshold || shouldRelease {
+            nes.release(.DOWN)
+        } else {
+            nes.press(.DOWN)
             
-            let threshold:CGFloat = center.x
-            
-            //Release if we've ended the gesture or too close to sender
-            let shouldRelease = sender.state == .ended || touchPoint.distance(fromPoint: center) < center.x * touchSensitivity
-            
-            if topCoordinate.distance(fromPoint: touchPoint) > threshold || shouldRelease {
-                nes.release(.UP)
-            } else {
-                nes.press(.UP)
-            }
-            
-            if bottomCoordinate.distance(fromPoint: touchPoint) > threshold || shouldRelease {
-                nes.release(.DOWN)
-            } else {
-                nes.press(.DOWN)
-                
-            }
-            
-            if leftCoordinate.distance(fromPoint: touchPoint) > threshold || shouldRelease {
-                nes.release(.LEFT)
-            } else {
-                nes.press(.LEFT)
-            }
-            
-            if rightCoordinate.distance(fromPoint: touchPoint) > threshold || shouldRelease {
-                nes.release(.RIGHT)
-            } else {
-                nes.press(.RIGHT)
-            }
+        }
+        
+        if leftCoordinate.distance(fromPoint: touchPoint) > threshold || shouldRelease {
+            nes.release(.LEFT)
+        } else {
+            nes.press(.LEFT)
+        }
+        
+        if rightCoordinate.distance(fromPoint: touchPoint) > threshold || shouldRelease {
+            nes.release(.RIGHT)
+        } else {
+            nes.press(.RIGHT)
         }
     }
 }

@@ -26,6 +26,10 @@
     return self;
 }
 
+-(void) dealloc {
+    delete self.nes;
+}
+
 -(void)initializeConsole {
     self.nes = new NES::Console;
 }

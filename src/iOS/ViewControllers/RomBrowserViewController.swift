@@ -52,13 +52,13 @@ class RomBrowserViewController: UIViewController {
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let selectedIndexPath = tableView.indexPathForSelectedRow {
-            tableView.deselectRow(at: selectedIndexPath, animated: true)
-            let rom:Rom = self.fetchedResultsController.object(at: selectedIndexPath)
-            let vc:RomPlayerViewController = segue.destination as! RomPlayerViewController
-            vc.rom = rom
-            vc.title = rom.game.strippedName
-        }
+        guard let selectedIndexPath = tableView.indexPathForSelectedRow else { return }
+        
+        tableView.deselectRow(at: selectedIndexPath, animated: true)
+        let rom:Rom = self.fetchedResultsController.object(at: selectedIndexPath)
+        let vc:RomPlayerViewController = segue.destination as! RomPlayerViewController
+        vc.rom = rom
+        vc.title = rom.game.strippedName
     }
     
     func displayMessage(_ message:String) {
@@ -130,7 +130,7 @@ extension RomBrowserViewController: UITableViewDelegate {
 
 extension RomBrowserViewController: UIDocumentPickerDelegate {
     // MARK: UIDocumentPickerDelegatex
-    
+        
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         print("Processing \(urls.count) files")
         var successfulImports = 0
@@ -146,25 +146,28 @@ extension RomBrowserViewController: UIDocumentPickerDelegate {
                 let fetchRequest:NSFetchRequest<Game> = Game.fetchRequest()
                 fetchRequest.predicate = NSPredicate(format: "md5 = %@", md5)
                 fetchRequest.fetchLimit = 1
-                if let game = try context.fetch(fetchRequest).first {
-                    if game.rom != nil {
-                        // game all ready exists
-                        failedImports += 1
-                    } else {
-                        // create the rom object
-                        let romObj:Rom = NSEntityDescription.insertNewObject(forEntityName: "Rom", into: context) as! Rom
-                        romObj.game = game
-                        romObj.romData = romData as NSData
-                        
-                        // Save
-                        try context.save()
-                        successfulImports += 1
-                    }
-                } else {
+                
+                guard let game = try context.fetch(fetchRequest).first else {
                     //Didn't find the game
                     print("Couldn't find md5 has that matches:" + md5)
                     failedImports += 1
+                    continue
                 }
+                
+                if game.rom != nil {
+                    // game all ready exists
+                    failedImports += 1
+                } else {
+                    // create the rom object
+                    let romObj:Rom = NSEntityDescription.insertNewObject(forEntityName: "Rom", into: context) as! Rom
+                    romObj.game = game
+                    romObj.romData = romData as NSData
+                    
+                    // Save
+                    try context.save()
+                    successfulImports += 1
+                }
+                
             }
             if failedImports != 0 {
                 self.displayMessage("Failed to import \(failedImports) games.\n\n Either the rom all ready exists in your library, or you tried to import a game that is unrecognized in our rom database.")

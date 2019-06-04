@@ -288,7 +288,7 @@ int main(int argc, char** argv) {
     //* nes->loadProgram("roms/test/apu/blargg_apu_2005.07.30/05.len_timing_mode0.nes");
     //* nes->loadProgram("roms/test/apu/blargg_apu_2005.07.30/06.len_timing_mode1.nes");
     //* nes->loadProgram("roms/test/apu/blargg_apu_2005.07.30/07.irq_flag_timing.nes");
-    nes->loadProgram("roms/test/apu/blargg_apu_2005.07.30/08.irq_timing.nes");
+    // nes->loadProgram("roms/test/apu/blargg_apu_2005.07.30/08.irq_timing.nes");
     //* nes->loadProgram("roms/test/apu/blargg_apu_2005.07.30/09.reset_timing.nes");
     //nes->loadProgram("roms/test/apu/blargg_apu_2005.07.30/10.len_halt_timing.nes");
     //nes->loadProgram("roms/test/apu/blargg_apu_2005.07.30/11.len_reload_timing.nes");
@@ -320,6 +320,7 @@ int main(int argc, char** argv) {
     //nes->loadProgram("roms/test/apu/apu_test/rom_singles/8-dmc_rates.nes");
 
     //Games
+    //nes->loadProgram("roms/RBIBaseball.nes");
     //nes->loadProgram("../roms/PunchOut.nes");
     //nes->loadProgram("roms/games/Simpsons.nes");
     //nes->loadProgram("roms/games/Battletoads.nes");
@@ -329,8 +330,8 @@ int main(int argc, char** argv) {
     //nes->loadProgram("../roms/IceClimber.nes");
     //nes->loadProgram("../roms/Megaman3.nes");
     //nes->loadProgram("roms/games/Castlevania2.nes");
-    //nes->loadProgram("roms/games/Zelda.nes");
-    //nes->loadProgram("../roms/SuperMario3.nes");
+    nes->loadProgram("../roms/Zelda.nes");
+    // nes->loadProgram("roms/SuperMario3.nes");
     //nes->loadProgram("roms/games/Mario.nes");
     //nes->loadProgram("../roms/Excitebike.nes");
     //nes->loadProgram("../roms/DonkeyKong.nes");

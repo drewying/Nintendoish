@@ -12,7 +12,6 @@
 		10164BEC20D6407400F13ED2 /* GameLibrary.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 10164BEB20D6407400F13ED2 /* GameLibrary.sqlite */; };
 		102024A221E18DEB003C6F1A /* CGPoint+Distance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102024A121E18DEB003C6F1A /* CGPoint+Distance.swift */; };
 		1038344F214CCDE800D03A5B /* Rom+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1038344E214CCDE800D03A5B /* Rom+CoreDataProperties.swift */; };
-		1043C9102280DD9F00A324B3 /* RomBrowserTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1043C90F2280DD9E00A324B3 /* RomBrowserTableViewCell.swift */; };
 		1043C9112280E27700A324B3 /* RomBrowserTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1043C90F2280DD9E00A324B3 /* RomBrowserTableViewCell.swift */; };
 		105CD0F120D1021400B67406 /* RomBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 105CD0EF20D1020F00B67406 /* RomBrowserViewController.swift */; };
 		1060B1241F4373F200C9EFF5 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1060B1231F4373F200C9EFF5 /* OpenGL.framework */; };
@@ -531,7 +530,6 @@
 				10FFD5F620CDF76100910B40 /* APU.cpp in Sources */,
 				10FFD5F720CDF76100910B40 /* CPU.cpp in Sources */,
 				10FFD5F820CDF76100910B40 /* Mapper9.cpp in Sources */,
-				1043C9102280DD9F00A324B3 /* RomBrowserTableViewCell.swift in Sources */,
 				10FFD5F920CDF76100910B40 /* Display.cpp in Sources */,
 				10FFD5FA20CDF76100910B40 /* main.cpp in Sources */,
 			);
