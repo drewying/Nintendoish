@@ -421,7 +421,9 @@ namespace NES {
             }
         };
 
-        APU(Console &console) : console(console) { };
+        APU(Console &console) : console(console) {
+            nextClock = (console.CPU_CLOCK_RATE / console.AUDIO_SAMPLE_RATE);
+        };
 
         Console &console;
         
@@ -431,10 +433,11 @@ namespace NES {
         Noise noise = Noise();
         DMC dmc = DMC(console);
 
-        uint32_t totalCycles = 0;
-        uint32_t currentCycle = 0;
+        uint32_t totalCycles = 0x0;
+        uint32_t currentCycle = 0x0;
         uint8_t frameCounter = 0x0;
-
+        uint32_t nextClock = 0x0;
+        
         bool interruptInhibit = false;
         bool longSequence = false;
         bool processFrameCounterWrite = false;

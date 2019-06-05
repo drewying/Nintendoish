@@ -84,8 +84,7 @@ void APU::step() {
     if (frameIRQ || dmcIRQ) {
         console.cpu->requestIRQ = true;
     }
-    static bool r = 0; 
-    static int nextClock = (console.CPU_CLOCK_RATE / console.AUDIO_SAMPLE_RATE);
+    static bool r = 0;
     if (totalCycles == nextClock) {
         r = !r;
         nextClock += (console.CPU_CLOCK_RATE / console.AUDIO_SAMPLE_RATE) + r;
