@@ -15,7 +15,7 @@ class RomPlayerViewController: UIViewController {
     var renderer: NESRenderer!
     var audioPlayer: NESAudioPlayer!
     var nes: NESConsole = NESConsole()
-    var rom:Rom?
+    var rom:CoreDataRom?
     
     @IBOutlet weak var metalView: MTKView!
     
@@ -36,7 +36,7 @@ class RomPlayerViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         let tempFile = NSTemporaryDirectory() + "/" + ProcessInfo.processInfo.globallyUniqueString + ".nes"
-        try? rom?.romData?.write(toFile: tempFile, options: .atomic)
+        try? rom?.romData.write(toFile: tempFile, options: .atomic)
         nes.loadRom(tempFile)
     }
     

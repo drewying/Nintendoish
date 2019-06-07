@@ -24,7 +24,7 @@ class RomBrowserViewController: UIViewController {
         return container
     }()
     
-    var fetchedResultsController:NSFetchedResultsController<Rom>!
+    var fetchedResultsController:NSFetchedResultsController<CoreDataRom>!
     
     var hasRoms:Bool {
         get {
@@ -44,8 +44,8 @@ class RomBrowserViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let fr:NSFetchRequest<Rom> = Rom.fetchRequest()
-        fr.sortDescriptors = [NSSortDescriptor(keyPath: \Rom.game.name, ascending: true)]
+        let fr:NSFetchRequest<CoreDataRom> = CoreDataRom.fetchRequest()
+        fr.sortDescriptors = [NSSortDescriptor(keyPath: \CoreDataRom.game.name, ascending: true)]
         fetchedResultsController = NSFetchedResultsController(fetchRequest: fr, managedObjectContext: persistentContainer.viewContext, sectionNameKeyPath: nil, cacheName: "RomCache")
         fetchedResultsController.delegate = self
         try? fetchedResultsController.performFetch()
@@ -55,10 +55,10 @@ class RomBrowserViewController: UIViewController {
         guard let selectedIndexPath = tableView.indexPathForSelectedRow else { return }
         
         tableView.deselectRow(at: selectedIndexPath, animated: true)
-        let rom:Rom = self.fetchedResultsController.object(at: selectedIndexPath)
+        let rom:CoreDataRom = self.fetchedResultsController.object(at: selectedIndexPath)
         let vc:RomPlayerViewController = segue.destination as! RomPlayerViewController
         vc.rom = rom
-        vc.title = rom.game.strippedName
+        vc.title = rom.game.name
     }
     
     func displayMessage(_ message:String) {
@@ -88,11 +88,11 @@ extension RomBrowserViewController: UITableViewDataSource {
             return tableView.dequeueReusableCell(withIdentifier: "NoRomCell", for: indexPath)
         }
         
-        let rom:Rom = self.fetchedResultsController.object(at: indexPath)
+        let rom:CoreDataRom = self.fetchedResultsController.object(at: indexPath)
         let cell = tableView.dequeueReusableCell(withIdentifier: "RomCell", for: indexPath) as! RomBrowserTableViewCell
         
-        cell.titleLabel.text = rom.game.strippedName
-        cell.coverImage.image = UIImage(data: rom.game.boxImage! as Data)
+        cell.titleLabel.text = rom.game.name
+        cell.coverImage.image = UIImage(data: rom.game.boxImage as Data)
         
         return cell
     }
@@ -143,7 +143,7 @@ extension RomBrowserViewController: UIDocumentPickerDelegate {
                 let md5:String = romData.advanced(by: 16).MD5().uppercased()
                 
                 //Find game
-                let fetchRequest:NSFetchRequest<Game> = Game.fetchRequest()
+                let fetchRequest:NSFetchRequest<CoreDataGame> = CoreDataGame.fetchRequest()
                 fetchRequest.predicate = NSPredicate(format: "md5 = %@", md5)
                 fetchRequest.fetchLimit = 1
                 
@@ -159,9 +159,9 @@ extension RomBrowserViewController: UIDocumentPickerDelegate {
                     failedImports += 1
                 } else {
                     // create the rom object
-                    let romObj:Rom = NSEntityDescription.insertNewObject(forEntityName: "Rom", into: context) as! Rom
-                    romObj.game = game
-                    romObj.romData = romData as NSData
+                    let romObj:CoreDataRom = NSEntityDescription.insertNewObject(forEntityName: "Rom", into: context) as! CoreDataRom
+                    // romObj.game = game
+                    // romObj.romData = romData as NSData
                     
                     // Save
                     try context.save()

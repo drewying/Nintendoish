@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="14838.16" systemVersion="18E226" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="NO" userDefinedModelVersionIdentifier="">
+    <entity name="Game" representedClassName="CoreDataGame" syncable="YES">
+        <attribute name="boxImage" attributeType="Binary"/>
+        <attribute name="md5" attributeType="String"/>
+        <attribute name="name" attributeType="String"/>
+        <attribute name="screenImage" attributeType="Binary"/>
+        <attribute name="titleImage" attributeType="Binary"/>
+    </entity>
+    <entity name="Rom" representedClassName="CoreDataRom" syncable="YES">
+        <attribute name="romData" attributeType="Binary"/>
+        <relationship name="game" maxCount="1" deletionRule="Nullify" destinationEntity="Game"/>
+    </entity>
+    <elements>
+        <element name="Game" positionX="-54" positionY="9" width="128" height="118"/>
+        <element name="Rom" positionX="-63" positionY="-18" width="128" height="73"/>
+    </elements>
+</model>
