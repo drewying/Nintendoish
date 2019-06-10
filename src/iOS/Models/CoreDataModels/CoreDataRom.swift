@@ -17,6 +17,6 @@ public class CoreDataRom: NSManagedObject {
         return NSFetchRequest<CoreDataRom>(entityName: "Rom")
     }
     
-    @NSManaged var romData: NSData
-    @NSManaged var game: CoreDataGame
+    @NSManaged public var romData: NSData
+    @NSManaged public var game: CoreDataGame
 }

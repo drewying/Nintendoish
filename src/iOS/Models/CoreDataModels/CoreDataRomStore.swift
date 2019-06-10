@@ -23,11 +23,12 @@ class CoreDataRomStore: NSObject, RomStore, NSFetchedResultsControllerDelegate {
         return fetchedResultsController
     }()
     
-    lazy var roms:[RomViewModel] = {
-        return fetchedResultsController.fetchedObjects?.compactMap { (coreDataRom:CoreDataRom) in
-            return RomViewModel(id: coreDataRom.game.md5, romData: coreDataRom.romData, name: coreDataRom.game.name, image: UIImage(data: coreDataRom.game.boxImage as Data)!)
-            } ?? []
-    }()
+    var roms:[RomViewModel] = []
+    
+    override init() {
+        super.init()
+        fetchRoms()
+    }
     
     lazy var persistentContainer: GameLibraryPersistentContainer = {
         let container = GameLibraryPersistentContainer(name: "GameLibrary")
@@ -62,8 +63,25 @@ class CoreDataRomStore: NSObject, RomStore, NSFetchedResultsControllerDelegate {
         let romObj:CoreDataRom = NSEntityDescription.insertNewObject(forEntityName: "Rom", into: context) as! CoreDataRom
         romObj.game = game
         romObj.romData = romData as NSData
+        game.rom = romObj
         
         // Save
-        try? context.save()
+        do {
+            try context.save()
+        } catch let error as NSError {
+            print("Error saving \(error.localizedDescription)")
+        }
+        
+    }
+    
+    func fetchRoms() {
+        roms = fetchedResultsController.fetchedObjects?.compactMap { (coreDataRom:CoreDataRom) in
+            return RomViewModel(id: coreDataRom.game.md5, romData: coreDataRom.romData, name: coreDataRom.game.name, image: UIImage(data: coreDataRom.game.boxImage as Data)!)
+            } ?? []
+    }
+    
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        fetchRoms()
+        didChange.send(self)
     }
 }

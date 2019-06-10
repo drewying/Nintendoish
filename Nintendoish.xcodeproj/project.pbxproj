@@ -17,6 +17,8 @@
 		10164BEC20D6407400F13ED2 /* GameLibrary.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 10164BEB20D6407400F13ED2 /* GameLibrary.sqlite */; };
 		102024A221E18DEB003C6F1A /* CGPoint+Distance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102024A121E18DEB003C6F1A /* CGPoint+Distance.swift */; };
 		1037EF1322AC3FA00010FA1B /* RomDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1037EF1222AC3FA00010FA1B /* RomDetailView.swift */; };
+		1049288222AF20C7009A34FC /* NESEmulatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1049288122AF20C7009A34FC /* NESEmulatorView.swift */; };
+		1049288422AF20FC009A34FC /* ControllerState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1049288322AF20FC009A34FC /* ControllerState.swift */; };
 		1060B1241F4373F200C9EFF5 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1060B1231F4373F200C9EFF5 /* OpenGL.framework */; };
 		10A78EA1214B92C000F4AA78 /* NESAudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10A78EA0214B92C000F4AA78 /* NESAudioPlayer.swift */; };
 		10D042C422A9ADB600C8C4EB /* ExplicitRomStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10D042C222A9ADB300C8C4EB /* ExplicitRomStore.swift */; };
@@ -104,6 +106,8 @@
 		10164BEB20D6407400F13ED2 /* GameLibrary.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = GameLibrary.sqlite; sourceTree = "<group>"; };
 		102024A121E18DEB003C6F1A /* CGPoint+Distance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGPoint+Distance.swift"; sourceTree = "<group>"; };
 		1037EF1222AC3FA00010FA1B /* RomDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RomDetailView.swift; sourceTree = "<group>"; };
+		1049288122AF20C7009A34FC /* NESEmulatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NESEmulatorView.swift; sourceTree = "<group>"; };
+		1049288322AF20FC009A34FC /* ControllerState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerState.swift; sourceTree = "<group>"; };
 		1060B10A1F43737D00C9EFF5 /* Nintendoish-macOS */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Nintendoish-macOS"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1060B1231F4373F200C9EFF5 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		10969B5120C6F91E00895FC1 /* Nintendoish-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Nintendoish-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -247,6 +251,7 @@
 				100C06B222A984AA0000B4C9 /* Protocols */,
 				100C06B422A984C00000B4C9 /* ExplicitModels */,
 				100C06B122A9849D0000B4C9 /* CoreDataModels */,
+				1049288322AF20FC009A34FC /* ControllerState.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -261,13 +266,14 @@
 			name = Nintendoish;
 			sourceTree = "<group>";
 		};
-		105CD0F320D1023300B67406 /* ViewControllers */ = {
+		105CD0F320D1023300B67406 /* Views */ = {
 			isa = PBXGroup;
 			children = (
 				100C06AB22A980F70000B4C9 /* RomBrowserView.swift */,
 				1037EF1222AC3FA00010FA1B /* RomDetailView.swift */,
+				1049288122AF20C7009A34FC /* NESEmulatorView.swift */,
 			);
-			path = ViewControllers;
+			path = Views;
 			sourceTree = "<group>";
 		};
 		1060B1011F43737D00C9EFF5 = {
@@ -343,7 +349,7 @@
 				1084EB11214BA1A400952585 /* Emulator */,
 				1084EB0F214BA18100952585 /* Resources */,
 				1084EB0E214BA04300952585 /* Extensions */,
-				105CD0F320D1023300B67406 /* ViewControllers */,
+				105CD0F320D1023300B67406 /* Views */,
 				101597A4214A3D9300354B5D /* Models */,
 				10FFD56720CDF3D000910B40 /* AppDelegate.swift */,
 				100C06A922A9801F0000B4C9 /* SceneDelegate.swift */,
@@ -594,6 +600,8 @@
 				10FFD5A520CDF40900910B40 /* Mapper3.cpp in Sources */,
 				10FFD5A620CDF40900910B40 /* PPUMemory.cpp in Sources */,
 				10FFD5A720CDF40900910B40 /* Cartridge.cpp in Sources */,
+				1049288422AF20FC009A34FC /* ControllerState.swift in Sources */,
+				1049288222AF20C7009A34FC /* NESEmulatorView.swift in Sources */,
 				10FFD5A820CDF40900910B40 /* Mapper1.cpp in Sources */,
 				10EFBB7D21498F4F00C693AB /* CoreDataRom.swift in Sources */,
 				1003FB9620D377BD0059A18B /* GameLibraryPersistentContainer.swift in Sources */,

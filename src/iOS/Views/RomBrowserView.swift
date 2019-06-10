@@ -38,8 +38,10 @@ struct RomCell: View {
                 .resizable()
                 .aspectRatio(0.72, contentMode: .fit)
                 .padding(8)
-            Text(rom.name)
+                .layoutPriority(1)
+            Text(rom.strippedName)
                 .font(Font.custom("PixelNES", size: 20))
+                .lineLimit(2)
         }
             .frame(width: nil, height: 150, alignment: .leading)
     }
@@ -57,10 +59,12 @@ struct RomPickerView<StoreType:RomStore>: UIViewControllerRepresentable {
         }
         func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
             print("Cancelled")
-            store.addRom(romData: Data())
+            
         }
         func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-            print("Picked")
+            urls.forEach {
+                try? store.addRom(romData: Data(contentsOf: $0))
+            }
         }
     }
     
