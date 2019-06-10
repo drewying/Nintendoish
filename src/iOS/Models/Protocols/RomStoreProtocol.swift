@@ -10,6 +10,6 @@ import Foundation
 import SwiftUI
 
 protocol RomStore: BindableObject {
-    var roms:[Rom] { get }
+    var roms:[RomViewModel] { get }
     func addRom(romData:Data)
 }

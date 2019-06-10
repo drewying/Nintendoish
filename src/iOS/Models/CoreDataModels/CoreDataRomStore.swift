@@ -23,9 +23,9 @@ class CoreDataRomStore: NSObject, RomStore, NSFetchedResultsControllerDelegate {
         return fetchedResultsController
     }()
     
-    lazy var roms:[Rom] = {
+    lazy var roms:[RomViewModel] = {
         return fetchedResultsController.fetchedObjects?.compactMap { (coreDataRom:CoreDataRom) in
-            return Rom(id: coreDataRom.game.md5, romData: coreDataRom.romData, name: coreDataRom.game.name, image: UIImage(data: coreDataRom.game.boxImage as Data)!)
+            return RomViewModel(id: coreDataRom.game.md5, romData: coreDataRom.romData, name: coreDataRom.game.name, image: UIImage(data: coreDataRom.game.boxImage as Data)!)
             } ?? []
     }()
     

@@ -8,7 +8,6 @@
 
 import SwiftUI
 import UIKit
-import MetalKit
 
 struct RomBrowserView<StoreType : RomStore>: View {
     
@@ -16,67 +15,21 @@ struct RomBrowserView<StoreType : RomStore>: View {
     
     var body: some View {
         NavigationView {
-            List(romStore.roms) { (rom:Rom) in
+            List(romStore.roms) { rom in
                 NavigationButton(
                     destination:RomDetailView(rom:rom)) {
                         RomCell(rom: rom)
                 }
             }
-                .navigationBarItem(title: Text("ROMS"))
+                .navigationBarItem(title: Text("ROMS"), titleDisplayMode: .inline)
                 .navigationBarItems(trailing: PresentationButton(Text("Add"), destination: RomPickerView<StoreType>(store: romStore)))
         }
     }
 }
 
-struct NESEmulatorView: UIViewRepresentable {
-    
-    var rom:Rom
-    
-    func makeUIView(context: Context) -> UIView {
-        var metalView = MTKView()
-        guard let device = MTLCreateSystemDefaultDevice() else {
-            var label = UILabel()
-            label.text = "Metal Isn't Supported"
-            return label
-        }
-        
-        metalView.device = MTLCreateSystemDefaultDevice()
-        metalView.backgroundColor = UIColor.black
-        
-        var nes:NESConsole = NESConsole()
-        guard var nesRenderer = NESRenderer(metalKitView: metalView, nes: nes) else {
-            fatalError("Unable to initialize NESRenderer")
-        }
-        nesRenderer.mtkView(metalView, drawableSizeWillChange: metalView.drawableSize)
-        metalView.delegate = nesRenderer
-        
-        var audioPlayer: NESAudioPlayer!
-        audioPlayer = NESAudioPlayer(nes: nes)
-        audioPlayer.startAudio()
-        
-        let tempFile = NSTemporaryDirectory() + "/" + ProcessInfo.processInfo.globallyUniqueString + ".nes"
-        try? rom.romData.write(toFile: tempFile, options: .atomic)
-        nes.loadRom(tempFile)
-        
-        return metalView
-    }
-    
-    func updateUIView(_ view: UIView, context: Context) {
-        
-    }
-}
-
-struct RomDetailView: View {
-    var rom:Rom
-    
-    var body: some View {
-        NESEmulatorView(rom: rom)
-    }
-}
-
 struct RomCell: View {
-    var rom:Rom
-    init(rom:Rom) {
+    var rom:RomViewModel
+    init(rom:RomViewModel) {
         self.rom = rom
     }
     var body: some View {
@@ -87,7 +40,7 @@ struct RomCell: View {
                 .padding(8)
             Text(rom.name)
                 .font(Font.custom("PixelNES", size: 20))
-            }
+        }
             .frame(width: nil, height: 150, alignment: .leading)
     }
 }

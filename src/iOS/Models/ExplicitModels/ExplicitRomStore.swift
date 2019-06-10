@@ -14,7 +14,7 @@ import Combine
 class ExplicitRomStore: RomStore {
     let didChange = PassthroughSubject<ExplicitRomStore, Never>()
     
-    public var roms:[Rom] = []
+    public var roms:[RomViewModel] = []
     
     private var identifier:Int = 0
     
@@ -31,8 +31,8 @@ class ExplicitRomStore: RomStore {
         didChange.send(self)
     }
     
-    private func createRom() -> Rom {
+    private func createRom() -> RomViewModel {
         identifier += 1
-        return Rom(id: "\(identifier)", romData: NSData(), name: "MegaMan", image: UIImage(named: "cover")!)
+        return RomViewModel(id: "\(identifier)", romData: NSData(), name: "MegaMan", image: UIImage(named: "cover")!)
     }
 }

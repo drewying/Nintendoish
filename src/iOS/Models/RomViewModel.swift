@@ -10,7 +10,7 @@ import Foundation
 import SwiftUI
 
 
-struct Rom: Identifiable {
+struct RomViewModel: Identifiable {
     var id: String
     var romData: NSData
     var name: String
