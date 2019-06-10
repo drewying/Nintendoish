@@ -54,14 +54,10 @@ class CoreDataRomStore: NSObject, RomStore, NSFetchedResultsControllerDelegate {
         }
 
         guard let game = fetchedGames.first else {
-            return
-        }
-
-        if game.rom != nil {
             // Game all read exists. Return.
             return
         }
-        
+
         // Create the rom object
         let romObj:CoreDataRom = NSEntityDescription.insertNewObject(forEntityName: "Rom", into: context) as! CoreDataRom
         romObj.game = game

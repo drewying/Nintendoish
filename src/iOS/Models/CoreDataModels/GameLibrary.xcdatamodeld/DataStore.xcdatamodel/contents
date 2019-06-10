@@ -6,13 +6,14 @@
         <attribute name="name" attributeType="String"/>
         <attribute name="screenImage" attributeType="Binary"/>
         <attribute name="titleImage" attributeType="Binary"/>
+        <relationship name="rom" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Rom" inverseName="game" inverseEntity="Rom"/>
     </entity>
     <entity name="Rom" representedClassName="CoreDataRom" syncable="YES">
         <attribute name="romData" attributeType="Binary"/>
-        <relationship name="game" maxCount="1" deletionRule="Nullify" destinationEntity="Game"/>
+        <relationship name="game" maxCount="1" deletionRule="Nullify" destinationEntity="Game" inverseName="rom" inverseEntity="Game"/>
     </entity>
     <elements>
-        <element name="Game" positionX="-54" positionY="9" width="128" height="118"/>
+        <element name="Game" positionX="-54" positionY="9" width="128" height="133"/>
         <element name="Rom" positionX="-63" positionY="-18" width="128" height="73"/>
     </elements>
 </model>
