@@ -2,15 +2,14 @@
 //  NESEmulatorView.swift
 //  Nintendoish-iOS
 //
-//  Created by Ingebretsen, Andrew (HBO) on 6/10/19.
-//  Copyright © 2019 Ingebretsen, Andrew (HBO). All rights reserved.
+//  Created by Drew Ingebretsen on 6/10/19.
+//  Copyright © 2019 Drew Ingebretsen. All rights reserved.
 //
 
 import Foundation
 import SwiftUI
 import UIKit
 import MetalKit
-
 
 struct NESEmulatorView: UIViewRepresentable {
     var rom: RomViewModel
@@ -23,17 +22,15 @@ struct NESEmulatorView: UIViewRepresentable {
     
     class NESEmulatorCoordinator:NSObject, UIDocumentPickerDelegate {
         var rom: RomViewModel
-        let nes: NESConsole
-        let audioPlayer: NESAudioPlayer
-        var nesRenderer:NESRenderer!
+        let nes: NESConsole = NESConsole()
+        var audioPlayer: NESAudioPlayer?
+        var nesRenderer:NESRenderer?
         
         init(rom: RomViewModel) {
             self.rom = rom
-            nes = NESConsole()
-            audioPlayer = NESAudioPlayer(nes: nes)
         }
         deinit {
-            audioPlayer.stopAudio()
+            audioPlayer?.stopAudio()
         }
     }
     
@@ -51,15 +48,16 @@ struct NESEmulatorView: UIViewRepresentable {
             return label
         }
         
+        context.coordinator.audioPlayer =  NESAudioPlayer(nes:  context.coordinator.nes)
         metalView.device = device
         metalView.backgroundColor = UIColor.black
         
         context.coordinator.nesRenderer = NESRenderer(metalKitView: metalView, nes: context.coordinator.nes)
         
-        context.coordinator.nesRenderer.mtkView(metalView, drawableSizeWillChange: metalView.drawableSize)
+        context.coordinator.nesRenderer?.mtkView(metalView, drawableSizeWillChange: metalView.drawableSize)
         metalView.delegate = context.coordinator.nesRenderer
         
-        context.coordinator.audioPlayer.startAudio()
+        context.coordinator.audioPlayer?.startAudio()
         
         let tempFile = NSTemporaryDirectory() + "/" + ProcessInfo.processInfo.globallyUniqueString + ".nes"
         try? rom.romData.write(toFile: tempFile, options: .atomic)
@@ -140,7 +138,6 @@ struct NESEmulatorView: UIViewRepresentable {
             } else {
                 context.coordinator.nes.release(.B)
             }
-            
         }
     }
 }

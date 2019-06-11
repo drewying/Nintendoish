@@ -12,6 +12,7 @@ import Combine
 import CoreData
 
 class CoreDataRomStore: NSObject, RomStore, NSFetchedResultsControllerDelegate {
+    
     let didChange = PassthroughSubject<CoreDataRomStore, Never>()
     
     private lazy var fetchedResultsController:NSFetchedResultsController<CoreDataRom> = {
@@ -72,6 +73,21 @@ class CoreDataRomStore: NSObject, RomStore, NSFetchedResultsControllerDelegate {
             print("Error saving \(error.localizedDescription)")
         }
         
+    }
+    
+    func deleteRom(id: String) {
+        //Find game
+        guard let romObject = self.fetchedResultsController.fetchedObjects?.first(where: {
+            return $0.game.md5 == id
+        }) else { return }
+        
+        do {
+            self.persistentContainer.viewContext.delete(romObject)
+            try self.persistentContainer.viewContext.save()
+        } catch {
+            print("Error deleting object")
+        }
+
     }
     
     func fetchRoms() {

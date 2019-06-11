@@ -23,7 +23,7 @@ class GameLibraryPersistentContainer : NSPersistentContainer {
                 }
             }
         } catch {
-            
+            fatalError("Unable to initialize game library")
         }
     }
 }

@@ -31,8 +31,17 @@ class ExplicitRomStore: RomStore {
         didChange.send(self)
     }
     
+    func deleteRom(id:String) {
+        guard let index = roms.firstIndex(where: {
+            return $0.id == id
+        }) else { return }
+        
+        roms.remove(at: index)
+        didChange.send(self)
+    }
+    
     private func createRom() -> RomViewModel {
         identifier += 1
-        return RomViewModel(id: "\(identifier)", romData: NSData(), name: "MegaMan", image: UIImage(named: "cover")!)
+        return RomViewModel(id: "\(identifier)", romData: NSData(), name: "Super Rom Man 2", image: UIImage(named: "cover")!)
     }
 }

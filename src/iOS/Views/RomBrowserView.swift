@@ -13,13 +13,21 @@ struct RomBrowserView<StoreType : RomStore>: View {
     
     @ObjectBinding var romStore : StoreType
     
+    func delete(at offsets: IndexSet) {
+        guard let index = offsets.first else { return }
+        let rom = romStore.roms[index]
+        romStore.deleteRom(id: rom.id)
+    }
+    
     var body: some View {
         NavigationView {
-            List(romStore.roms) { rom in
-                NavigationButton(
+            List() {
+                ForEach(romStore.roms) { rom in
+                    NavigationButton(
                     destination:RomDetailView(rom:rom)) {
                         RomCell(rom: rom)
-                }
+                        }
+                }.onDelete(perform: delete)
             }
                 .navigationBarItem(title: Text("ROMS"), titleDisplayMode: .inline)
                 .navigationBarItems(trailing: PresentationButton(Text("Add"), destination: RomPickerView<StoreType>(store: romStore)))
@@ -44,43 +52,6 @@ struct RomCell: View {
                 .lineLimit(2)
         }
             .frame(width: nil, height: 150, alignment: .leading)
-    }
-}
-
-struct RomPickerView<StoreType:RomStore>: UIViewControllerRepresentable {
-    
-    var store:StoreType
-    
-    class RomPickerCoordinator:NSObject, UIDocumentPickerDelegate {
-        var store:StoreType
-        
-        init(store:StoreType) {
-            self.store = store
-        }
-        func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
-            print("Cancelled")
-            
-        }
-        func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-            urls.forEach {
-                try? store.addRom(romData: Data(contentsOf: $0))
-            }
-        }
-    }
-    
-    
-    func makeCoordinator() -> RomPickerCoordinator {
-        RomPickerCoordinator(store: store)
-    }
-    
-    func makeUIViewController(context: Context) -> UIDocumentPickerViewController {
-        let vc:UIDocumentPickerViewController = UIDocumentPickerViewController.init(documentTypes: ["nintendo.nes"], in: .import)
-        vc.delegate = context.coordinator
-        return vc
-    }
-    
-    func updateUIViewController(_ uiViewController: UIDocumentPickerViewController, context: UIViewControllerRepresentableContext<RomPickerView<StoreType>>) {
-        
     }
 }
 

@@ -34,6 +34,7 @@
 		10EFBB7D21498F4F00C693AB /* CoreDataRom.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10EFBB7921498F4F00C693AB /* CoreDataRom.swift */; };
 		10EFBB7F21498F4F00C693AB /* CoreDataGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10EFBB7B21498F4F00C693AB /* CoreDataGame.swift */; };
 		10EFBB822149927000C693AB /* Pixel_NES.otf in Resources */ = {isa = PBXBuildFile; fileRef = 10EFBB812149927000C693AB /* Pixel_NES.otf */; };
+		10F9D62022B02F86007F4B5B /* RomPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10F9D61F22B02F86007F4B5B /* RomPickerView.swift */; };
 		10FF3D3E20D6254700B92AE1 /* GameLibrary.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 10FF3D3820D6228400B92AE1 /* GameLibrary.xcdatamodeld */; };
 		10FFD59E20CDF40900910B40 /* Mapper4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD56B20CDF3D000910B40 /* Mapper4.cpp */; };
 		10FFD59F20CDF40900910B40 /* Memory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD56C20CDF3D000910B40 /* Memory.cpp */; };
@@ -126,6 +127,7 @@
 		10EFBB7921498F4F00C693AB /* CoreDataRom.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataRom.swift; sourceTree = "<group>"; };
 		10EFBB7B21498F4F00C693AB /* CoreDataGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataGame.swift; sourceTree = "<group>"; };
 		10EFBB812149927000C693AB /* Pixel_NES.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Pixel_NES.otf; sourceTree = "<group>"; };
+		10F9D61F22B02F86007F4B5B /* RomPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RomPickerView.swift; sourceTree = "<group>"; };
 		10FF3D3920D6228400B92AE1 /* DataStore.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DataStore.xcdatamodel; sourceTree = "<group>"; };
 		10FFD55C20CDF3D000910B40 /* BridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgingHeader.h; sourceTree = "<group>"; };
 		10FFD55D20CDF3D000910B40 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -271,6 +273,7 @@
 			children = (
 				100C06AB22A980F70000B4C9 /* RomBrowserView.swift */,
 				1037EF1222AC3FA00010FA1B /* RomDetailView.swift */,
+				10F9D61F22B02F86007F4B5B /* RomPickerView.swift */,
 				1049288122AF20C7009A34FC /* NESEmulatorView.swift */,
 			);
 			path = Views;
@@ -326,6 +329,7 @@
 			children = (
 				10164BEB20D6407400F13ED2 /* GameLibrary.sqlite */,
 				10EFBB812149927000C693AB /* Pixel_NES.otf */,
+				10D042C522A9AF7900C8C4EB /* MegaManCover.png */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -347,15 +351,14 @@
 			isa = PBXGroup;
 			children = (
 				1084EB11214BA1A400952585 /* Emulator */,
-				1084EB0F214BA18100952585 /* Resources */,
-				1084EB0E214BA04300952585 /* Extensions */,
 				105CD0F320D1023300B67406 /* Views */,
 				101597A4214A3D9300354B5D /* Models */,
+				1084EB0F214BA18100952585 /* Resources */,
+				1084EB0E214BA04300952585 /* Extensions */,
 				10FFD56720CDF3D000910B40 /* AppDelegate.swift */,
 				100C06A922A9801F0000B4C9 /* SceneDelegate.swift */,
 				10FFD55D20CDF3D000910B40 /* Assets.xcassets */,
 				10FFD55C20CDF3D000910B40 /* BridgingHeader.h */,
-				10D042C522A9AF7900C8C4EB /* MegaManCover.png */,
 				1016180620D617D800DDD2B5 /* GameDatabaseBuilder.playground */,
 				10FFD56820CDF3D000910B40 /* Info.plist */,
 				10FFD56120CDF3D000910B40 /* LaunchScreen.storyboard */,
@@ -607,6 +610,7 @@
 				1003FB9620D377BD0059A18B /* GameLibraryPersistentContainer.swift in Sources */,
 				10D042C422A9ADB600C8C4EB /* ExplicitRomStore.swift in Sources */,
 				100C06BC22A993710000B4C9 /* RomStoreProtocol.swift in Sources */,
+				10F9D62022B02F86007F4B5B /* RomPickerView.swift in Sources */,
 				10EFBB7F21498F4F00C693AB /* CoreDataGame.swift in Sources */,
 				100C06AE22A981B40000B4C9 /* CoreDataRomStore.swift in Sources */,
 				10FFD5A920CDF40900910B40 /* Mapper0.cpp in Sources */,

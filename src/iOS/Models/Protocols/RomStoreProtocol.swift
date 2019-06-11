@@ -11,5 +11,9 @@ import SwiftUI
 
 protocol RomStore: BindableObject {
     var roms:[RomViewModel] { get }
+    
+    // TODO these methods should return error state
     func addRom(romData:Data)
+    func deleteRom(id:String)
+    
 }
