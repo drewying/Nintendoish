@@ -40,9 +40,14 @@ struct RomDetailView: View {
         let abbuttons = DragGesture(minimumDistance: 0)
             .onChanged() { state in
                 let width = CGFloat(170.0)
-                if state.location.x < width / 2 {
+                if state.location.x < width * 0.4 {
                     self.state.b = true
+                    self.state.a = false
+                } else if state.location.x > width * 0.6 {
+                    self.state.b = false
+                    self.state.a = true
                 } else {
+                    self.state.b = true
                     self.state.a = true
                 }
             }
@@ -53,7 +58,7 @@ struct RomDetailView: View {
         
         let startselectbuttons = DragGesture(minimumDistance: 0)
             .onChanged() { state in
-                let width = CGFloat(170.0)
+                let width = CGFloat(120.0)
                 if state.location.x < width / 2 {
                     self.state.select = true
                 } else {
