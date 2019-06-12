@@ -249,7 +249,6 @@
 		101597A4214A3D9300354B5D /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				100C06AF22A9823F0000B4C9 /* RomViewModel.swift */,
 				100C06B222A984AA0000B4C9 /* Protocols */,
 				100C06B422A984C00000B4C9 /* ExplicitModels */,
 				100C06B122A9849D0000B4C9 /* CoreDataModels */,
@@ -275,6 +274,7 @@
 				1037EF1222AC3FA00010FA1B /* RomDetailView.swift */,
 				10F9D61F22B02F86007F4B5B /* RomPickerView.swift */,
 				1049288122AF20C7009A34FC /* NESEmulatorView.swift */,
+				100C06AF22A9823F0000B4C9 /* RomViewModel.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";

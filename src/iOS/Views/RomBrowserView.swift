@@ -13,25 +13,51 @@ struct RomBrowserView<StoreType : RomStore>: View {
     
     @ObjectBinding var romStore : StoreType
     
-    func delete(at offsets: IndexSet) {
+    func deleteRom(at offsets: IndexSet) {
         guard let index = offsets.first else { return }
         let rom = romStore.roms[index]
         romStore.deleteRom(id: rom.id)
     }
     
+    struct AddButton<StoreType : RomStore>: View {
+        var romStore : StoreType
+        
+        var body: some View {
+            #if DEBUG
+            return Button(action: {
+                self.romStore.addRom(romData: Data())
+            }, label: { Text("ADD") })
+            #else
+            return PresentationButton(Text("ADD"), destination: RomPickerView<StoreType>(store: romStore))
+            #endif
+        }
+    }
+    
     var body: some View {
         NavigationView {
-            List() {
-                ForEach(romStore.roms) { rom in
-                    NavigationButton(
-                    destination:RomDetailView(rom:rom)) {
+            if romStore.roms.count == 0 {
+                Text("NO ROMS IN LIBARY\nPRESS ADD")
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+                    .navigationBarItem(
+                        title: Text(""),
+                        titleDisplayMode: .inline)
+                    .navigationBarItems(trailing: AddButton(romStore: romStore))
+
+            } else {
+                List() {
+                    ForEach(romStore.roms) { rom in
                         RomCell(rom: rom)
-                        }
-                }.onDelete(perform: delete)
+                    }
+                        .onDelete(perform: deleteRom)
+                }
+                    .navigationBarItem(
+                        title: Text(""),
+                        titleDisplayMode: .inline)
+                    .navigationBarItems(trailing: AddButton(romStore: romStore))
             }
-                .navigationBarItem(title: Text("ROMS"), titleDisplayMode: .inline)
-                .navigationBarItems(trailing: PresentationButton(Text("Add"), destination: RomPickerView<StoreType>(store: romStore)))
         }
+            .font(Font.custom("PixelNES", size: 18))
     }
 }
 
@@ -41,17 +67,19 @@ struct RomCell: View {
         self.rom = rom
     }
     var body: some View {
-        HStack {
-            Image(uiImage: rom.image)
-                .resizable()
-                .aspectRatio(0.72, contentMode: .fit)
-                .padding(8)
-                .layoutPriority(1)
-            Text(rom.strippedName)
-                .font(Font.custom("PixelNES", size: 20))
-                .lineLimit(2)
+        NavigationButton(destination:RomDetailView(rom:rom)) {
+            HStack {
+                Image(uiImage: rom.image)
+                    .resizable()
+                    .aspectRatio(0.72, contentMode: .fit)
+                    .padding(8)
+                    .layoutPriority(1)
+                Text(rom.strippedName)
+                    .font(Font.custom("PixelNES", size: 18))
+                    .lineLimit(2)
+                }
+                .frame(width: nil, height: 130, alignment: .leading)
         }
-            .frame(width: nil, height: 150, alignment: .leading)
     }
 }
 

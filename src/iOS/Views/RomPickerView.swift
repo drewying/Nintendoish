@@ -11,6 +11,7 @@ import SwiftUI
 
 struct RomPickerView<StoreType:RomStore>: UIViewControllerRepresentable {
     
+    typealias UIViewControllerType = UIDocumentPickerViewController
     var store:StoreType
     
     class RomPickerCoordinator:NSObject, UIDocumentPickerDelegate {
@@ -19,10 +20,10 @@ struct RomPickerView<StoreType:RomStore>: UIViewControllerRepresentable {
         init(store:StoreType) {
             self.store = store
         }
+        
         func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
-            print("Cancelled")
-            
         }
+        
         func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
             urls.forEach {
                 try? store.addRom(romData: Data(contentsOf: $0))
