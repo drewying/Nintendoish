@@ -34,6 +34,7 @@
 		10EFBB7D21498F4F00C693AB /* CoreDataRom.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10EFBB7921498F4F00C693AB /* CoreDataRom.swift */; };
 		10EFBB7F21498F4F00C693AB /* CoreDataGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10EFBB7B21498F4F00C693AB /* CoreDataGame.swift */; };
 		10EFBB822149927000C693AB /* Pixel_NES.otf in Resources */ = {isa = PBXBuildFile; fileRef = 10EFBB812149927000C693AB /* Pixel_NES.otf */; };
+		10F501CD22B173E4008D7C85 /* StubRom.nes in Resources */ = {isa = PBXBuildFile; fileRef = 10F501CC22B173E4008D7C85 /* StubRom.nes */; };
 		10F9D62022B02F86007F4B5B /* RomPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10F9D61F22B02F86007F4B5B /* RomPickerView.swift */; };
 		10FF3D3E20D6254700B92AE1 /* GameLibrary.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 10FF3D3820D6228400B92AE1 /* GameLibrary.xcdatamodeld */; };
 		10FFD59E20CDF40900910B40 /* Mapper4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 10FFD56B20CDF3D000910B40 /* Mapper4.cpp */; };
@@ -127,6 +128,7 @@
 		10EFBB7921498F4F00C693AB /* CoreDataRom.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataRom.swift; sourceTree = "<group>"; };
 		10EFBB7B21498F4F00C693AB /* CoreDataGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataGame.swift; sourceTree = "<group>"; };
 		10EFBB812149927000C693AB /* Pixel_NES.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Pixel_NES.otf; sourceTree = "<group>"; };
+		10F501CC22B173E4008D7C85 /* StubRom.nes */ = {isa = PBXFileReference; lastKnownFileType = file; path = StubRom.nes; sourceTree = "<group>"; };
 		10F9D61F22B02F86007F4B5B /* RomPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RomPickerView.swift; sourceTree = "<group>"; };
 		10FF3D3920D6228400B92AE1 /* DataStore.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DataStore.xcdatamodel; sourceTree = "<group>"; };
 		10FFD55C20CDF3D000910B40 /* BridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgingHeader.h; sourceTree = "<group>"; };
@@ -329,6 +331,7 @@
 			children = (
 				10164BEB20D6407400F13ED2 /* GameLibrary.sqlite */,
 				10EFBB812149927000C693AB /* Pixel_NES.otf */,
+				10F501CC22B173E4008D7C85 /* StubRom.nes */,
 				10D042C522A9AF7900C8C4EB /* MegaManCover.png */,
 			);
 			path = Resources;
@@ -540,6 +543,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				10F501CD22B173E4008D7C85 /* StubRom.nes in Resources */,
 				10FFD5D320CDF5E900910B40 /* Assets.xcassets in Resources */,
 				10EFBB822149927000C693AB /* Pixel_NES.otf in Resources */,
 				10D042C622A9AF7900C8C4EB /* MegaManCover.png in Resources */,

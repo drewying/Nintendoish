@@ -42,6 +42,7 @@ class ExplicitRomStore: RomStore {
     
     private func createRom() -> RomViewModel {
         identifier += 1
-        return RomViewModel(id: "\(identifier)", romData: NSData(), name: "Super Rom Man 2", image: UIImage(named: "cover")!)
+        let romData = NSData(contentsOfFile: Bundle.main.path(forResource: "StubRom", ofType: "nes") ?? "") ?? NSData()
+        return RomViewModel(id: "\(identifier)", romData: romData, name: "Super Rom Man 2", image: UIImage(named: "cover")!)
     }
 }

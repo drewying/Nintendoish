@@ -54,8 +54,8 @@ struct RomBrowserView<StoreType : RomStore>: View {
                     .navigationBarTitle(Text(""), displayMode: .inline)
                     .navigationBarItems(trailing: AddButton(romStore: romStore))
             }
-            }
-            .font(Font.custom("PixelNES", size: 18))
+        }
+        .font(Font.custom("PixelNES", size: 18))
     }
 }
 
