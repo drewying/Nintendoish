@@ -43,20 +43,18 @@ struct RomBrowserView<StoreType : RomStore>: View {
                         title: Text(""),
                         titleDisplayMode: .inline)
                     .navigationBarItems(trailing: AddButton(romStore: romStore))
-
+                
             } else {
                 List() {
                     ForEach(romStore.roms) { rom in
                         RomCell(rom: rom)
-                    }
+                        }
                         .onDelete(perform: deleteRom)
-                }
-                    .navigationBarItem(
-                        title: Text(""),
-                        titleDisplayMode: .inline)
+                    }
+                    .navigationBarTitle(Text(""), displayMode: .inline)
                     .navigationBarItems(trailing: AddButton(romStore: romStore))
             }
-        }
+            }
             .font(Font.custom("PixelNES", size: 18))
     }
 }

@@ -86,6 +86,7 @@ struct RomDetailView: View {
                 .gesture(startselectbuttons)
             Spacer()
         }
+        .navigationBarTitle(Text(rom.strippedName), displayMode: .inline)
         .background(Color.black)
     }
 }

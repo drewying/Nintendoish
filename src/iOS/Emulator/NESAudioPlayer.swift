@@ -14,7 +14,7 @@ class NESAudioPlayer {
     var nes:NESConsole
     var queue:AudioQueueRef? = nil
     var buffers:[AudioQueueBufferRef?] = []
-    var bufferLengthInFrames:UInt32 = 1024
+    var bufferLengthInFrames:UInt32 = 2048
     var frameSizeInBytes:UInt32 = UInt32(MemoryLayout<Float32>.size)
     var audioDispatchQueue = DispatchQueue(label: "nesAudioQueue")
     var bufferLengthInBytes:UInt32 {
