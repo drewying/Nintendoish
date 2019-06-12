@@ -66,8 +66,10 @@ struct RomDetailView: View {
             }
         
         return VStack {
-            NESEmulatorView(rom: rom, state: state)
-                .aspectRatio(256.0/240.0, contentMode: .fill)
+            NESEmulatorView(rom: self.rom, state: self.state)
+                .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
+                .aspectRatio(256.0/240.0, contentMode: .fit)
+            
             HStack {
                 Image("DPad")
                     .resizable()
@@ -84,8 +86,8 @@ struct RomDetailView: View {
                 .resizable()
                 .frame(width: 120, height: 80)
                 .gesture(startselectbuttons)
-            Spacer()
         }
+            .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity, alignment: .top)
         .navigationBarTitle(Text(rom.strippedName), displayMode: .inline)
         .background(Color.black)
     }
