@@ -10,6 +10,10 @@ While the emulator's primary user experience is for iOS, a very bare bones port 
 
 This emulator is very much a continual work in progress.
 
+### SwiftUI
+
+The current `master` branch has been migrated to use SwiftUI and has known instabilities. If targeting iOS 12 or would like a more stable UI experience, please use the `v0.2_stable` branch
+
 ### Features
 
 - Support for Mappers 0/1/2/3/4/7/9. This makes it compatible with nearly every licensed USA game released. The only games not currently supported are a [handful of Mapper 5 games](http://bootgod.dyndns.org:7777/search.php?ines=5&group=groupid).
@@ -25,7 +29,7 @@ The emulator can successfully emulate nearly all known [tricky to emulate games]
 By the standards which [TAS Video rates emulators](http://tasvideos.org/EmulatorResources/NESAccuracyTests.html) the emulator scores 76% in accuracy, mostly because of the work in progress APU. The accuracy score bumps up to 96% when considering only PPU and CPU accuracy. 
 
 ### TODO
-- Audio is highly unstable on iOS. (The audio on the desktop ports do much better)
+- Audio performance on iOS needs to be improved
 - Improve APU emulation
 - Add support for Mapper 5
 - Add support for save/restore states
